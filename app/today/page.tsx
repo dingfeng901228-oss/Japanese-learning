@@ -21,44 +21,31 @@ export default function TodayPage() {
 
         <ul className="space-y-3">
           <li className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-gray-50">
-            <span className="flex items-center gap-3">
-              <span>🎧</span>
-              <span>听力</span>
-            </span>
+            <span>🎧 听力</span>
             <span className="text-sm text-gray-500">10 分钟</span>
           </li>
           <li className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-gray-50">
-            <span className="flex items-center gap-3">
-              <span>🎤</span>
-              <span>口语</span>
-            </span>
+            <span>🎤 口语</span>
             <span className="text-sm text-gray-500">10 分钟</span>
           </li>
           <li className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-gray-50">
-            <span className="flex items-center gap-3">
-              <span>🔁</span>
-              <span>Shadowing</span>
-            </span>
+            <span>🔁 Shadowing</span>
             <span className="text-sm text-gray-500">5 分钟</span>
           </li>
           <li className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-gray-50">
-            <span className="flex items-center gap-3">
-              <span>📝</span>
-              <span>复习</span>
-            </span>
+            <span>📝 复习</span>
             <span className="text-sm text-gray-500">5 分钟</span>
           </li>
         </ul>
 
-        <button
-          type="button"
-          disabled
-          className="w-full mt-8 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        <Link
+          href="/speaking"
+          className="block text-center mt-8 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
         >
-          开始今天的训练
-        </button>
+          开始今天的训练 →
+        </Link>
         <p className="text-xs text-gray-400 text-center mt-3">
-          Phase 1 完成后即可启用
+          Phase 1 AI Conversation MVP 已启用
         </p>
       </div>
 
