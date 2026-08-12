@@ -104,6 +104,31 @@ export default function SpeakingPage() {
     window.localStorage.setItem(STORAGE_KEY, feedbackLanguage);
   }, [feedbackLanguage]);
 
+  // Phase 4: save each generated feedback's mistakes to localStorage so
+  // /today can show "最近弱点" as a live history instead of hardcoded text.
+  useEffect(() => {
+    if (!feedback) return;
+    if (typeof window === "undefined") return;
+    const KEY = "japaneseLearning.mistakeHistory";
+    const history = JSON.parse(
+      window.localStorage.getItem(KEY) || "[]"
+    ) as Array<{
+      id: string;
+      timestamp: number;
+      language: FeedbackLanguage;
+      grammar: string[];
+      vocabulary: string[];
+    }>;
+    history.push({
+      id: Date.now().toString(),
+      timestamp: Date.now(),
+      language: feedbackLanguage,
+      grammar: feedback.grammar,
+      vocabulary: feedback.vocabulary,
+    });
+    window.localStorage.setItem(KEY, JSON.stringify(history));
+  }, [feedback, feedbackLanguage]);
+
   // Phase 2: voice input via Web Speech API
   const [recognizing, setRecognizing] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
