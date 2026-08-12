@@ -13,14 +13,14 @@ AI 驱动的日语听力与口语训练系统。
 
 | Phase | 范围 | 状态 |
 |-------|------|------|
-| **0** | 项目初始化与骨架 | 🟡 进行中 |
-| **1** | AI Conversation MVP（登录 + Dashboard + 对话 + STT + 反馈 + 错误记忆） | ⚪ |
+| **0** | 项目初始化与骨架 | ✅ 完成 |
+| **1** | AI Conversation MVP（登录 + Dashboard + 对话 + STT + 反馈 + 错误记忆） | 🟡 对话已通；STT/反馈/错误记忆待补 |
 | **2** | Speech-to-Text 增强 | ⚪ |
 | **3** | AI Feedback 增强 | ⚪ |
 | **4** | Mistake Memory | ⚪ |
 | **5** | Retry | ⚪ |
 | **6** | Listening + Shadowing | ⚪ |
-| **7** | Daily Training Engine | ⚪ |
+| **7** | Daily Training Engine | 🟡 UI 占位完成，引擎逻辑待接 |
 | **8** | Weakness Profile | ⚪ |
 | **9** | Real-World Missions | ⚪ |
 | **10** | Progress / Analytics | ⚪ |
