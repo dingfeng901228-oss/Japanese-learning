@@ -1,7 +1,9 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Force dynamic rendering — never evaluate at build time (env vars not available)
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 const SYSTEM_PROMPT = `You are a Japanese language tutor for a Chinese-speaking learner (N2 level).
 
@@ -27,6 +29,9 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+
+    // Lazy-init the OpenAI client so missing env var at build time doesn't crash.
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     const body = (await req.json()) as { messages?: Turn[] };
     const messages = Array.isArray(body.messages) ? body.messages : [];
