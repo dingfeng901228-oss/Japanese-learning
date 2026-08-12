@@ -296,30 +296,33 @@ export default function SpeakingPage() {
       )}
 
       {conversationActive && (
-        <>
-          <div className="flex gap-2">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  send();
-                }
-              }}
-              placeholder={
-                recognizing
-                  ? "🎤 正在听...（请说日语）"
-                  : "用日语回复... (Enter 发送, Shift+Enter 换行)"
+        <div className="space-y-3">
+          {/* Row 1: textarea */}
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send();
               }
-              rows={2}
-              className={`flex-1 px-4 py-3 border rounded-lg resize-none focus:outline-none disabled:bg-gray-50 ${
-                recognizing
-                  ? "border-red-300 bg-red-50"
-                  : "border-gray-200 focus:border-gray-400"
-              }`}
-              disabled={busy}
-            />
+            }}
+            placeholder={
+              recognizing
+                ? "🎤 正在听...（请说日语）"
+                : "用日语回复... (Shift+Enter 换行)"
+            }
+            rows={1}
+            className={`w-full px-4 py-3 border rounded-lg resize-none focus:outline-none disabled:bg-gray-50 ${
+              recognizing
+                ? "border-red-300 bg-red-50"
+                : "border-gray-200 focus:border-gray-400"
+            }`}
+            disabled={busy}
+          />
+
+          {/* Row 2: voice + keyboard hint + send */}
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={recognizing ? stopRecognition : startRecognition}
@@ -329,7 +332,7 @@ export default function SpeakingPage() {
                   ? "停止录音"
                   : "用日语语音输入（Chrome / Safari）"
               }
-              className={`px-4 py-3 rounded-lg transition-colors text-xl ${
+              className={`flex-shrink-0 px-4 py-2.5 rounded-lg transition-colors text-xl ${
                 recognizing
                   ? "bg-red-500 text-white hover:bg-red-600 animate-pulse"
                   : "border border-gray-300 text-gray-700 hover:bg-gray-50"
@@ -337,62 +340,63 @@ export default function SpeakingPage() {
             >
               {recognizing ? "⏹" : "🎤"}
             </button>
+            <span className="flex-1 text-xs text-gray-400 text-center whitespace-nowrap">
+              Enter 发送 · Shift+Enter 换行
+            </span>
             <button
               type="button"
               onClick={send}
               disabled={busy || !input.trim()}
-              className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-shrink-0 px-6 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
               {busy ? "..." : "发送"}
             </button>
           </div>
 
-          <div className="mt-4 space-y-3">
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-gray-400 whitespace-nowrap">
-                {labels.feedbackLangLabel}:
-              </span>
-              <div className="inline-flex rounded-lg border border-gray-200 overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setFeedbackLanguage("zh")}
-                  className={`px-4 py-1 text-sm transition-colors ${
-                    feedbackLanguage === "zh"
-                      ? "bg-gray-900 text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  中文
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFeedbackLanguage("en")}
-                  className={`px-4 py-1 text-sm transition-colors border-l border-gray-200 ${
-                    feedbackLanguage === "en"
-                      ? "bg-gray-900 text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  English
-                </button>
-              </div>
-            </div>
+          {/* Separator */}
+          <div className="pt-3 border-t border-gray-100" />
 
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-400">
-                {labels.pickLangHint}
-              </span>
+          {/* Row 3: feedback language */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-500">
+              {labels.feedbackLangLabel}
+            </span>
+            <div className="inline-flex rounded-lg border border-gray-200 overflow-hidden">
               <button
                 type="button"
-                onClick={finishConversation}
-                disabled={gettingFeedback || busy}
-                className="px-5 py-2 border border-gray-900 text-gray-900 rounded-lg hover:bg-gray-900 hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm"
+                onClick={() => setFeedbackLanguage("zh")}
+                className={`px-4 py-1.5 text-sm transition-colors ${
+                  feedbackLanguage === "zh"
+                    ? "bg-gray-900 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-50"
+                }`}
               >
-                {gettingFeedback ? labels.analyzing : labels.finishCta}
+                中文
+              </button>
+              <button
+                type="button"
+                onClick={() => setFeedbackLanguage("en")}
+                className={`px-4 py-1.5 text-sm transition-colors border-l border-gray-200 ${
+                  feedbackLanguage === "en"
+                    ? "bg-gray-900 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                English
               </button>
             </div>
           </div>
-        </>
+
+          {/* Row 4: finish button (full-width on mobile) */}
+          <button
+            type="button"
+            onClick={finishConversation}
+            disabled={gettingFeedback || busy}
+            className="w-full px-5 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium"
+          >
+            {gettingFeedback ? labels.analyzing : labels.finishCta}
+          </button>
+        </div>
       )}
 
       {gettingFeedback && !feedback && (
