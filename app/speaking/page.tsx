@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 
 type Turn = { role: "user" | "assistant"; content: string };
@@ -22,6 +22,19 @@ const INITIAL_TURNS: Turn[] = [
   },
 ];
 
+// Web Speech API types (declared globally in globals.d.ts).
+// Using any here because TypeScript lib.dom doesn't ship these.
+type SpeechRecognitionLike = any;
+
+function getSpeechRecognition(): SpeechRecognitionLike | null {
+  if (typeof window === "undefined") return null;
+  const Ctor =
+    (window as any).SpeechRecognition ||
+    (window as any).webkitSpeechRecognition;
+  if (!Ctor) return null;
+  return new Ctor();
+}
+
 export default function SpeakingPage() {
   const [turns, setTurns] = useState<Turn[]>(INITIAL_TURNS);
   const [input, setInput] = useState("");
@@ -30,6 +43,10 @@ export default function SpeakingPage() {
 
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [gettingFeedback, setGettingFeedback] = useState(false);
+
+  // Phase 2: voice input via Web Speech API
+  const [recognizing, setRecognizing] = useState(false);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
   async function send() {
     const text = input.trim();
@@ -61,7 +78,6 @@ export default function SpeakingPage() {
   }
 
   async function finishConversation() {
-    // Need at least one user message beyond the initial greeting to generate feedback
     const userTurns = turns.filter((t) => t.role === "user");
     if (userTurns.length === 0) {
       setError("Say at least one sentence in Japanese before getting feedback.");
@@ -96,6 +112,58 @@ export default function SpeakingPage() {
     setFeedback(null);
   }
 
+  function startRecognition() {
+    if (recognizing) return;
+    const recognition = getSpeechRecognition();
+    if (!recognition) {
+      setError(
+        "当前浏览器不支持语音识别。请用 Chrome 或 Safari（或手动输入）。"
+      );
+      return;
+    }
+    setError(null);
+    recognition.lang = "ja-JP";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event: any) => {
+      let transcript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setInput(transcript);
+    };
+    recognition.onerror = (event: any) => {
+      setError(`语音识别错误: ${event.error || "unknown"}`);
+      setRecognizing(false);
+    };
+    recognition.onend = () => {
+      setRecognizing(false);
+    };
+
+    try {
+      recognition.start();
+      recognitionRef.current = recognition;
+      setRecognizing(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+      setRecognizing(false);
+    }
+  }
+
+  function stopRecognition() {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {
+        // ignore — recognition might already have ended
+      }
+      recognitionRef.current = null;
+    }
+    setRecognizing(false);
+  }
+
   const conversationActive = !feedback && !gettingFeedback;
 
   return (
@@ -110,7 +178,7 @@ export default function SpeakingPage() {
       <h1 className="text-2xl font-bold mb-2">自由对话</h1>
       <p className="text-sm text-gray-500 mb-6">
         {conversationActive
-          ? "用日语跟 AI 教练对话。结束训练后会给你反馈（Phase 1.5 启用）"
+          ? "用日语跟 AI 教练对话（可以打字或🎤 语音）。结束训练后会给你反馈"
           : "对话已结束 — 下面是 AI 教练给你的反馈"}
       </p>
 
@@ -154,11 +222,36 @@ export default function SpeakingPage() {
                   send();
                 }
               }}
-              placeholder="用日语回复... (Enter 发送, Shift+Enter 换行)"
+              placeholder={
+                recognizing
+                  ? "🎤 正在听...（请说日语）"
+                  : "用日语回复... (Enter 发送, Shift+Enter 换行)"
+              }
               rows={2}
-              className="flex-1 px-4 py-3 border border-gray-200 rounded-lg resize-none focus:outline-none focus:border-gray-400 disabled:bg-gray-50"
+              className={`flex-1 px-4 py-3 border rounded-lg resize-none focus:outline-none disabled:bg-gray-50 ${
+                recognizing
+                  ? "border-red-300 bg-red-50"
+                  : "border-gray-200 focus:border-gray-400"
+              }`}
               disabled={busy}
             />
+            <button
+              type="button"
+              onClick={recognizing ? stopRecognition : startRecognition}
+              disabled={busy}
+              title={
+                recognizing
+                  ? "停止录音"
+                  : "用日语语音输入（Chrome / Safari）"
+              }
+              className={`px-4 py-3 rounded-lg transition-colors text-xl ${
+                recognizing
+                  ? "bg-red-500 text-white hover:bg-red-600 animate-pulse"
+                  : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              {recognizing ? "⏹" : "🎤"}
+            </button>
             <button
               type="button"
               onClick={send}
