@@ -5,7 +5,22 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const FEEDBACK_SYSTEM_PROMPT = `You are an expert Japanese language tutor providing end-of-session feedback to a Chinese-speaking learner at JLPT N2 level (upper-intermediate).
+type FeedbackLanguage = "zh" | "en";
+
+// System prompts are parameterized by output language so the AI tutor's
+// prose feedback (overall / grammar / vocabulary / strengths / improvements
+// / encouragement) is written in the learner's preferred language.
+// Field names + JSON schema stay English (machine-facing); content is
+// human-facing and matches the toggle on /speaking.
+function buildFeedbackSystemPrompt(lang: FeedbackLanguage): string {
+  const langDirective =
+    lang === "zh"
+      ? "用中文（简体）写所有 prose feedback 字段：overall、naturalness、grammar、vocabulary、strengths、improvements、encouragement。日语例句保留原样。"
+      : "Write all prose feedback fields (overall, naturalness, grammar, vocabulary, strengths, improvements, encouragement) in English. Keep Japanese example sentences in Japanese.";
+
+  return `You are an expert Japanese language tutor providing end-of-session feedback to a Chinese-speaking learner at JLPT N2 level (upper-intermediate).
+
+**Output language**: ${langDirective}
 
 Analyze the entire conversation transcript and produce structured feedback in JSON only (no preamble, no markdown).
 
@@ -19,6 +34,7 @@ Focus areas:
 Tone: encouraging but honest. The learner is at N2 level, so expect intermediate-advanced grammar. Don't patronize.
 
 If the learner barely spoke (e.g. only the AI's opening greeting + 1 user reply), set grammar/vocabulary arrays to empty and explain in \`overall\` that there wasn't enough material to analyze.`;
+}
 
 type Turn = { role: "user" | "assistant"; content: string };
 
@@ -43,8 +59,12 @@ export async function POST(req: Request) {
 
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-    const body = (await req.json()) as { messages?: Turn[] };
+    const body = (await req.json()) as {
+      messages?: Turn[];
+      language?: FeedbackLanguage;
+    };
     const messages = Array.isArray(body.messages) ? body.messages : [];
+    const language: FeedbackLanguage = body.language === "en" ? "en" : "zh";
 
     if (messages.length < 2) {
       return NextResponse.json(
@@ -56,7 +76,7 @@ export async function POST(req: Request) {
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: FEEDBACK_SYSTEM_PROMPT },
+        { role: "system", content: buildFeedbackSystemPrompt(language) },
         {
           role: "user",
           content:
@@ -143,7 +163,7 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json({ feedback });
+    return NextResponse.json({ feedback, language });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
