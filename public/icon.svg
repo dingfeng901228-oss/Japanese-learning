@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#111827" rx="96"/>
+  <text
+    x="256"
+    y="346"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="300"
+    font-weight="700"
+    fill="#ffffff"
+    text-anchor="middle"
+  >日</text>
+</svg>

@@ -1,0 +1,33 @@
+{
+  "name": "FastStudy 2.0 — AI 日语口语教练",
+  "short_name": "FastStudy",
+  "description": "AI 驱动的日语听力与口语训练平台。长期观察学习者 + 自动调整训练内容，把\"看得懂的日语\"逐渐变成\"听得懂、说得出、用得自然的日语\"。",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#111827",
+  "lang": "zh-CN",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
