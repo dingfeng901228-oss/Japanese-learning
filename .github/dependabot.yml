@@ -1,0 +1,45 @@
+# Dependabot config — https://docs.github.com/en/code-security/dependabot
+version: 2
+
+updates:
+  # ── npm dependencies (package.json + package-lock.json) ──
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      production:
+        dependency-type: "production"
+      development:
+        dependency-type: "development"
+      # Bundle patch + minor updates for non-major deps into one PR to reduce noise
+      non-major:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ── GitHub Actions versions (.github/workflows/*.yml) ──
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
