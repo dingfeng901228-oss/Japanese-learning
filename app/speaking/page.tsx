@@ -133,6 +133,10 @@ export default function SpeakingPage() {
   const [recognizing, setRecognizing] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
+  // Phase 6 MVP: TTS via Web Speech API — track which AI message is
+  // currently being spoken so the button can show a stop state.
+  const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
+
   const labels = FEEDBACK_LABELS[feedbackLanguage];
 
   async function send() {
@@ -251,6 +255,30 @@ export default function SpeakingPage() {
     setRecognizing(false);
   }
 
+  // Phase 6 MVP: speak an AI message aloud via Web Speech API.
+  // Click again to stop. Slightly slower rate for learning.
+  function speakJapanese(text: string, idx: number) {
+    if (typeof window === "undefined" || !window.speechSynthesis) {
+      setError("当前浏览器不支持语音合成。请用 Chrome 或 Safari。");
+      return;
+    }
+    // Toggle: same button while playing stops the current speech
+    if (speakingIdx === idx) {
+      window.speechSynthesis.cancel();
+      setSpeakingIdx(null);
+      return;
+    }
+    // Cancel any in-flight utterance before starting a new one
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ja-JP";
+    utterance.rate = 0.9;
+    utterance.onend = () => setSpeakingIdx(null);
+    utterance.onerror = () => setSpeakingIdx(null);
+    window.speechSynthesis.speak(utterance);
+    setSpeakingIdx(idx);
+  }
+
   const conversationActive = !feedback && !gettingFeedback;
 
   return (
@@ -286,6 +314,23 @@ export default function SpeakingPage() {
                 {t.role === "user" ? "You" : "AI 教练"}
               </div>
               <div className="whitespace-pre-wrap">{t.content}</div>
+              {t.role === "assistant" && (
+                <button
+                  type="button"
+                  onClick={() => speakJapanese(t.content, i)}
+                  disabled={recognizing}
+                  className="mt-2 text-xs text-gray-500 hover:text-gray-900 flex items-center gap-1 disabled:opacity-40"
+                >
+                  {speakingIdx === i ? (
+                    <span className="inline-flex items-center gap-1 text-red-600">
+                      <span className="inline-block w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+                      ⏹ 停止
+                    </span>
+                  ) : (
+                    <>🔊 听 AI 示范</>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         ))}
