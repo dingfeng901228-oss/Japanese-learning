@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 type Difficulty = "N5" | "N4" | "N3";
 
@@ -475,6 +476,22 @@ export default function ListeningPage() {
     setBrowserSupportsTts(Boolean(window.speechSynthesis));
     setProgress(loadProgress());
     setShadowHistory(loadShadowHistory());
+  }, []);
+
+  // Phase 5 enhancement: read ?c=<categoryId> from URL and pre-select that
+  // category. Lets /today's "去练习" link deep-link to the right category.
+  // Run once on mount (empty deps) so we don't reset the user's position if
+  // they manually switch categories afterwards.
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const cat = searchParams.get("c");
+    if (!cat) return;
+    const idx = CATEGORIES.findIndex((c) => c.id === cat);
+    if (idx >= 0) {
+      setCategoryIdx(idx);
+      setSentenceIdx(0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Cleanup on unmount.

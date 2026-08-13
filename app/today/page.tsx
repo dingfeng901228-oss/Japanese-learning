@@ -359,7 +359,7 @@ export default function TodayPage() {
                       准 {w.accuracy}
                     </span>
                     <Link
-                      href="/listening"
+                      href={`/listening?c=${w.categoryId}`}
                       className="text-xs text-gray-500 hover:text-gray-900"
                     >
                       去练习 →
