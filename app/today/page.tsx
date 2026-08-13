@@ -26,6 +26,27 @@ type AggregatedMistake = {
 };
 
 const HISTORY_KEY = "japaneseLearning.mistakeHistory";
+const SHADOW_HISTORY_KEY = "japanese:shadow-history";
+
+const SHADOW_CATEGORY_LABELS: Record<
+  string,
+  { emoji: string; label: string }
+> = {
+  "self-intro": { emoji: "🙋", label: "自我介绍" },
+  restaurant: { emoji: "🍱", label: "餐厅" },
+  directions: { emoji: "🗺️", label: "问路" },
+  "numbers-time": { emoji: "⏰", label: "数字时间" },
+  greetings: { emoji: "👋", label: "寒暄" },
+};
+
+type ShadowHistoryEntry = {
+  id: string;
+  sentenceId: string;
+  categoryId: string;
+  timestamp: number;
+  transcript: string;
+  grade: { accuracy: number; fluency: number; feedback: string; suggestions: string[]; encouragement: string };
+};
 
 function formatDate(ts: number): string {
   const d = new Date(ts);
@@ -95,6 +116,7 @@ function aggregateMistakes(
 
 export default function TodayPage() {
   const [history, setHistory] = useState<MistakeEntry[]>([]);
+  const [shadowHistory, setShadowHistory] = useState<ShadowHistoryEntry[]>([]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -104,6 +126,19 @@ export default function TodayPage() {
       setHistory(parsed);
     } catch {
       setHistory([]);
+    }
+  }, []);
+
+  // Phase 4 enhancement: load Shadow history (same key as /listening).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(SHADOW_HISTORY_KEY);
+      setShadowHistory(
+        raw ? (JSON.parse(raw) as ShadowHistoryEntry[]) : []
+      );
+    } catch {
+      setShadowHistory([]);
     }
   }, []);
 
@@ -129,6 +164,38 @@ export default function TodayPage() {
       lang: m.language,
     })),
   ]);
+
+  // Phase 4 enhancement: aggregate Shadow history to find weak sentences
+  // (accuracy < 80). Dedupe by sentenceId, keep the lowest accuracy, sort
+  // ascending by accuracy, take the worst 5. Gives the user concrete
+  // actionable items to re-practice.
+  const weakShadowSentences = (() => {
+    const WEAK_THRESHOLD = 80;
+    const map = new Map<
+      string,
+      {
+        sentenceId: string;
+        categoryId: string;
+        accuracy: number;
+        timestamp: number;
+      }
+    >();
+    for (const e of shadowHistory) {
+      if (e.grade.accuracy >= WEAK_THRESHOLD) continue;
+      const existing = map.get(e.sentenceId);
+      if (!existing || e.grade.accuracy < existing.accuracy) {
+        map.set(e.sentenceId, {
+          sentenceId: e.sentenceId,
+          categoryId: e.categoryId,
+          accuracy: e.grade.accuracy,
+          timestamp: e.timestamp,
+        });
+      }
+    }
+    return Array.from(map.values())
+      .sort((a, b) => a.accuracy - b.accuracy)
+      .slice(0, 5);
+  })();
 
   // Sort newest first, take latest 10
   const recentItems = allItems
@@ -251,6 +318,59 @@ export default function TodayPage() {
           </ul>
         )}
       </section>
+
+      {/* Phase 4 enhancement: Shadow 弱點句子
+         (sentences user got < 80% accuracy in Shadow mode) */}
+      {weakShadowSentences.length > 0 && (
+        <section className="mt-8">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+            Shadow 弱點句子
+            <span className="ml-2 text-xs text-gray-400 normal-case font-normal">
+              （准确度 &lt; 80 ·{" "}
+              {weakShadowSentences.length === 1
+                ? "1 句"
+                : `${weakShadowSentences.length} 句`}
+              待巩固）
+            </span>
+          </h3>
+          <div className="space-y-2">
+            {weakShadowSentences.map((w) => {
+              const cat = SHADOW_CATEGORY_LABELS[w.categoryId];
+              return (
+                <div
+                  key={w.sentenceId}
+                  className="flex items-center justify-between bg-gray-50 rounded-xl p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">
+                      {cat?.emoji ?? "❓"}
+                    </span>
+                    <div>
+                      <div className="text-sm font-medium text-gray-700">
+                        {cat?.label ?? w.categoryId}
+                      </div>
+                      <div className="text-xs text-gray-400 font-mono">
+                        {w.sentenceId}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold text-red-600">
+                      准 {w.accuracy}
+                    </span>
+                    <Link
+                      href="/listening"
+                      className="text-xs text-gray-500 hover:text-gray-900"
+                    >
+                      去练习 →
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* Phase 1 enhancement #3: 错误时间线 (recent mistakes with timestamps) */}
       {history.length > 0 && (
