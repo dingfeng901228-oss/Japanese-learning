@@ -363,6 +363,121 @@ export default function ProgressPage() {
         </section>
       )}
 
+      {/* Phase 8 enhancement: 弱點档案 (Weakness Profile)
+         Comprehensive view: top 3 weak categories + improvement trend. */}
+      {!isEmpty &&
+        (() => {
+          // Per-category weakness ranking (from shadowHistory avg accuracy)
+          const byCategory: Record<string, { sum: number; count: number }> = {};
+          for (const e of shadowHistory) {
+            if (!byCategory[e.categoryId])
+              byCategory[e.categoryId] = { sum: 0, count: 0 };
+            byCategory[e.categoryId].sum += e.grade.accuracy;
+            byCategory[e.categoryId].count += 1;
+          }
+          const weaknessRanking = Object.entries(byCategory)
+            .map(([cat, stats]) => ({
+              categoryId: cat,
+              avg: stats.sum / stats.count,
+              count: stats.count,
+            }))
+            .sort((a, b) => a.avg - b.avg)
+            .slice(0, 3);
+
+          if (weaknessRanking.length === 0) return null;
+
+          // Improvement trend: first half vs second half of Shadow history.
+          // Needs ≥4 samples for meaningful comparison.
+          const trend =
+            shadowHistory.length >= 4
+              ? (() => {
+                  const sorted = [...shadowHistory].sort(
+                    (a, b) => a.timestamp - b.timestamp
+                  );
+                  const mid = Math.floor(sorted.length / 2);
+                  const avgAcc = (arr: typeof sorted) =>
+                    arr.length > 0
+                      ? arr.reduce((s, e) => s + e.grade.accuracy, 0) /
+                        arr.length
+                      : 0;
+                  const firstAvg = avgAcc(sorted.slice(0, mid));
+                  const secondAvg = avgAcc(sorted.slice(mid));
+                  return {
+                    firstAvg,
+                    secondAvg,
+                    delta: secondAvg - firstAvg,
+                  };
+                })()
+              : null;
+
+          return (
+            <section className="border border-gray-200 rounded-2xl p-5 mb-6 bg-white">
+              <h2 className="text-base font-semibold text-gray-800 mb-4">
+                弱點档案
+              </h2>
+
+              <div className="mb-5">
+                <div className="text-sm text-gray-500 mb-2">
+                  最弱 3 个场景：
+                </div>
+                <div className="space-y-2">
+                  {weaknessRanking.map((w) => {
+                    const cat = CATEGORY_LABELS[w.categoryId];
+                    return (
+                      <div
+                        key={w.categoryId}
+                        className="flex items-center justify-between bg-gray-50 rounded-xl p-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-xl">
+                            {cat?.emoji ?? "❓"}
+                          </span>
+                          <span className="text-sm font-medium text-gray-700">
+                            {cat?.label ?? w.categoryId}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {w.count} 次
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-bold text-red-600">
+                            准 {Math.round(w.avg)}
+                          </span>
+                          <Link
+                            href={`/listening?c=${w.categoryId}`}
+                            className="text-xs text-gray-500 hover:text-gray-900"
+                          >
+                            去练习 →
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {trend && (
+                <div className="text-sm text-gray-600 bg-gray-50 rounded-xl p-3">
+                  <span className="text-gray-500">改进趋势：</span>{" "}
+                  前半 {Math.round(trend.firstAvg)} → 后半{" "}
+                  {Math.round(trend.secondAvg)}
+                  {trend.delta > 0 ? (
+                    <span className="text-green-600 ml-1">
+                      ↑{Math.round(trend.delta)}
+                    </span>
+                  ) : trend.delta < 0 ? (
+                    <span className="text-red-600 ml-1">
+                      ↓{Math.abs(Math.round(trend.delta))}
+                    </span>
+                  ) : (
+                    <span className="text-gray-500 ml-1">持平</span>
+                  )}
+                </div>
+              )}
+            </section>
+          );
+        })()}
+
       {/* Empty state */}
       {isEmpty && (
         <section className="border border-gray-200 rounded-2xl p-8 bg-white text-center">
