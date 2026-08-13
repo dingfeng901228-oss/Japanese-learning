@@ -1020,13 +1020,40 @@ export default function ListeningPage() {
                   🎤 跟读
                 </button>
               ) : (
-                <button
-                  type="button"
-                  onClick={stopShadowRecording}
-                  className="px-6 py-3 rounded-lg text-base font-medium bg-red-500 text-white hover:bg-red-600 animate-pulse transition-colors"
-                >
-                  ⏹ 停止 ({recordingTime}s)
-                </button>
+                <div className="w-full flex flex-col items-center gap-3 bg-red-50 border border-red-200 rounded-2xl p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="text-sm font-medium text-red-700">
+                      🎙️ 正在录音
+                    </div>
+                    <div className="text-base font-bold text-red-700 font-mono">
+                      {recordingTime}s
+                    </div>
+                  </div>
+                  {/* Visual waveform indicator (7 staggered bars). 
+                     Not real audio level — just visual feedback that recording is alive. */}
+                  <div
+                    className="flex items-end gap-1 h-8"
+                    aria-hidden="true"
+                  >
+                    {[30, 55, 40, 75, 50, 65, 35].map((h, i) => (
+                      <div
+                        key={i}
+                        className="w-1.5 bg-red-500 rounded-full animate-pulse"
+                        style={{
+                          height: `${h}%`,
+                          animationDelay: `${i * 0.12}s`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={stopShadowRecording}
+                    className="px-6 py-3 rounded-lg text-base font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
+                  >
+                    ⏹ 停止录音
+                  </button>
+                </div>
               )}
 
               <button
