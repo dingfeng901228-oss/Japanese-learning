@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
@@ -344,6 +344,18 @@ type ShadowPhase =
   | "result";
 
 export default function ListeningPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-8 text-center text-gray-500">加载中…</div>
+      }
+    >
+      <ListeningPageContent />
+    </Suspense>
+  );
+}
+
+function ListeningPageContent() {
   const [mode, setMode] = useState<Mode>("listen");
 
   // Difficulty level (N5/N4/N3)
