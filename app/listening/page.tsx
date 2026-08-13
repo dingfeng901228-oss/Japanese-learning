@@ -239,6 +239,47 @@ function formatHistoryTime(ts: number): string {
   return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+// Phase 1 enhancement: split Japanese text into tokens (words) + separators
+// (particles, punctuation, whitespace). Used by the word-level diff display.
+function tokenizeWithSeparators(
+  text: string
+): { word: string; isSeparator: boolean }[] {
+  return text
+    .split(/([、。「」!?\s]+)/)
+    .filter((p) => p.length > 0)
+    .map((p) => ({
+      word: p,
+      isSeparator: /^[、。「」!?\s]+$/.test(p),
+    }));
+}
+
+// Phase 1 enhancement: compare target sentence against transcript at the word level.
+// Returns the tokens (for rendering), and the matched/missed sets (for stats).
+function computeWordDiff(
+  target: string,
+  transcript: string
+): {
+  tokens: { word: string; isSeparator: boolean }[];
+  matched: string[];
+  missed: string[];
+} {
+  const tokens = tokenizeWithSeparators(target);
+  const transcriptWords = new Set(
+    transcript.split(/[、。「」!?\s]+/).filter(Boolean)
+  );
+  const matched: string[] = [];
+  const missed: string[] = [];
+  for (const tok of tokens) {
+    if (tok.isSeparator) continue;
+    if (transcriptWords.has(tok.word) || transcript.includes(tok.word)) {
+      matched.push(tok.word);
+    } else {
+      missed.push(tok.word);
+    }
+  }
+  return { tokens, matched, missed };
+}
+
 // Phase 4: chunk Japanese sentence by 読点/句点 (、。); fall back to fixed-length chunks
 // when no punctuation is present. Returns at least one chunk for any non-empty input.
 function chunkJapanese(ja: string): string[] {
@@ -351,6 +392,13 @@ export default function ListeningPage() {
   const chunks = (chunkedMode && mode === "shadow")
     ? chunkJapanese(sentence.ja)
     : [];
+
+  // Phase 1 enhancement: word-level diff between target and transcript.
+  // Null when not in Shadow result phase (or transcript missing).
+  const wordDiff =
+    mode === "shadow" && shadowPhase === "result" && transcript
+      ? computeWordDiff(sentence.ja, transcript)
+      : null;
 
   // Phase 5: aggregate Shadow stats (trends).
   const shadowStats = (() => {
@@ -1034,6 +1082,33 @@ export default function ListeningPage() {
                 )}
               </div>
             </div>
+
+            {/* Phase 1 enhancement:逐字对照 (target vs transcript) */}
+            {wordDiff && (
+              <div>
+                <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">
+                  逐字对照 · 命中 {wordDiff.matched.length} /{" "}
+                  {wordDiff.matched.length + wordDiff.missed.length}
+                </div>
+                <div
+                  className="text-base bg-gray-50 rounded-xl p-3 leading-relaxed"
+                  lang="ja"
+                >
+                  {wordDiff.tokens.map((tok, i) => {
+                    const cls = tok.isSeparator
+                      ? "text-gray-500"
+                      : wordDiff.matched.includes(tok.word)
+                        ? "text-green-700"
+                        : "text-red-600 line-through";
+                    return (
+                      <span key={i} className={cls}>
+                        {tok.word}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
