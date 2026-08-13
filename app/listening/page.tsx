@@ -252,6 +252,41 @@ function chunkJapanese(ja: string): string[] {
   return result;
 }
 
+// Phase 5: look up a sentence by its id across all (category × difficulty) buckets.
+function findSentenceById(sentenceId: string): Sentence | null {
+  for (const cat of CATEGORIES) {
+    for (const lvl of ["N5", "N4", "N3"] as const) {
+      const sent = cat[lvl].find((s) => s.id === sentenceId);
+      if (sent) return sent;
+    }
+  }
+  return null;
+}
+
+// Phase 5: small stat tile used in the 📊 panel.
+function StatTile({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone?: "blue" | "purple";
+}) {
+  const toneClass =
+    tone === "blue"
+      ? "text-blue-700"
+      : tone === "purple"
+        ? "text-purple-700"
+        : "text-gray-900";
+  return (
+    <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-center">
+      <div className={`text-xl font-bold ${toneClass}`}>{value}</div>
+      <div className="text-xs text-gray-500 mt-1">{label}</div>
+    </div>
+  );
+}
+
 const RATE_OPTIONS = [
   { v: 0.7, label: "0.7x", desc: "慢速" },
   { v: 0.9, label: "0.9x", desc: "常速" },
@@ -316,6 +351,47 @@ export default function ListeningPage() {
   const chunks = (chunkedMode && mode === "shadow")
     ? chunkJapanese(sentence.ja)
     : [];
+
+  // Phase 5: aggregate Shadow stats (trends).
+  const shadowStats = (() => {
+    const total = shadowHistory.length;
+    if (total === 0) {
+      return {
+        total: 0,
+        avgAcc: 0,
+        avgFlu: 0,
+        best: null as ShadowHistoryEntry | null,
+        byLevel: { N5: 0, N4: 0, N3: 0 } as Record<Difficulty, number>,
+        byLevelAcc: { N5: 0, N4: 0, N3: 0 } as Record<Difficulty, number>,
+      };
+    }
+    const sumAcc = shadowHistory.reduce((s, e) => s + e.grade.accuracy, 0);
+    const sumFlu = shadowHistory.reduce((s, e) => s + e.grade.fluency, 0);
+    const best = shadowHistory.reduce(
+      (bestE, e) =>
+        e.grade.accuracy > (bestE?.grade.accuracy ?? -1) ? e : bestE,
+      shadowHistory[0]
+    );
+
+    const byLevel: Record<Difficulty, number> = { N5: 0, N4: 0, N3: 0 };
+    const byLevelAcc: Record<Difficulty, number> = { N5: 0, N4: 0, N3: 0 };
+    for (const e of shadowHistory) {
+      const m = e.sentenceId.match(/-n([543])-\d+$/);
+      if (m) {
+        const lvl = `N${m[1]}` as Difficulty;
+        byLevel[lvl] += 1;
+        byLevelAcc[lvl] += e.grade.accuracy;
+      }
+    }
+    return {
+      total,
+      avgAcc: Math.round(sumAcc / total),
+      avgFlu: Math.round(sumFlu / total),
+      best,
+      byLevel,
+      byLevelAcc,
+    };
+  })();
 
   // Boot: detect browser APIs + load saved state.
   useEffect(() => {
@@ -1019,6 +1095,54 @@ export default function ListeningPage() {
         )}
       </section>
 
+      {/* Phase 5: Shadow stats / trends panel */}
+      {mode === "shadow" && shadowStats.total > 0 && (
+        <section className="border border-gray-200 rounded-2xl p-5 mb-6 bg-white">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-700">
+              📊 Shadow 统计 · 共 {shadowStats.total} 条
+            </h3>
+          </div>
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            <StatTile label="总录音" value={`${shadowStats.total}`} />
+            <StatTile
+              label="平均准确度"
+              value={`${shadowStats.avgAcc}`}
+              tone="blue"
+            />
+            <StatTile
+              label="平均流畅度"
+              value={`${shadowStats.avgFlu}`}
+              tone="purple"
+            />
+          </div>
+          <div className="space-y-1 text-xs">
+            <div className="text-gray-500 mb-1">按难度：</div>
+            {(["N5", "N4", "N3"] as Difficulty[]).map((lvl) => {
+              const cnt = shadowStats.byLevel[lvl];
+              if (cnt === 0) return null;
+              const acc = Math.round(shadowStats.byLevelAcc[lvl] / cnt);
+              return (
+                <div
+                  key={lvl}
+                  className="flex items-center justify-between text-gray-700"
+                >
+                  <span>{lvl}</span>
+                  <span>
+                    {cnt} 条 · 准 {acc}
+                  </span>
+                </div>
+              );
+            })}
+            {shadowStats.best && (
+              <div className="text-gray-500 mt-2 italic">
+                最佳：{shadowStats.best.grade.accuracy} 分（{shadowStats.best.sentenceId}）
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* Navigation */}
       <div className="flex items-center justify-between gap-3 mb-6">
         <button
@@ -1084,37 +1208,61 @@ export default function ListeningPage() {
             </button>
           </div>
           <div className="space-y-2">
-            {shadowHistoryForSentence.slice(0, 5).map((entry) => (
-              <div
-                key={entry.id}
-                className="flex items-center justify-between text-sm bg-gray-50 rounded-xl p-3 gap-3"
-              >
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  <div className="text-xs text-gray-500 font-mono">
-                    {formatHistoryTime(entry.timestamp)}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-blue-700 font-bold">
-                      {entry.grade.accuracy}
-                    </span>
-                    <span className="text-gray-300">/</span>
-                    <span className="text-purple-700 font-bold">
-                      {entry.grade.fluency}
-                    </span>
-                  </div>
-                </div>
+            {shadowHistoryForSentence.slice(0, 5).map((entry) => {
+              const target = findSentenceById(entry.sentenceId);
+              return (
                 <div
-                  className="text-xs text-gray-500 truncate min-w-0"
-                  lang="ja"
+                  key={entry.id}
+                  className="flex items-center justify-between text-sm bg-gray-50 rounded-xl p-3 gap-3"
                 >
-                  {entry.transcript ? (
-                    entry.transcript
-                  ) : (
-                    <span className="italic text-gray-400">(空白)</span>
-                  )}
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="text-xs text-gray-500 font-mono">
+                      {formatHistoryTime(entry.timestamp)}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-blue-700 font-bold">
+                        {entry.grade.accuracy}
+                      </span>
+                      <span className="text-gray-300">/</span>
+                      <span className="text-purple-700 font-bold">
+                        {entry.grade.fluency}
+                      </span>
+                    </div>
+                    {target && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (
+                            typeof window === "undefined" ||
+                            !window.speechSynthesis
+                          )
+                            return;
+                          window.speechSynthesis.cancel();
+                          const u = new SpeechSynthesisUtterance(target.ja);
+                          u.lang = "ja-JP";
+                          u.rate = rate;
+                          window.speechSynthesis.speak(u);
+                        }}
+                        className="text-xs text-gray-400 hover:text-blue-600 transition-colors"
+                        title="重听原句 AI 朗读"
+                      >
+                        ▶
+                      </button>
+                    )}
+                  </div>
+                  <div
+                    className="text-xs text-gray-500 truncate min-w-0"
+                    lang="ja"
+                  >
+                    {entry.transcript ? (
+                      entry.transcript
+                    ) : (
+                      <span className="italic text-gray-400">(空白)</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {shadowHistoryForSentence.length > 5 && (
               <div className="text-xs text-gray-400 text-center pt-2">
                 ... 还有 {shadowHistoryForSentence.length - 5} 条
