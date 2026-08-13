@@ -14,16 +14,16 @@ AI 驱动的日语听力与口语训练系统。
 | Phase | 范围 | 状态 |
 |-------|------|------|
 | **0** | 项目初始化与骨架 | ✅ 完成 |
-| **1** | AI Conversation MVP（登录 + Dashboard + 对话 + STT + 反馈 + 错误记忆） | 🟡 对话已通；STT/反馈/错误记忆待补 |
-| **2** | Speech-to-Text 增强 | ⚪ |
-| **3** | AI Feedback 增强 | ⚪ |
-| **4** | Mistake Memory | ⚪ |
-| **5** | Retry | ⚪ |
-| **6** | Listening + Shadowing | ⚪ |
-| **7** | Daily Training Engine | 🟡 UI 占位完成，引擎逻辑待接 |
-| **8** | Weakness Profile | ⚪ |
-| **9** | Real-World Missions | ⚪ |
-| **10** | Progress / Analytics | ⚪ |
+| **1** | AI Conversation MVP（登录 + Dashboard + 对话 + STT + 反馈 + 错误记忆） | ✅ 完成（含 Phase 1 #1 #2 #3 增强：word-level diff / STT 视觉反馈 / 错误记忆时间线） |
+| **2** | Speech-to-Text 增强 | ✅ 完成（editable transcript + 重评分） |
+| **3** | AI Feedback 增强 | ✅ 完成（delta display 对比上次） |
+| **4** | Mistake Memory | ✅ 完成（Shadow 弱點句子 in /today） |
+| **5** | Retry | ✅ 完成（Retry via deep-link /listening?c=…） |
+| **6** | Listening + Shadowing | ✅ 完成（fc5adb3 + 24e92d8 + …） |
+| **7** | Daily Training Engine | ✅ 完成（今日重点 in /today） |
+| **8** | Weakness Profile | ✅ 完成（弱點档案 in /progress） |
+| **9** | Real-World Missions | ✅ 完成（🌍 任务清单 in /today） |
+| **10** | Progress / Analytics | ✅ 完成（/progress 页） |
 
 ---
 
