@@ -499,9 +499,10 @@ function ListeningPageContent() {
   // category. Lets /today's "去练习" link deep-link to the right category.
   // Run once on mount (empty deps) so we don't reset the user's position if
   // they manually switch categories afterwards.
-  const searchParams = useSearchParams();
   useEffect(() => {
-    const cat = searchParams.get("c");
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get("c");
     if (!cat) return;
     const idx = CATEGORIES.findIndex((c) => c.id === cat);
     if (idx >= 0) {
