@@ -39,6 +39,98 @@ const SHADOW_CATEGORY_LABELS: Record<
   greetings: { emoji: "👋", label: "寒暄" },
 };
 
+// Phase 9: Real-World Missions (hardcoded list per category).
+// Each mission is a real-world task that connects AI practice to actual
+// Japanese usage. Users can mark as "done" (stored in localStorage).
+type RealWorldMission = {
+  id: string;
+  categoryId: string;
+  emoji: string;
+  title: string;
+  description: string;
+};
+
+const REAL_WORLD_MISSIONS: RealWorldMission[] = [
+  // 自我介绍
+  {
+    id: "m-self-intro-1",
+    categoryId: "self-intro",
+    emoji: "🙋",
+    title: "用日语做 1 分钟自我介绍",
+    description:
+      "用日语做一次 1 分钟自我介绍录音。可以在 /listening 复习 🙋 类别的句子。",
+  },
+  {
+    id: "m-self-intro-2",
+    categoryId: "self-intro",
+    emoji: "🙋",
+    title: "向朋友介绍自己",
+    description: "用日语向朋友介绍自己（姓名、职业、爱好）。",
+  },
+  // 餐厅
+  {
+    id: "m-restaurant-1",
+    categoryId: "restaurant",
+    emoji: "🍱",
+    title: "用日语点一份餐",
+    description: "试着在餐厅用日语点一份餐。用 /listening 复习 🍱 类别句子。",
+  },
+  {
+    id: "m-restaurant-2",
+    categoryId: "restaurant",
+    emoji: "🍱",
+    title: "用日语问推荐",
+    description: "用日语问服务员推荐什么菜（'おすすめは何ですか'）。",
+  },
+  // 问路
+  {
+    id: "m-directions-1",
+    categoryId: "directions",
+    emoji: "🗺️",
+    title: "用日语问路",
+    description: "试着在路上用日语问路。用 /listening 复习 🗺️ 类别句子。",
+  },
+  {
+    id: "m-directions-2",
+    categoryId: "directions",
+    emoji: "🗺️",
+    title: "用日语说方向",
+    description:
+      "用日语告诉别人怎么走（'まっすぐ行って、右に曲がって'）。",
+  },
+  // 数字时间
+  {
+    id: "m-numbers-time-1",
+    categoryId: "numbers-time",
+    emoji: "⏰",
+    title: "用日语报时间",
+    description: "用日语报出当前时间（'今、何時ですか' + 数字）。",
+  },
+  {
+    id: "m-numbers-time-2",
+    categoryId: "numbers-time",
+    emoji: "⏰",
+    title: "用日语报日期",
+    description: "用日语报出今天的日期（'今日は何日ですか' + 日期）。",
+  },
+  // 寒暄
+  {
+    id: "m-greetings-1",
+    categoryId: "greetings",
+    emoji: "👋",
+    title: "用日语跟朋友打招呼",
+    description:
+      "用日语跟朋友打招呼（'おはようございます' / 'こんにちは'）。",
+  },
+  {
+    id: "m-greetings-2",
+    categoryId: "greetings",
+    emoji: "👋",
+    title: "用日语告别",
+    description: "用日语跟朋友告别（'また明日' / 'また会いましょう'）。",
+  },
+];
+
 type ShadowHistoryEntry = {
   id: string;
   sentenceId: string;
@@ -117,6 +209,10 @@ function aggregateMistakes(
 export default function TodayPage() {
   const [history, setHistory] = useState<MistakeEntry[]>([]);
   const [shadowHistory, setShadowHistory] = useState<ShadowHistoryEntry[]>([]);
+  // Phase 9: mission completions (missionId → completion timestamp).
+  const [missionCompletions, setMissionCompletions] = useState<
+    Record<string, number>
+  >({});
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -324,6 +420,73 @@ export default function TodayPage() {
           </div>
         </section>
       )}
+
+      {/* Phase 9 enhancement: Real-World Missions */}
+      <section className="border border-gray-200 rounded-2xl p-5 mb-6 bg-white">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold">🌍 Real-World Missions</h2>
+          <span className="text-xs text-gray-500">
+            {Object.keys(missionCompletions).length}/
+            {REAL_WORLD_MISSIONS.length} 完成
+          </span>
+        </div>
+        <div className="space-y-2">
+          {REAL_WORLD_MISSIONS.map((m) => {
+            const isDone = !!missionCompletions[m.id];
+            return (
+              <div
+                key={m.id}
+                className={`flex items-start gap-3 rounded-xl p-3 ${
+                  isDone
+                    ? "bg-green-50 border border-green-200"
+                    : "bg-gray-50"
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = { ...missionCompletions };
+                    if (next[m.id]) delete next[m.id];
+                    else next[m.id] = Date.now();
+                    setMissionCompletions(next);
+                    if (typeof window !== "undefined") {
+                      window.localStorage.setItem(
+                        "japaneseLearning.missionCompletions",
+                        JSON.stringify(next)
+                      );
+                    }
+                  }}
+                  className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center mt-0.5 ${
+                    isDone
+                      ? "bg-green-500 border-green-500 text-white"
+                      : "border-gray-300 hover:border-gray-400"
+                  }`}
+                  title={isDone ? "标记为未完成" : "标记为完成"}
+                >
+                  {isDone && "✓"}
+                </button>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xl">{m.emoji}</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {m.title}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500">{m.description}</div>
+                  {isDone && missionCompletions[m.id] && (
+                    <div className="text-xs text-green-600 mt-1">
+                      ✓ 完成于{" "}
+                      {new Date(missionCompletions[m.id]).toLocaleString(
+                        "zh-CN"
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
       <section>
         <div className="flex items-center justify-between mb-4">
