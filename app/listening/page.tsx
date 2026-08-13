@@ -408,6 +408,26 @@ export default function ListeningPage() {
       ? computeWordDiff(sentence.ja, transcript)
       : null;
 
+  // Phase 3 enhancement: previous attempt lookup (for delta display).
+  // shadowHistory is already sorted newest first; the [0] entry is the
+  // current attempt (just added or just re-graded), so [1] is the previous
+  // attempt for this same sentence.
+  const sameSentenceEntries =
+    mode === "shadow" && shadowPhase === "result" && transcript
+      ? shadowHistory.filter((e) => e.sentenceId === sentence.id)
+      : [];
+  const previousAttempt = sameSentenceEntries[1] ?? null;
+
+  const accuracyDelta =
+    grade && previousAttempt
+      ? grade.accuracy - previousAttempt.grade.accuracy
+      : null;
+
+  const fluencyDelta =
+    grade && previousAttempt
+      ? grade.fluency - previousAttempt.grade.fluency
+      : null;
+
   // Phase 5: aggregate Shadow stats (trends).
   const shadowStats = (() => {
     const total = shadowHistory.length;
@@ -1230,6 +1250,36 @@ export default function ListeningPage() {
                 placeholder="STT 偶尔翻字，修改后点「重新评分」"
               />
             </div>
+
+            {/* Phase 3 enhancement:对比上次 attempt */}
+            {previousAttempt &&
+              (accuracyDelta !== null || fluencyDelta !== null) && (
+                <div className="text-xs text-gray-500 text-center">
+                  <span className="text-gray-400">对比上次</span> ·{" "}
+                  {previousAttempt.grade.accuracy} /{" "}
+                  {previousAttempt.grade.fluency}
+                  {accuracyDelta !== null && accuracyDelta !== 0 && (
+                    <span
+                      className={`ml-2 ${
+                        accuracyDelta > 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      准{accuracyDelta > 0 ? " ↑" : " ↓"}
+                      {Math.abs(accuracyDelta)}
+                    </span>
+                  )}
+                  {fluencyDelta !== null && fluencyDelta !== 0 && (
+                    <span
+                      className={`ml-2 ${
+                        fluencyDelta > 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      流{fluencyDelta > 0 ? " ↑" : " ↓"}
+                      {Math.abs(fluencyDelta)}
+                    </span>
+                  )}
+                </div>
+              )}
 
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
