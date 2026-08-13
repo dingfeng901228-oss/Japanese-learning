@@ -149,6 +149,12 @@ function saveShadowHistory(history: ShadowHistoryEntry[]) {
   );
 }
 
+function formatHistoryTime(ts: number): string {
+  const d = new Date(ts);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 const RATE_OPTIONS = [
   { v: 0.7, label: "0.7x", desc: "慢速" },
   { v: 0.9, label: "0.9x", desc: "常速" },
@@ -196,6 +202,9 @@ export default function ListeningPage() {
     0
   );
   const allDone = totalCompleted >= 30;
+  const shadowHistoryForSentence = shadowHistory.filter(
+    (e) => e.sentenceId === sentence.id
+  );
 
   // Boot: detect browser APIs + load saved state.
   useEffect(() => {
@@ -830,6 +839,75 @@ export default function ListeningPage() {
           下一句 →
         </button>
       </div>
+
+      {/* Shadow history for current sentence (Shadow mode only) */}
+      {mode === "shadow" && shadowHistoryForSentence.length > 0 && (
+        <section className="border border-gray-200 rounded-2xl p-5 mb-6 bg-white">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-700">
+              本句 Shadow 记录 · {shadowHistoryForSentence.length} 次
+            </h3>
+            <button
+              type="button"
+              onClick={() => {
+                if (
+                  typeof window !== "undefined" &&
+                  window.confirm(
+                    `清空本句 ${shadowHistoryForSentence.length} 条 Shadow 记录？`
+                  )
+                ) {
+                  const newHistory = shadowHistory.filter(
+                    (e) => e.sentenceId !== sentence.id
+                  );
+                  setShadowHistory(newHistory);
+                  saveShadowHistory(newHistory);
+                }
+              }}
+              className="text-xs text-gray-400 hover:text-red-600 transition-colors"
+            >
+              清空
+            </button>
+          </div>
+          <div className="space-y-2">
+            {shadowHistoryForSentence.slice(0, 5).map((entry) => (
+              <div
+                key={entry.id}
+                className="flex items-center justify-between text-sm bg-gray-50 rounded-xl p-3 gap-3"
+              >
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  <div className="text-xs text-gray-500 font-mono">
+                    {formatHistoryTime(entry.timestamp)}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-blue-700 font-bold">
+                      {entry.grade.accuracy}
+                    </span>
+                    <span className="text-gray-300">/</span>
+                    <span className="text-purple-700 font-bold">
+                      {entry.grade.fluency}
+                    </span>
+                  </div>
+                </div>
+                <div
+                  className="text-xs text-gray-500 truncate min-w-0"
+                  lang="ja"
+                >
+                  {entry.transcript ? (
+                    entry.transcript
+                  ) : (
+                    <span className="italic text-gray-400">(空白)</span>
+                  )}
+                </div>
+              </div>
+            ))}
+            {shadowHistoryForSentence.length > 5 && (
+              <div className="text-xs text-gray-400 text-center pt-2">
+                ... 还有 {shadowHistoryForSentence.length - 5} 条
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* All-done celebration (Listen mode only) */}
       {mode === "listen" && allDone && (
