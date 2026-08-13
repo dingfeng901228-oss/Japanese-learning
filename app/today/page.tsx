@@ -197,6 +197,31 @@ export default function TodayPage() {
       .slice(0, 5);
   })();
 
+  // Phase 7 enhancement: find user's weakest category from Shadow history
+  // (lowest avg accuracy, min 2 samples). Used to recommend "今日重点".
+  const weakestCategory = (() => {
+    const MIN_SAMPLES = 2;
+    const byCat: Record<string, { sum: number; count: number }> = {};
+    for (const e of shadowHistory) {
+      if (!byCat[e.categoryId]) byCat[e.categoryId] = { sum: 0, count: 0 };
+      byCat[e.categoryId].sum += e.grade.accuracy;
+      byCat[e.categoryId].count += 1;
+    }
+    let worst: {
+      categoryId: string;
+      avg: number;
+      count: number;
+    } | null = null;
+    for (const [cat, stats] of Object.entries(byCat)) {
+      if (stats.count < MIN_SAMPLES) continue;
+      const avg = stats.sum / stats.count;
+      if (!worst || avg < worst.avg) {
+        worst = { categoryId: cat, avg, count: stats.count };
+      }
+    }
+    return worst;
+  })();
+
   // Sort newest first, take latest 10
   const recentItems = allItems
     .sort((a, b) => b.ts - a.ts)
@@ -265,6 +290,40 @@ export default function TodayPage() {
           Phase 1 AI Conversation MVP 已启用
         </p>
       </div>
+
+      {/* Phase 7 enhancement: 今日重点 (Daily Training Engine)
+         Picks the weakest category from Shadow history + deep-link to /listening. */}
+      {weakestCategory && (
+        <section className="mb-8 p-5 rounded-2xl border-2 border-gray-900 bg-gray-50">
+          <div className="text-xs text-gray-500 uppercase tracking-wide mb-3">
+            今日重点
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">
+                {SHADOW_CATEGORY_LABELS[weakestCategory.categoryId]?.emoji ??
+                  "❓"}
+              </span>
+              <div>
+                <div className="text-base font-bold text-gray-900">
+                  {SHADOW_CATEGORY_LABELS[weakestCategory.categoryId]?.label ??
+                    weakestCategory.categoryId}
+                </div>
+                <div className="text-xs text-gray-500">
+                  平均准 {Math.round(weakestCategory.avg)} · 共{" "}
+                  {weakestCategory.count} 次练习
+                </div>
+              </div>
+            </div>
+            <Link
+              href={`/listening?c=${weakestCategory.categoryId}`}
+              className="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors flex-shrink-0"
+            >
+              去训练 →
+            </Link>
+          </div>
+        </section>
+      )}
 
       <section>
         <div className="flex items-center justify-between mb-4">
