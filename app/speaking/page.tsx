@@ -51,7 +51,6 @@ const FEEDBACK_LABELS: Record<FeedbackLanguage, Record<string, string>> = {
     finishCta: "结束训练，获取反馈",
     analyzing: "分析中...",
     startNew: "开始新对话",
-    feedbackLangLabel: "反馈语言",
     speakHint: "聊够了？获取 AI 教练反馈 →",
     pickLangHint: "选完语言后点按钮获取反馈 →",
     emptyError: "Say at least one sentence in Japanese before getting feedback.",
@@ -71,14 +70,13 @@ const FEEDBACK_LABELS: Record<FeedbackLanguage, Record<string, string>> = {
     finishCta: "End Session & Get Feedback",
     analyzing: "Analyzing...",
     startNew: "Start New Conversation",
-    feedbackLangLabel: "Feedback language",
     speakHint: "Done talking? Get your tutor's feedback →",
     pickLangHint: "Pick a language above, then click to get feedback →",
     emptyError: "Say at least one sentence in Japanese before getting feedback.",
   },
 };
 
-const STORAGE_KEY = "feedbackLanguage";
+// STORAGE_KEY removed along with the feedback language toggle (see #5945).
 
 export default function SpeakingPage() {
   const [turns, setTurns] = useState<Turn[]>(INITIAL_TURNS);
@@ -89,20 +87,9 @@ export default function SpeakingPage() {
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [gettingFeedback, setGettingFeedback] = useState(false);
 
-  // Default to Chinese; fall back to localStorage preference if present
-  const [feedbackLanguage, setFeedbackLanguage] =
-    useState<FeedbackLanguage>("zh");
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (saved === "zh" || saved === "en") setFeedbackLanguage(saved);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(STORAGE_KEY, feedbackLanguage);
-  }, [feedbackLanguage]);
+  // Default to Chinese. Per Frank's request (#5945), the feedback language
+  // toggle is removed — always render feedback in Chinese.
+  const [feedbackLanguage] = useState<FeedbackLanguage>("zh");
 
   // Phase 4: save each generated feedback's mistakes to localStorage so
   // /today can show "最近弱点" as a live history instead of hardcoded text.
@@ -401,36 +388,7 @@ export default function SpeakingPage() {
           {/* Separator */}
           <div className="pt-3 border-t border-gray-100" />
 
-          {/* Row 3: feedback language */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">
-              {labels.feedbackLangLabel}
-            </span>
-            <div className="inline-flex rounded-lg border border-gray-200 overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setFeedbackLanguage("zh")}
-                className={`px-4 py-1.5 text-sm transition-colors ${
-                  feedbackLanguage === "zh"
-                    ? "bg-gray-900 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                中文
-              </button>
-              <button
-                type="button"
-                onClick={() => setFeedbackLanguage("en")}
-                className={`px-4 py-1.5 text-sm transition-colors border-l border-gray-200 ${
-                  feedbackLanguage === "en"
-                    ? "bg-gray-900 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                English
-              </button>
-            </div>
-          </div>
+          {/* Row 3: feedback language — removed per Frank's request (#5945) */}
 
           {/* Row 4: finish button (full-width on mobile) */}
           <button
