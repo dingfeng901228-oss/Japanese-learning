@@ -363,6 +363,14 @@ export default function ListeningPage() {
   const [grade, setGrade] = useState<ShadowGrade | null>(null);
   const [shadowError, setShadowError] = useState<string | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
+  // Phase 2: editable transcript (user can fix STT errors before re-grading).
+  const [editableTranscript, setEditableTranscript] = useState<string>("");
+  const [isTranscriptEdited, setIsTranscriptEdited] = useState(false);
+  // Phase 2: re-grade in progress (separate boolean to avoid TypeScript
+  // narrowing issues — the result section is already conditional on
+  // `shadowPhase === "result"`, so checking `shadowPhase === "grading"` inside
+  // would always be false).
+  const [isRegrading, setIsRegrading] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -734,6 +742,8 @@ export default function ListeningPage() {
       }
       const tData = (await tRes.json()) as { text: string };
       setTranscript(tData.text);
+      setEditableTranscript(tData.text);
+      setIsTranscriptEdited(false);
       setShadowPhase("grading");
 
       const gRes = await fetch("/api/grade", {
@@ -779,6 +789,54 @@ export default function ListeningPage() {
     setGrade(null);
     setShadowError(null);
     setShadowPhase("idle");
+    setEditableTranscript("");
+    setIsTranscriptEdited(false);
+  }
+
+  // Phase 2: re-grade with user-edited transcript (without re-recording audio).
+  async function reGradeWithEditedTranscript() {
+    if (!editableTranscript.trim() || !sentence) return;
+    setIsRegrading(true);
+    setShadowError(null);
+    try {
+      const gRes = await fetch("/api/grade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transcript: editableTranscript,
+          target: sentence.ja,
+          sentenceId: sentence.id,
+          categoryLabel: category.label,
+        }),
+      });
+      if (!gRes.ok) {
+        const j = (await gRes
+          .json()
+          .catch(() => ({}))) as { error?: string };
+        throw new Error(j.error || `Grade HTTP ${gRes.status}`);
+      }
+      const gData = (await gRes.json()) as { grade: ShadowGrade };
+      setGrade(gData.grade);
+      // Update history entry (if id matches) so the corrected transcript + grade
+      // are persisted in the localStorage history.
+      setShadowHistory((prev) => {
+        const idx = prev.findIndex(
+          (e) => e.sentenceId === sentence.id && e.transcript === transcript
+        );
+        if (idx === -1) return prev;
+        const next = [...prev];
+        next[idx] = {
+          ...next[idx],
+          transcript: editableTranscript,
+          grade: gData.grade,
+        };
+        return next;
+      });
+    } catch (e) {
+      setShadowError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setIsRegrading(false);
+    }
   }
 
   const sentenceHeard = progress[category.id]?.has(sentence.id) ?? false;
@@ -1136,6 +1194,42 @@ export default function ListeningPage() {
                 </div>
               </div>
             )}
+
+            {/* Phase 2: editable transcript + re-grade button */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xs text-gray-500 uppercase tracking-wide">
+                  你的转写{isTranscriptEdited && (
+                    <span className="ml-2 text-orange-600 normal-case font-normal">
+                      · 已修正
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={reGradeWithEditedTranscript}
+                  disabled={
+                    isRegrading ||
+                    !editableTranscript.trim() ||
+                    !isTranscriptEdited
+                  }
+                  className="text-xs px-3 py-1 rounded-md bg-gray-900 text-white hover:bg-gray-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  {isRegrading ? "评分中…" : "✏️ 重新评分"}
+                </button>
+              </div>
+              <textarea
+                value={editableTranscript}
+                onChange={(e) => {
+                  setEditableTranscript(e.target.value);
+                  setIsTranscriptEdited(e.target.value !== (transcript ?? ""));
+                }}
+                rows={3}
+                className="w-full text-sm bg-gray-50 rounded-xl p-3 border border-gray-200 focus:border-gray-400 focus:outline-none resize-y"
+                lang="ja"
+                placeholder="STT 偶尔翻字，修改后点「重新评分」"
+              />
+            </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
