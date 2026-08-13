@@ -239,6 +239,19 @@ function formatHistoryTime(ts: number): string {
   return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+// Phase 4: chunk Japanese sentence by 読点/句点 (、。); fall back to fixed-length chunks
+// when no punctuation is present. Returns at least one chunk for any non-empty input.
+function chunkJapanese(ja: string): string[] {
+  if (!ja || !ja.trim()) return [];
+  const parts = ja.split(/[、。]/).map((s) => s.trim()).filter(Boolean);
+  if (parts.length > 1) return parts;
+  const result: string[] = [];
+  for (let i = 0; i < ja.length; i += 6) {
+    result.push(ja.slice(i, i + 6));
+  }
+  return result;
+}
+
 const RATE_OPTIONS = [
   { v: 0.7, label: "0.7x", desc: "慢速" },
   { v: 0.9, label: "0.9x", desc: "常速" },
@@ -279,6 +292,11 @@ export default function ListeningPage() {
   const chunksRef = useRef<Blob[]>([]);
   const recordingStartRef = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const speakCancelRef = useRef(false);
+
+  // Shadow chunked mode (Phase 4): play sentence in chunks with 1.5s delay between.
+  const [chunkedMode, setChunkedMode] = useState(false);
+  const [currentChunkIdx, setCurrentChunkIdx] = useState(-1);
 
   const DIFFICULTIES: Difficulty[] = ["N5", "N4", "N3"];
   const category = CATEGORIES[categoryIdx];
@@ -295,6 +313,9 @@ export default function ListeningPage() {
   const shadowHistoryForSentence = shadowHistory.filter(
     (e) => e.sentenceId === sentence.id
   );
+  const chunks = (chunkedMode && mode === "shadow")
+    ? chunkJapanese(sentence.ja)
+    : [];
 
   // Boot: detect browser APIs + load saved state.
   useEffect(() => {
@@ -352,10 +373,12 @@ export default function ListeningPage() {
   }, [categoryIdx, sentenceIdx, levelIdx]);
 
   function stopSpeech() {
+    speakCancelRef.current = true;
     if (typeof window !== "undefined" && window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
     setSpeaking(false);
+    setCurrentChunkIdx(-1);
   }
 
   function switchMode(next: Mode) {
@@ -402,14 +425,51 @@ export default function ListeningPage() {
       stopSpeech();
       return;
     }
+    speakCancelRef.current = false;
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(sentence.ja);
-    u.lang = "ja-JP";
-    u.rate = rate;
-    u.onend = () => setSpeaking(false);
-    u.onerror = () => setSpeaking(false);
-    window.speechSynthesis.speak(u);
+
+    const useChunked = chunkedMode && mode === "shadow";
+    const pieces = useChunked ? chunkJapanese(sentence.ja) : [sentence.ja];
+    let pieceIdx = 0;
+    setCurrentChunkIdx(useChunked ? 0 : -1);
     setSpeaking(true);
+
+    const playNext = () => {
+      if (speakCancelRef.current || pieceIdx >= pieces.length) {
+        setSpeaking(false);
+        setCurrentChunkIdx(-1);
+        return;
+      }
+      if (useChunked) setCurrentChunkIdx(pieceIdx);
+      const u = new SpeechSynthesisUtterance(pieces[pieceIdx]);
+      u.lang = "ja-JP";
+      u.rate = rate;
+      u.onend = () => {
+        setCurrentChunkIdx(-1);
+        pieceIdx++;
+        if (useChunked && pieceIdx < pieces.length) {
+          // 1.5s pause between chunks; bail if cancelled during the pause.
+          setTimeout(() => {
+            if (speakCancelRef.current) {
+              setSpeaking(false);
+              setCurrentChunkIdx(-1);
+              return;
+            }
+            playNext();
+          }, 1500);
+        } else {
+          setSpeaking(false);
+          setCurrentChunkIdx(-1);
+        }
+      };
+      u.onerror = () => {
+        setSpeaking(false);
+        setCurrentChunkIdx(-1);
+      };
+      window.speechSynthesis.speak(u);
+    };
+
+    playNext();
 
     // Mark sentence as listened (Listen mode only).
     if (mode === "listen") {
@@ -742,7 +802,24 @@ export default function ListeningPage() {
           className="text-3xl font-bold mb-4 leading-relaxed text-center py-4 break-words"
           lang="ja"
         >
-          {sentence.ja}
+          {chunkedMode && mode === "shadow" && chunks.length > 0 ? (
+            chunks.map((chunk, i) => (
+              <span
+                key={i}
+                className={`inline-block mx-1 transition-colors px-1 rounded ${
+                  i === currentChunkIdx
+                    ? "bg-yellow-200 text-gray-900"
+                    : i < currentChunkIdx
+                      ? "text-gray-400"
+                      : "text-gray-900"
+                }`}
+              >
+                {chunk}
+              </span>
+            ))
+          ) : (
+            sentence.ja
+          )}
         </div>
 
         <div className="text-base text-gray-600 text-center mb-6">
@@ -827,6 +904,19 @@ export default function ListeningPage() {
                   ⏹ 停止 ({recordingTime}s)
                 </button>
               )}
+
+              <button
+                type="button"
+                onClick={() => setChunkedMode(!chunkedMode)}
+                className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                  chunkedMode
+                    ? "bg-gray-900 text-white"
+                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                }`}
+                title="切 chunk 顺序播放（每段之间 1.5s 停顿）"
+              >
+                🎵 Chunked {chunkedMode ? "ON" : "OFF"}
+              </button>
             </div>
 
             {shadowPhase === "transcribing" && (
