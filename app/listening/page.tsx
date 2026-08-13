@@ -1,6 +1,11 @@
 "use client";
 
 import { Suspense, useEffect, useRef, useState } from "react";
+
+// Force dynamic rendering — useSearchParams() inside ListeningPageContent
+// is not compatible with static prerendering even inside a Suspense boundary
+// in this Next.js 15 build. opt out of SSG for this route.
+export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
