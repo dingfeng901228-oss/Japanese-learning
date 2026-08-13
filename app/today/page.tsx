@@ -136,9 +136,20 @@ export default function TodayPage() {
   return (
     <main className="min-h-screen px-6 py-12 max-w-3xl mx-auto">
       <header className="mb-12">
-        <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">
-          ← 返回
-        </Link>
+        <div className="flex items-center gap-4 mb-4">
+          <Link
+            href="/"
+            className="text-sm text-gray-500 hover:text-gray-900"
+          >
+            ← 返回
+          </Link>
+          <Link
+            href="/progress"
+            className="text-sm text-gray-500 hover:text-gray-900"
+          >
+            📊 进度
+          </Link>
+        </div>
         <p className="text-sm text-gray-500 mt-4">FastStudy 2.0</p>
         <h1 className="text-3xl font-bold mt-1">今日训练</h1>
         <p className="text-gray-600 mt-2">
