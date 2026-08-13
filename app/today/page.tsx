@@ -33,6 +33,13 @@ function formatDate(ts: number): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+// Phase 1 enhancement #3: compact MM-DD HH:MM format for timeline display.
+function formatMistakeTime(ts: number): string {
+  const d = new Date(ts);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 // Phase 4 follow-up: group identical mistakes across sessions so the
 // learner can see which patterns keep coming back. Normalize via
 // lowercase + trim + collapse whitespace, dedupe per (type, normalized),
@@ -244,6 +251,42 @@ export default function TodayPage() {
           </ul>
         )}
       </section>
+
+      {/* Phase 1 enhancement #3: 错误时间线 (recent mistakes with timestamps) */}
+      {history.length > 0 && (
+        <section className="mt-8">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+            错误时间线
+            <span className="ml-2 text-xs text-gray-400 normal-case font-normal">
+              （最近 {Math.min(15, history.length)} 条 · 共 {history.length}）
+            </span>
+          </h3>
+          <div className="space-y-2">
+            {history.slice(0, 15).map((m) => (
+              <div
+                key={m.id}
+                className="flex items-center gap-3 text-sm bg-gray-50 rounded-xl p-3"
+              >
+                <span className="text-xs text-gray-500 font-mono flex-shrink-0 w-24">
+                  {formatMistakeTime(m.timestamp)}
+                </span>
+                <span
+                  className={`flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium ${
+                    m.grammar.length > 0
+                      ? "bg-red-50 text-red-600"
+                      : "bg-blue-50 text-blue-600"
+                  }`}
+                >
+                  {m.grammar.length > 0 ? "语法" : "词汇"}
+                </span>
+                <span className="text-gray-700 truncate flex-1">
+                  {m.grammar[0] || m.vocabulary[0] || "(空)"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="mt-8">
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
