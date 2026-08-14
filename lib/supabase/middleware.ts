@@ -21,12 +21,25 @@ const PROTECTED_PREFIXES = [
 ] as const;
 
 export async function updateSession(request: NextRequest) {
+  // Graceful degradation: if Supabase env vars aren't configured yet
+  // (e.g. before Vercel env add), skip auth entirely. The site still
+  // renders — just no session refresh / route protection. Once
+  // NEXT_PUBLIC_SUPABASE_URL + _KEY are set on Vercel, full auth kicks in.
+  //
+  // This matters because EVERY request on the CDN routes through the
+  // middleware (per the matcher in /middleware.ts). A throw here is
+  // a 500 on every page — that's exactly what MIDDLEWARE_INVOCATION_FAILED
+  // is. Never let the middleware throw.
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseKey) {
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  try {
+    const supabase = createServerClient(supabaseUrl, supabaseKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -43,35 +56,37 @@ export async function updateSession(request: NextRequest) {
           );
         },
       },
-    },
-  );
+    });
 
-  // IMPORTANT: do not move this `getUser()` into a try/catch wrapper.
-  // Throwing here breaks the entire middleware.  If it ever errors,
-  // surface the error to the logs instead of swallowing.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
-  const isProtected = PROTECTED_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`),
-  );
+    const { pathname } = request.nextUrl;
+    const isProtected = PROTECTED_PREFIXES.some(
+      (p) => pathname === p || pathname.startsWith(`${p}/`),
+    );
 
-  if (!user && isProtected) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.searchParams.set("redirectTo", pathname);
-    return NextResponse.redirect(url);
+    if (!user && isProtected) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      url.searchParams.set("redirectTo", pathname);
+      return NextResponse.redirect(url);
+    }
+
+    // Bounce already-signed-in users away from /login.
+    if (user && (pathname === "/login" || pathname === "/signin")) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/today";
+      url.searchParams.delete("redirectTo");
+      return NextResponse.redirect(url);
+    }
+
+    return supabaseResponse;
+  } catch (err) {
+    // Transient error during session refresh / auth.getUser().
+    // Log + pass through — NEVER let the middleware throw.
+    console.error("[middleware] updateSession failed:", err);
+    return NextResponse.next({ request });
   }
-
-  // Bounce already-signed-in users away from /login.
-  if (user && (pathname === "/login" || pathname === "/signin")) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/today";
-    url.searchParams.delete("redirectTo");
-    return NextResponse.redirect(url);
-  }
-
-  return supabaseResponse;
 }

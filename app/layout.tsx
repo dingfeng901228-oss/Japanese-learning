@@ -35,13 +35,25 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // If Supabase isn't configured (e.g. Vercel env vars not yet set),
+  // we skip the user fetch and render the page without the UserMenu.
+  // Once NEXT_PUBLIC_SUPABASE_URL + _KEY are present, the UserMenu
+  // appears for signed-in users.
+  //
+  // Wrapped in try/catch so a Supabase outage can't crash the whole
+  // page (the crash would surface as a Server Component error that
+  // Next.js renders via the error boundary, not a 500).
+  let userInfo: {
+    email: string;
+    displayName: string | null;
+    avatarUrl: string | null;
+  } | null = null;
 
-  const userInfo = user
-    ? {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      userInfo = {
         email: user.email ?? "",
         displayName:
           (user.user_metadata?.full_name as string | undefined) ??
@@ -51,8 +63,13 @@ export default async function RootLayout({
           (user.user_metadata?.avatar_url as string | undefined) ??
           (user.user_metadata?.picture as string | undefined) ??
           null,
-      }
-    : null;
+      };
+    }
+  } catch (err) {
+    // Supabase unavailable (env vars missing, network down, etc.) —
+    // render without UserMenu instead of crashing the whole page.
+    console.error("[root layout] failed to load user:", err);
+  }
 
   return (
     <html lang="zh-CN">
