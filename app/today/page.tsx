@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 
 type MistakeEntry = {
@@ -206,6 +206,45 @@ function aggregateMistakes(
     .slice(0, 10);
 }
 
+// Phase 11: time-of-day greeting — computed client-side from current hour
+// to avoid hydration mismatch (initial state is empty string, set in useEffect).
+function getTimeBasedGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return "Good morning";
+  if (hour >= 12 && hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
+// Phase 11: consecutive training days from shadow history timestamps.
+// Counts unique training days (any shadow recording = training activity)
+// going back from today. If today has no training, allows yesterday as the
+// most recent day so the streak isn't broken before the user trains today.
+function computeStreak(history: { timestamp: number }[]): number {
+  if (history.length === 0) return 0;
+
+  const formatDay = (d: Date): string =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+  const trainingDays = new Set<string>();
+  for (const entry of history) {
+    trainingDays.add(formatDay(new Date(entry.timestamp)));
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let checkDate = new Date(today);
+  if (!trainingDays.has(formatDay(checkDate))) {
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+
+  let streak = 0;
+  while (trainingDays.has(formatDay(checkDate))) {
+    streak++;
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+  return streak;
+}
+
 export default function TodayPage() {
   const [history, setHistory] = useState<MistakeEntry[]>([]);
   const [shadowHistory, setShadowHistory] = useState<ShadowHistoryEntry[]>([]);
@@ -237,6 +276,18 @@ export default function TodayPage() {
       setShadowHistory([]);
     }
   }, []);
+
+  // Phase 11: time-based greeting — set on mount to avoid hydration mismatch.
+  const [greeting, setGreeting] = useState<string>("");
+  useEffect(() => {
+    setGreeting(getTimeBasedGreeting());
+  }, []);
+
+  // Phase 11: real consecutive training days from shadow history timestamps.
+  const streakDays = useMemo(
+    () => computeStreak(shadowHistory),
+    [shadowHistory]
+  );
 
   function clearHistory() {
     if (typeof window === "undefined") return;
@@ -348,8 +399,12 @@ export default function TodayPage() {
         <p className="text-sm text-gray-500 mt-4">FastStudy 2.0</p>
         <h1 className="text-3xl font-bold mt-1">今日训练</h1>
         <p className="text-gray-600 mt-2">
-          Good evening.{" "}
-          <span className="text-gray-400">连续训练 18 天 🔥</span>
+          {greeting && `${greeting}. `}
+          <span className="text-gray-400">
+            {streakDays > 0
+              ? `连续训练 ${streakDays} 天 🔥`
+              : "开始训练，记录你的连续天数"}
+          </span>
         </p>
       </header>
 
