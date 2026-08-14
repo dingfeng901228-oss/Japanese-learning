@@ -11,3 +11,19 @@
 body {
   font-family: var(--font-sans);
 }
+
+/* Phase 6: furigana (振り仮名) annotations on kanji.
+   <ruby> wraps each kanji word; <rt> holds the hiragana reading.
+   Browsers render ruby-position: over by default. */
+ruby {
+  ruby-position: over;
+  -webkit-ruby-position: before;
+  ruby-align: center;
+}
+rt {
+  font-size: 0.45em;
+  color: #6b7280;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0;
+}

@@ -8,173 +8,14 @@ import { Suspense, useEffect, useRef, useState } from "react";
 export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-
-type Difficulty = "N5" | "N4" | "N3";
-
-type Sentence = {
-  id: string;
-  ja: string;
-  zh: string;
-};
-
-type Category = {
-  id: string;
-  label: string;
-  emoji: string;
-  N5: Sentence[];
-  N4: Sentence[];
-  N3: Sentence[];
-};
-
-// 90 sentences across 5 everyday scenes × 3 JLPT levels (N5/N4/N3).
-// Phase 3: N4/N3 levels added. Future: extract to data file + add N2/N1.
-const CATEGORIES: Category[] = [
-  {
-    id: "self-intro",
-    label: "自我介绍",
-    emoji: "🙋",
-    N5: [
-      { id: "s1-n5-1", ja: "はじめまして。", zh: "初次见面。" },
-      { id: "s1-n5-2", ja: "私はディン・フェンと申します。", zh: "我叫丁锋。" },
-      { id: "s1-n5-3", ja: "中国から来ました。", zh: "我来自中国。" },
-      { id: "s1-n5-4", ja: "今は東京に住んでいます。", zh: "我现在住在东京。" },
-      { id: "s1-n5-5", ja: "ITエンジニアです。", zh: "我是 IT 工程师。" },
-      { id: "s1-n5-6", ja: "よろしくお願いします。", zh: "请多多关照。" },
-    ],
-    N4: [
-      { id: "s1-n4-1", ja: "私は〇〇大学を卒業しました。", zh: "我毕业于〇〇大学。" },
-      { id: "s1-n4-2", ja: "ソフトウェア開発を五年経験があります。", zh: "有五年软件开发经验。" },
-      { id: "s1-n4-3", ja: "今はスタートアップで働いています。", zh: "现在在创业公司工作。" },
-      { id: "s1-n4-4", ja: "趣味は読書と写真です。", zh: "兴趣是读书和摄影。" },
-      { id: "s1-n4-5", ja: "週末はよくハイキングに行きます。", zh: "周末经常去徒步。" },
-      { id: "s1-n4-6", ja: "日本の文化に興味があります。", zh: "对日本文化感兴趣。" },
-    ],
-    N3: [
-      { id: "s1-n3-1", ja: "大学院で人工知能を専攻しました。", zh: "研究生时专攻人工智能。" },
-      { id: "s1-n3-2", ja: "去年の後半からこちらに住み始めました。", zh: "从去年下半年开始住在这里。" },
-      { id: "s1-n3-3", ja: "将来は自分の会社を立ち上げたいです。", zh: "将来想创办自己的公司。" },
-      { id: "s1-n3-4", ja: "最近は製品管理に興味があります。", zh: "最近对产品管理感兴趣。" },
-      { id: "s1-n3-5", ja: "休みの日は家でゆっくり過ごします。", zh: "休息日在家慢慢度过。" },
-      { id: "s1-n3-6", ja: "写真撮影が趣味で、よく週末に街に出ます。", zh: "兴趣是摄影，周末经常上街。" },
-    ],
-  },
-  {
-    id: "restaurant",
-    label: "餐厅",
-    emoji: "🍱",
-    N5: [
-      { id: "r1-n5-1", ja: "注文をお願いします。", zh: "我想点餐。" },
-      { id: "r1-n5-2", ja: "ラーメンをください。", zh: "我要一份拉面。" },
-      { id: "r1-n5-3", ja: "おすすめは何ですか。", zh: "推荐什么？" },
-      { id: "r1-n5-4", ja: "辛くしないでください。", zh: "请不要加辣。" },
-      { id: "r1-n5-5", ja: "お会計をお願いします。", zh: "请结账。" },
-      { id: "r1-n5-6", ja: "現金で払います。", zh: "我付现金。" },
-    ],
-    N4: [
-      { id: "r1-n4-1", ja: "辛さが足りないので、もっと辣椒をください。", zh: "不够辣，请再多加点辣椒。" },
-      { id: "r1-n4-2", ja: "同じものをもう一つ頼めますか。", zh: "可以再点一份一样的吗？" },
-      { id: "r1-n4-3", ja: "食後にコーヒーをお願いします。", zh: "餐后请来一杯咖啡。" },
-      { id: "r1-n4-4", ja: "テイクアウトできますか。", zh: "可以外带吗？" },
-      { id: "r1-n4-5", ja: "おすすめの料理は何ですか。", zh: "推荐菜是什么？" },
-      { id: "r1-n4-6", ja: "飲み物は別々でお願いします。", zh: "饮料请分开点。" },
-    ],
-    N3: [
-      { id: "r1-n3-1", ja: "ベジタリアンなので、肉料理の代わりに野菜でお願いします。", zh: "我是素食者，肉菜请换成蔬菜。" },
-      { id: "r1-n3-2", ja: "少し塩味が薄いように感じます。", zh: "感觉味道有点淡。" },
-      { id: "r1-n3-3", ja: "〇〇にアレルギーがあります。", zh: "我对〇〇过敏。" },
-      { id: "r1-n3-4", ja: "デザートの種類は何がありますか。", zh: "甜点有哪些种类？" },
-      { id: "r1-n3-5", ja: "割り勘にしましょうか、それともおごりますか。", zh: "AA 还是我请？" },
-      { id: "r1-n3-6", ja: "このスープは少し油っこいです。", zh: "这汤有点太油腻。" },
-    ],
-  },
-  {
-    id: "directions",
-    label: "问路",
-    emoji: "🗺️",
-    N5: [
-      { id: "d1-n5-1", ja: "駅はどこですか。", zh: "车站在哪里？" },
-      { id: "d1-n5-2", ja: "この道をまっすぐ行ってください。", zh: "请沿这条路直走。" },
-      { id: "d1-n5-3", ja: "右に曲がってください。", zh: "请向右转。" },
-      { id: "d1-n5-4", ja: "左に曲がってください。", zh: "请向左转。" },
-      { id: "d1-n5-5", ja: "どこまで歩けばいいですか。", zh: "需要走多远？" },
-      { id: "d1-n5-6", ja: "近くですか。", zh: "近吗？" },
-    ],
-    N4: [
-      { id: "d1-n4-1", ja: "ここから駅まで歩いてどのぐらいですか。", zh: "从这里走到车站要多久？" },
-      { id: "d1-n4-2", ja: "終電は何時ですか。", zh: "末班车是几点？" },
-      { id: "d1-n4-3", ja: "〇〇行きのバスはどこですか。", zh: "去〇〇的巴士在哪里？" },
-      { id: "d1-n4-4", ja: "一番速い道をお願いします。", zh: "请告诉我最快的路。" },
-      { id: "d1-n4-5", ja: "近くにコンビニはありますか。", zh: "附近有便利店吗？" },
-      { id: "d1-n4-6", ja: "〇〇までタクシーでいくらぐらいですか。", zh: "打车到〇〇大概多少钱？" },
-    ],
-    N3: [
-      { id: "d1-n3-1", ja: "このあたりでWi-Fiが使えますか。", zh: "这附近能用 Wi-Fi 吗？" },
-      { id: "d1-n3-2", ja: "〇〇の近くまでどうやって行けばいいですか。", zh: "怎么去〇〇附近？" },
-      { id: "d1-n3-3", ja: "電車とバス、どちらが速いですか。", zh: "电车和巴士哪个快？" },
-      { id: "d1-n3-4", ja: "途中でトイレに寄れますか。", zh: "路上能上厕所吗？" },
-      { id: "d1-n3-5", ja: "道を聞きながら行くので大丈夫です。", zh: "路上问路就行。" },
-      { id: "d1-n3-6", ja: "迎えに来てくれますか。", zh: "能来接我吗？" },
-    ],
-  },
-  {
-    id: "numbers-time",
-    label: "数字时间",
-    emoji: "⏰",
-    N5: [
-      { id: "n1-n5-1", ja: "今、何時ですか。", zh: "现在几点？" },
-      { id: "n1-n5-2", ja: "三時です。", zh: "三点。" },
-      { id: "n1-n5-3", ja: "今日は何日ですか。", zh: "今天几号？" },
-      { id: "n1-n5-4", ja: "九月十五日です。", zh: "九月十五日。" },
-      { id: "n1-n5-5", ja: "電話番号を教えてください。", zh: "请告诉我电话号码。" },
-      { id: "n1-n5-6", ja: "百円です。", zh: "一百日元。" },
-    ],
-    N4: [
-      { id: "n1-n4-1", ja: "会議は午後三時半から始まります。", zh: "会议从下午三点半开始。" },
-      { id: "n1-n4-2", ja: "明日十時に変更できますか。", zh: "能改到明天十点吗？" },
-      { id: "n1-n4-3", ja: "ここに三年住んでいます。", zh: "我在这里住了三年了。" },
-      { id: "n1-n4-4", ja: "一日二時間勉強しています。", zh: "每天学习两个小时。" },
-      { id: "n1-n4-5", ja: "締め切りは来週金曜日です。", zh: "截止日期是下周五。" },
-      { id: "n1-n4-6", ja: "三十五歳になります。", zh: "我三十五岁了。" },
-    ],
-    N3: [
-      { id: "n1-n3-1", ja: "次の診察は再来月の予定です。", zh: "下次检查预计在两个月后。" },
-      { id: "n1-n3-2", ja: "週に三回ジムに通っています。", zh: "每周去三次健身房。" },
-      { id: "n1-n3-3", ja: "このプロジェクトには半年以上かかりそうです。", zh: "这个项目估计要半年以上。" },
-      { id: "n1-n3-4", ja: "発売日は来週の予定です。", zh: "发售日期预计是下周。" },
-      { id: "n1-n3-5", ja: "一か月滞在しますが、延びる可能性があります。", zh: "计划待一个月，但可能延长。" },
-      { id: "n1-n3-6", ja: "月末までに報告書を提出してください。", zh: "月底前请提交报告。" },
-    ],
-  },
-  {
-    id: "greetings",
-    label: "寒暄",
-    emoji: "👋",
-    N5: [
-      { id: "g1-n5-1", ja: "おはようございます。", zh: "早上好。" },
-      { id: "g1-n5-2", ja: "こんにちは。", zh: "你好（白天）。" },
-      { id: "g1-n5-3", ja: "こんばんは。", zh: "晚上好。" },
-      { id: "g1-n5-4", ja: "お疲れ様です。", zh: "辛苦了。" },
-      { id: "g1-n5-5", ja: "また明日。", zh: "明天见。" },
-      { id: "g1-n5-6", ja: "また会いましょう。", zh: "下次再见。" },
-    ],
-    N4: [
-      { id: "g1-n4-1", ja: "今日はいい天気ですね。", zh: "今天天气真好。" },
-      { id: "g1-n4-2", ja: "お体に気をつけてください。", zh: "请注意身体。" },
-      { id: "g1-n4-3", ja: "先日はお世話になりました。", zh: "前几天承蒙关照。" },
-      { id: "g1-n4-4", ja: "助けていただき、ありがとうございます。", zh: "谢谢您的帮助。" },
-      { id: "g1-n4-5", ja: "ちょっと聞いてもいいですか。", zh: "能打扰一下吗？" },
-      { id: "g1-n4-6", ja: "お待たせしました。", zh: "让您久等了。" },
-    ],
-    N3: [
-      { id: "g1-n3-1", ja: "先日はお忙しい中お時間をいただき、ありがとうございます。", zh: "感谢您在百忙之中抽出时间。" },
-      { id: "g1-n3-2", ja: "今後ともよろしくお願いいたします。", zh: "今后也请多多指教。" },
-      { id: "g1-n3-3", ja: "お陰様で元気です。", zh: "托您的福，我很好。" },
-      { id: "g1-n3-4", ja: "改めてお詫び申し上げます。", zh: "再次表示歉意。" },
-      { id: "g1-n3-5", ja: "お邪魔いたします。", zh: "打扰了。" },
-      { id: "g1-n3-6", ja: "お力添えいただけると大変助かります。", zh: "能得到您的帮助，我将不胜感激。" },
-    ],
-  },
-];
+import {
+  type Difficulty,
+  type Sentence,
+  type Category,
+  CATEGORIES,
+  LEVELS,
+  CATEGORY_LABELS,
+} from "@/lib/sentences";
 
 const PROGRESS_KEY = "japanese:listen-progress";
 const SHADOW_HISTORY_KEY = "japanese:shadow-history";
@@ -300,9 +141,10 @@ function chunkJapanese(ja: string): string[] {
 }
 
 // Phase 5: look up a sentence by its id across all (category × difficulty) buckets.
+// Phase 6: iterate over LEVELS (N5/N4/N3/N2/N1).
 function findSentenceById(sentenceId: string): Sentence | null {
   for (const cat of CATEGORIES) {
-    for (const lvl of ["N5", "N4", "N3"] as const) {
+    for (const lvl of LEVELS) {
       const sent = cat[lvl].find((s) => s.id === sentenceId);
       if (sent) return sent;
     }
@@ -363,8 +205,8 @@ export default function ListeningPage() {
 function ListeningPageContent() {
   const [mode, setMode] = useState<Mode>("listen");
 
-  // Difficulty level (N5/N4/N3)
-  const [levelIdx, setLevelIdx] = useState<0 | 1 | 2>(0);
+  // Difficulty level (N5/N4/N3/N2/N1) — index into LEVELS array.
+  const [levelIdx, setLevelIdx] = useState<0 | 1 | 2 | 3 | 4>(0);
 
   // Listen state (preserved from Phase 1)
   const [categoryIdx, setCategoryIdx] = useState(0);
@@ -400,7 +242,7 @@ function ListeningPageContent() {
   const [chunkedMode, setChunkedMode] = useState(false);
   const [currentChunkIdx, setCurrentChunkIdx] = useState(-1);
 
-  const DIFFICULTIES: Difficulty[] = ["N5", "N4", "N3"];
+  const DIFFICULTIES: readonly Difficulty[] = LEVELS;
   const category = CATEGORIES[categoryIdx];
   const currentDifficulty = DIFFICULTIES[levelIdx];
   const currentSentences = category[currentDifficulty];
@@ -411,7 +253,7 @@ function ListeningPageContent() {
     (sum, set) => sum + set.size,
     0
   );
-  const allDone = totalCompleted >= 90;
+  const allDone = totalCompleted >= 150;
   const shadowHistoryForSentence = shadowHistory.filter(
     (e) => e.sentenceId === sentence.id
   );
@@ -455,8 +297,8 @@ function ListeningPageContent() {
         avgAcc: 0,
         avgFlu: 0,
         best: null as ShadowHistoryEntry | null,
-        byLevel: { N5: 0, N4: 0, N3: 0 } as Record<Difficulty, number>,
-        byLevelAcc: { N5: 0, N4: 0, N3: 0 } as Record<Difficulty, number>,
+        byLevel: { N5: 0, N4: 0, N3: 0, N2: 0, N1: 0 } as Record<Difficulty, number>,
+        byLevelAcc: { N5: 0, N4: 0, N3: 0, N2: 0, N1: 0 } as Record<Difficulty, number>,
       };
     }
     const sumAcc = shadowHistory.reduce((s, e) => s + e.grade.accuracy, 0);
@@ -467,10 +309,10 @@ function ListeningPageContent() {
       shadowHistory[0]
     );
 
-    const byLevel: Record<Difficulty, number> = { N5: 0, N4: 0, N3: 0 };
-    const byLevelAcc: Record<Difficulty, number> = { N5: 0, N4: 0, N3: 0 };
+    const byLevel: Record<Difficulty, number> = { N5: 0, N4: 0, N3: 0, N2: 0, N1: 0 };
+    const byLevelAcc: Record<Difficulty, number> = { N5: 0, N4: 0, N3: 0, N2: 0, N1: 0 };
     for (const e of shadowHistory) {
-      const m = e.sentenceId.match(/-n([543])-\d+$/);
+      const m = e.sentenceId.match(/-n([54321])-\d+$/);
       if (m) {
         const lvl = `N${m[1]}` as Difficulty;
         byLevel[lvl] += 1;
@@ -918,7 +760,7 @@ function ListeningPageContent() {
       </h1>
       <p className="text-sm text-gray-500 mb-6">
         {mode === "listen"
-          ? "听 AI 朗读：5 场景 × 3 难度 × 6 句 = 90 句 N5/N4/N3 起步。点 🔊 听、慢速 / 常速切换、上一句 / 下一句。"
+          ? "听 AI 朗读：5 场景 × 5 难度 × 6 句 = 150 句 N5/N4/N3/N2/N1 起步。所有汉字标假名（振り仮名）。点 🔊 听、慢速 / 常速切换、上一句 / 下一句。"
           : "跟 AI 读：先点 ▶ 听 AI 示范 → 点 🎤 跟读 → 录完自动评分 → 显示结果卡。"}
       </p>
 
@@ -956,9 +798,9 @@ function ListeningPageContent() {
         </button>
       </div>
 
-      {/* Difficulty tabs (N5 / N4 / N3) */}
+      {/* Difficulty tabs (N5 / N4 / N3 / N2 / N1) — Phase 6 */}
       <div
-        className="flex gap-2 mb-4"
+        className="flex gap-2 mb-4 flex-wrap"
         role="tablist"
         aria-label="难度"
       >
@@ -967,6 +809,8 @@ function ListeningPageContent() {
             { v: 0, label: "N5 入门", emoji: "🌱" },
             { v: 1, label: "N4 初级", emoji: "🌿" },
             { v: 2, label: "N3 中级", emoji: "🌳" },
+            { v: 3, label: "N2 中高级", emoji: "🌲" },
+            { v: 4, label: "N1 高级", emoji: "🏔️" },
           ] as const
         ).map((opt) => (
           <button
@@ -1036,7 +880,7 @@ function ListeningPageContent() {
         </div>
 
         <div
-          className="text-3xl font-bold mb-4 leading-relaxed text-center py-4 break-words"
+          className="text-3xl font-bold mb-4 leading-loose text-center py-4 break-words"
           lang="ja"
         >
           {chunkedMode && mode === "shadow" && chunks.length > 0 ? (
@@ -1055,7 +899,9 @@ function ListeningPageContent() {
               </span>
             ))
           ) : (
-            sentence.ja
+            // Phase 6: render jaHtml with <ruby> furigana annotations.
+            // Safe — content is hand-authored; only <ruby>/<rt> tags used.
+            <span dangerouslySetInnerHTML={{ __html: sentence.jaHtml }} />
           )}
         </div>
 
@@ -1399,7 +1245,7 @@ function ListeningPageContent() {
           </div>
           <div className="space-y-1 text-xs">
             <div className="text-gray-500 mb-1">按难度：</div>
-            {(["N5", "N4", "N3"] as Difficulty[]).map((lvl) => {
+            {(["N5", "N4", "N3", "N2", "N1"] as Difficulty[]).map((lvl) => {
               const cnt = shadowStats.byLevel[lvl];
               if (cnt === 0) return null;
               const acc = Math.round(shadowStats.byLevelAcc[lvl] / cnt);
@@ -1437,7 +1283,7 @@ function ListeningPageContent() {
         <div className="flex-1 text-sm text-gray-500 text-center">
           {mode === "listen" ? (
             <>
-              本组完成 {completedInCat}/{totalInCat} · 总进度 {totalCompleted}/30
+              本组完成 {completedInCat}/{totalInCat} · 总进度 {totalCompleted}/150
             </>
           ) : (
             <>
@@ -1558,7 +1404,7 @@ function ListeningPageContent() {
         <div className="border border-green-200 bg-green-50 rounded-2xl p-6 text-center">
           <div className="text-2xl mb-2">🎉</div>
           <div className="text-base font-medium text-green-800 mb-1">
-            全部 30 句都听过了
+            全部 150 句都听过了
           </div>
           <div className="text-sm text-green-700">
             去 <Link href="/speaking" className="underline">口语训练</Link> 试试自己说，或者回 <Link href="/today" className="underline">今日训练</Link> 看错点

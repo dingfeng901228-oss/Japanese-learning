@@ -2,6 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import {
+  type Difficulty,
+  LEVELS,
+  CATEGORY_LABELS,
+  TOTAL_SENTENCES_PER_LEVEL,
+  difficultyOf,
+} from "@/lib/sentences";
 
 type ShadowGrade = {
   accuracy: number;
@@ -24,16 +31,7 @@ type ShadowHistoryEntry = {
 const PROGRESS_KEY = "japane…ress";
 const SHADOW_HISTORY_KEY = "japane…tory";
 
-const CATEGORY_LABELS: Record<string, { emoji: string; label: string }> = {
-  "self-intro": { emoji: "🙋", label: "自我介绍" },
-  restaurant: { emoji: "🍱", label: "餐厅" },
-  directions: { emoji: "🗺️", label: "问路" },
-  "numbers-time": { emoji: "⏰", label: "数字时间" },
-  greetings: { emoji: "👋", label: "寒暄" },
-};
 
-const LEVELS = ["N5", "N4", "N3"] as const;
-const TOTAL_SENTENCES_PER_LEVEL = 30; // 6 sentences × 5 categories
 
 function loadProgress(): Record<string, Set<string>> {
   if (typeof window === "undefined") return {};
@@ -67,10 +65,7 @@ function formatTime(ts: number): string {
   return `${pad(d.getMonth() + 1)} -${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-function difficultyOf(sentenceId: string): "N5" | "N4" | "N3" | null {
-  const m = sentenceId.match(/-n([543])-\d+$/);
-  return m ? (`N${m[1]}` as "N5" | "N4" | "N3") : null;
-}
+
 
 export default function ProgressPage() {
   const [progress, setProgress] = useState<Record<string, Set<string>>>({});
@@ -86,10 +81,12 @@ export default function ProgressPage() {
     (s, set) => s + set.size,
     0
   );
-  const listenedByLevel: Record<"N5" | "N4" | "N3", number> = {
+  const listenedByLevel: Record<Difficulty, number> = {
     N5: 0,
     N4: 0,
     N3: 0,
+    N2: 0,
+    N1: 0,
   };
   for (const set of Object.values(progress)) {
     for (const sentId of set) {
@@ -122,12 +119,14 @@ export default function ProgressPage() {
 
   // Shadow by level
   const shadowByLevel: Record<
-    "N5" | "N4" | "N3",
+    Difficulty,
     { count: number; sumAcc: number }
   > = {
     N5: { count: 0, sumAcc: 0 },
     N4: { count: 0, sumAcc: 0 },
     N3: { count: 0, sumAcc: 0 },
+    N2: { count: 0, sumAcc: 0 },
+    N1: { count: 0, sumAcc: 0 },
   };
   for (const e of shadowHistory) {
     const lvl = difficultyOf(e.sentenceId);
