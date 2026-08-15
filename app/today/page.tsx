@@ -2,6 +2,12 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import {
+  createMistakeStorage,
+  type Mistake,
+} from "@/lib/mistake-storage";
+import { ISSUE_TYPE_LABELS, SEVERITY_LABELS } from "@/lib/grade-types";
+import { createClient as createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 type MistakeEntry = {
   id: string;
@@ -253,15 +259,55 @@ export default function TodayPage() {
     Record<string, number>
   >({});
 
+  // P1.C PR #3.2 — MistakeStorage state. `structuredMistakes` is the
+  // read source for the new "最近弱点" + "建议复习" sections; `history`
+  // stays loaded for the legacy fallback sections below.
+  const [isAuthed, setIsAuthed] = useState(false);
+  const [structuredMistakes, setStructuredMistakes] = useState<Mistake[]>([]);
+
+  // P1.C PR #3.2 — load MistakeStorage on mount. The factory picks
+  // Supabase when authed, localStorage otherwise. Legacy localStorage
+  // history (`japaneseLearning.mistakeHistory`) is loaded in parallel
+  // and used by the fallback "错误时间线" + "常见错误 Top 10" sections.
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem(HISTORY_KEY);
-      const parsed = raw ? (JSON.parse(raw) as MistakeEntry[]) : [];
-      setHistory(parsed);
-    } catch {
-      setHistory([]);
-    }
+    let cancelled = false;
+    const load = async () => {
+      let authed = false;
+      try {
+        const supabase = createBrowserSupabaseClient();
+        const { data } = await supabase.auth.getUser();
+        if (cancelled) return;
+        authed = !!data.user;
+        setIsAuthed(authed);
+      } catch (err) {
+        console.warn("[today] auth check failed:", err);
+      }
+
+      // Load MistakeStorage (Supabase OR localStorage fallback).
+      try {
+        const storage = createMistakeStorage(authed);
+        const recent = await storage.recent(500);
+        if (cancelled) return;
+        setStructuredMistakes(recent);
+      } catch (err) {
+        console.warn("[today] MistakeStorage load failed:", err);
+      }
+
+      // Also load legacy localStorage history for fallback views.
+      if (typeof window !== "undefined") {
+        try {
+          const raw = window.localStorage.getItem(HISTORY_KEY);
+          const parsed = raw ? (JSON.parse(raw) as MistakeEntry[]) : [];
+          if (!cancelled) setHistory(parsed);
+        } catch {
+          if (!cancelled) setHistory([]);
+        }
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Phase 4 enhancement: load Shadow history (same key as /listening).
@@ -288,6 +334,37 @@ export default function TodayPage() {
     () => computeStreak(shadowHistory),
     [shadowHistory]
   );
+
+  // P1.C PR #3.2 — aggregated pattern counts from MistakeStorage.
+  // Sorted desc by count, top 3 surfaced in the "最近弱点" section.
+  const aggregateByPattern = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const m of structuredMistakes) {
+      counts[m.patternType] = (counts[m.patternType] ?? 0) + 1;
+    }
+    return Object.entries(counts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 3);
+  }, [structuredMistakes]);
+
+  // P1.C PR #3.2 — review queue (top 5 by priority). Priority =
+  // reviewCount * exp(-daysSince / 14) — recent + frequent mistakes
+  // surface first. Matches the formula in lib/mistake-storage.ts.
+  const reviewQueue = useMemo(() => {
+    const now = Date.now();
+    return structuredMistakes
+      .map((m) => {
+        const daysSince = Math.max(
+          0,
+          (now - m.detectedAt) / (1000 * 60 * 60 * 24)
+        );
+        const priority = m.reviewCount * Math.exp(-daysSince / 14);
+        return { m, priority };
+      })
+      .sort((a, b) => b.priority - a.priority)
+      .slice(0, 5)
+      .map((x) => x.m);
+  }, [structuredMistakes]);
 
   function clearHistory() {
     if (typeof window === "undefined") return;
@@ -543,13 +620,21 @@ export default function TodayPage() {
         </div>
       </section>
 
+      {/* P1.C PR #3.2 — structured "最近弱点" + "建议复习" sections.
+         Reads from MistakeStorage (Supabase when authed, localStorage
+         otherwise). Each entry in the aggregate / queue is a structured
+         Mistake with patternType (IssueType) + severity (Severity) +
+         hint, so we render via ISSUE_TYPE_LABELS / SEVERITY_LABELS.
+         When MistakeStorage returns no structured mistakes (e.g. a user
+         who only has legacy localStorage entries from before PR #3.1),
+         fall back to the legacy recentItems view below. */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
             最近弱点
-            {sessionCount > 0 && (
+            {structuredMistakes.length > 0 && (
               <span className="ml-2 text-xs text-gray-400 normal-case font-normal">
-                （{sessionCount} 次对话 · 累计 {allItems.length} 条）
+                （{structuredMistakes.length} 条结构化记录）
               </span>
             )}
           </h3>
@@ -559,42 +644,118 @@ export default function TodayPage() {
               onClick={clearHistory}
               className="text-xs text-gray-400 hover:text-red-500 transition-colors"
             >
-              清空记录
+              清空本地记录
             </button>
           )}
         </div>
 
-        {recentItems.length === 0 ? (
-          <p className="text-sm text-gray-400 py-4">
-            还没积累弱点记录。完成几次 AI 对话 + 选 "结束训练，获取反馈" 后会显示在这里。
-          </p>
+        {structuredMistakes.length === 0 ? (
+          // Legacy fallback — pre-PR #3.1 localStorage entries don't have
+          // structured mistakes[]. Show the free-text recentItems view so
+          // the user still sees something useful.
+          recentItems.length === 0 ? (
+            <p className="text-sm text-gray-400 py-4">
+              还没积累弱点记录。完成几次 AI 对话 + 选 "结束训练，获取反馈" 后会显示在这里。
+            </p>
+          ) : (
+            <ul className="space-y-2 text-sm">
+              {recentItems.map((item, i) => (
+                <li
+                  key={`${item.ts}-${i}`}
+                  className="flex items-start justify-between py-2 px-3 rounded-md hover:bg-gray-50 gap-3"
+                >
+                  <span className="flex-1">
+                    <span
+                      className={`inline-block text-xs px-1.5 py-0.5 rounded mr-2 ${
+                        item.type === "grammar"
+                          ? "bg-red-50 text-red-600"
+                          : "bg-blue-50 text-blue-600"
+                      }`}
+                    >
+                      {item.type === "grammar" ? "语法" : "词汇"}
+                    </span>
+                    {item.text}
+                  </span>
+                  <span className="text-xs text-gray-400 whitespace-nowrap">
+                    {formatDate(item.ts)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )
         ) : (
           <ul className="space-y-2 text-sm">
-            {recentItems.map((item, i) => (
+            {aggregateByPattern.map(([type, count]) => (
               <li
-                key={`${item.ts}-${i}`}
-                className="flex items-start justify-between py-2 px-3 rounded-md hover:bg-gray-50 gap-3"
+                key={type}
+                className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-gray-50 gap-3"
               >
                 <span className="flex-1">
-                  <span
-                    className={`inline-block text-xs px-1.5 py-0.5 rounded mr-2 ${
-                      item.type === "grammar"
-                        ? "bg-red-50 text-red-600"
-                        : "bg-blue-50 text-blue-600"
-                    }`}
-                  >
-                    {item.type === "grammar" ? "语法" : "词汇"}
+                  <span className="inline-block text-xs px-1.5 py-0.5 rounded mr-2 bg-red-50 text-red-600">
+                    {ISSUE_TYPE_LABELS[type as keyof typeof ISSUE_TYPE_LABELS] ??
+                      type}
                   </span>
-                  {item.text}
+                  {isAuthed ? "跨设备同步" : "本机累计"}
                 </span>
-                <span className="text-xs text-gray-400 whitespace-nowrap">
-                  {formatDate(item.ts)}
+                <span className="text-sm font-semibold text-gray-900 bg-gray-100 px-2 py-0.5 rounded">
+                  × {count}
                 </span>
               </li>
             ))}
           </ul>
         )}
       </section>
+
+      {/* P1.C PR #3.2 — "建议复习" (review queue). Top 5 mistakes by
+         priority (reviewCount * exp(-daysSince / 14)). Empty state
+         collapses the section entirely so legacy users don't see an
+         empty list. */}
+      {reviewQueue.length > 0 && (
+        <section className="mt-8">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+            建议复习
+            <span className="ml-2 text-xs text-gray-400 normal-case font-normal">
+              （按近期优先级排序 · 顶部 5 条）
+            </span>
+          </h3>
+          <ul className="space-y-2 text-sm">
+            {reviewQueue.map((m) => (
+              <li
+                key={m.id ?? `${m.sentenceId}-${m.detectedAt}`}
+                className="flex items-start justify-between py-2 px-3 rounded-md hover:bg-gray-50 gap-3"
+              >
+                <span className="flex-1">
+                  <span className="inline-block text-xs px-1.5 py-0.5 rounded mr-2 bg-gray-100 text-gray-700">
+                    {ISSUE_TYPE_LABELS[m.patternType] ?? m.patternType}
+                  </span>
+                  <span
+                    className={`inline-block text-xs px-1.5 py-0.5 rounded mr-2 ${
+                      m.severity === "critical"
+                        ? "bg-red-100 text-red-700"
+                        : m.severity === "major"
+                        ? "bg-orange-50 text-orange-700"
+                        : "bg-yellow-50 text-yellow-700"
+                    }`}
+                  >
+                    {SEVERITY_LABELS[m.severity] ?? m.severity}
+                  </span>
+                  <span className="text-gray-700">
+                    {m.sentenceTarget}
+                  </span>
+                  {m.hint && (
+                    <span className="block text-xs text-gray-500 mt-1">
+                      {m.hint}
+                    </span>
+                  )}
+                </span>
+                <span className="text-xs text-gray-400 whitespace-nowrap">
+                  {formatDate(m.detectedAt)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* Phase 4 enhancement: Shadow 弱點句子
          (sentences user got < 80% accuracy in Shadow mode) */}
