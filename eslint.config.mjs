@@ -84,5 +84,15 @@ export default tseslint.config(
       ".vercel/**",
       "next-env.d.ts",
     ],
+  },
+  // Tests/ — relax rules that fire on legitimate test patterns. Mocks
+  // commonly need `as any` casts and `obj!.field` is the idiomatic way
+  // to read a field you just set up in `beforeEach`. Per-file overrides
+  // override the earlier `recommended` layer above.
+  {
+    files: ["tests/**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "off",
+    },
   }
 );
