@@ -27,6 +27,14 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # P1 — ignore major version bumps; peer dep chains (e.g. vitest
+    # peerOptional vite@^7 → wants @types/node@>=22.12) force transitive
+    # major bumps that the lockfile can't satisfy, causing `npm ci`
+    # EUSAGE in Dependabot CI (run 1526196468). Minor + patch still
+    # update weekly via the `non-major` group above.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   # ── GitHub Actions versions (.github/workflows/*.yml) ──
   - package-ecosystem: "github-actions"
