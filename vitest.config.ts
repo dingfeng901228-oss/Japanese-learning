@@ -47,6 +47,7 @@ export default defineConfig({
     },
   },
   esbuild: {
+    // @ts-ignore vitest 3.2.7 ESBuildOptions type missing jsx (added in later esbuild versions; runtime supports it)
     jsx: "automatic",
   },
   resolve: {
