@@ -16,6 +16,13 @@ import {
   LEVELS,
   CATEGORY_LABELS,
 } from "@/lib/sentences";
+import {
+  type Diff,
+  type GradeResponse,
+  type Issue,
+  ISSUE_TYPE_LABELS,
+  SEVERITY_LABELS,
+} from "@/lib/grade-types";
 
 const PROGRESS_KEY = "japanese:listen-progress";
 const SHADOW_HISTORY_KEY = "japanese:shadow-history";
@@ -28,6 +35,9 @@ type ShadowGrade = {
   encouragement: string;
 };
 
+// P1.B — server-returned per-token diff + structured issue list. Both
+// optional so old shadow-history entries (Phase 1 base / Phase 2) keep
+// loading; client falls back to computeWordDiff() when missing.
 type ShadowHistoryEntry = {
   id: string;
   sentenceId: string;
@@ -35,6 +45,8 @@ type ShadowHistoryEntry = {
   timestamp: number;
   transcript: string;
   grade: ShadowGrade;
+  diff?: Diff;
+  issues?: Issue[];
 };
 
 function loadProgress(): Record<string, Set<string>> {
@@ -100,15 +112,30 @@ function tokenizeWithSeparators(
     }));
 }
 
-// Phase 1 enhancement: compare target sentence against transcript at the word level.
-// Returns the tokens (for rendering), and the matched/missed sets (for stats).
+// P1.B — token shape used by both the server and client diff paths. The
+// `status` field is set by the server; the client fallback (below)
+// derives it from a transcript substring check.
+type DiffRenderToken = {
+  word: string;
+  isSeparator: boolean;
+  status?: "matched" | "mismatched";
+  target?: string;
+  transcript?: string;
+  transcriptForm?: string;
+};
+
+// Phase 1 enhancement (fallback only since P1.B): compare target sentence
+// against transcript at the word level. Returns the tokens (for rendering)
+// and the matched/missed sets (for stats). When the server returns a
+// structured diff it is used directly and this helper is skipped.
 function computeWordDiff(
   target: string,
   transcript: string
 ): {
-  tokens: { word: string; isSeparator: boolean }[];
+  tokens: DiffRenderToken[];
   matched: string[];
   missed: string[];
+  source: "client";
 } {
   const tokens = tokenizeWithSeparators(target);
   const transcriptWords = new Set(
@@ -116,15 +143,29 @@ function computeWordDiff(
   );
   const matched: string[] = [];
   const missed: string[] = [];
+  const renderTokens: DiffRenderToken[] = [];
   for (const tok of tokens) {
-    if (tok.isSeparator) continue;
+    if (tok.isSeparator) {
+      renderTokens.push({ word: tok.word, isSeparator: true });
+      continue;
+    }
     if (transcriptWords.has(tok.word) || transcript.includes(tok.word)) {
       matched.push(tok.word);
+      renderTokens.push({
+        word: tok.word,
+        isSeparator: false,
+        status: "matched",
+      });
     } else {
       missed.push(tok.word);
+      renderTokens.push({
+        word: tok.word,
+        isSeparator: false,
+        status: "mismatched",
+      });
     }
   }
-  return { tokens, matched, missed };
+  return { tokens: renderTokens, matched, missed, source: "client" };
 }
 
 // Phase 4: chunk Japanese sentence by 読点/句点 (、。); fall back to fixed-length chunks
@@ -275,11 +316,46 @@ function ListeningPageContent() {
     ? chunkJapanese(sentence.ja)
     : [];
 
-  // Phase 1 enhancement: word-level diff between target and transcript.
-  // Null when not in Shadow result phase (or transcript missing).
+  // P1.B — prefer server-returned `diff` (structured per-token alignment
+  // with kana-form hints); fall back to client `computeWordDiff()` for
+  // older shadow-history entries that don't carry one. The two shapes
+  // are unified into a single `wordDiff` shape so the render section
+  // below doesn't branch on source.
+  //
+  // `tokenIssues` is an index → issues[] map for hover tooltips.
+  const currentShadowEntry =
+    mode === "shadow" && shadowPhase === "result" && transcript
+      ? shadowHistory.find(
+          (e) => e.sentenceId === sentence.id && e.transcript === transcript
+        ) ?? null
+      : null;
+  const serverDiff = currentShadowEntry?.diff;
+  const serverIssues = currentShadowEntry?.issues;
+  const tokenIssues: Issue[] =
+    serverIssues && serverIssues.length > 0 ? serverIssues : [];
   const wordDiff =
     mode === "shadow" && shadowPhase === "result" && transcript
-      ? computeWordDiff(sentence.ja, transcript)
+      ? serverDiff && serverDiff.tokens.length > 0
+        ? {
+            // server shape — tokens already aligned, no need to recompute.
+            // Each token has an explicit `status` from the model.
+            tokens: serverDiff.tokens.map((t) => ({
+              word: t.text,
+              isSeparator: false,
+              status: t.status as "matched" | "mismatched",
+              target: t.target,
+              transcript: t.transcript,
+              transcriptForm: t.transcriptForm,
+            })),
+            matched: serverDiff.tokens
+              .filter((t) => t.status === "matched")
+              .map((t) => t.text),
+            missed: serverDiff.tokens
+              .filter((t) => t.status === "mismatched")
+              .map((t) => t.text),
+            source: "server" as const,
+          }
+        : computeWordDiff(sentence.ja, transcript)
       : null;
 
   // Phase 3 enhancement: previous attempt lookup (for delta display).
@@ -695,7 +771,10 @@ function ListeningPageContent() {
           .catch(() => ({}))) as { error?: string };
         throw new Error(j.error || `Grade HTTP ${gRes.status}`);
       }
-      const gData = (await gRes.json()) as { grade: ShadowGrade };
+      // P1.B — full GradeResponse (grade + optional diff + optional issues).
+      // We capture `diff` and `issues` so the next render can use the
+      // server-aligned tokens instead of the client substring fallback.
+      const gData = (await gRes.json()) as GradeResponse;
       setGrade(gData.grade);
       setShadowPhase("result");
 
@@ -707,6 +786,8 @@ function ListeningPageContent() {
         timestamp: Date.now(),
         transcript: tData.text,
         grade: gData.grade,
+        diff: gData.diff,
+        issues: gData.issues,
       };
       const newHistory = [entry, ...shadowHistory].slice(0, 50);
       setShadowHistory(newHistory);
@@ -749,10 +830,10 @@ function ListeningPageContent() {
           .catch(() => ({}))) as { error?: string };
         throw new Error(j.error || `Grade HTTP ${gRes.status}`);
       }
-      const gData = (await gRes.json()) as { grade: ShadowGrade };
+      const gData = (await gRes.json()) as GradeResponse;
       setGrade(gData.grade);
-      // Update history entry (if id matches) so the corrected transcript + grade
-      // are persisted in the localStorage history.
+      // Update history entry (if id matches) so the corrected transcript +
+      // grade + fresh diff/issues are persisted in localStorage history.
       setShadowHistory((prev) => {
         const idx = prev.findIndex(
           (e) => e.sentenceId === sentence.id && e.transcript === transcript
@@ -763,6 +844,8 @@ function ListeningPageContent() {
           ...next[idx],
           transcript: editableTranscript,
           grade: gData.grade,
+          diff: gData.diff,
+          issues: gData.issues,
         };
         return next;
       });
@@ -1112,7 +1195,10 @@ function ListeningPageContent() {
               </div>
             </div>
 
-            {/* Phase 1 enhancement:逐字对照 (target vs transcript) */}
+            {/* P1.B — 逐字对照 (target vs transcript). When the server returned
+                a structured `diff`, each token has an explicit `status` and a
+                `transcriptForm` for kanji → kana mismatches. Otherwise we
+                use the Phase 1 client fallback (substring match). */}
             {wordDiff && (
               <div>
                 <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">
@@ -1124,18 +1210,98 @@ function ListeningPageContent() {
                   lang="ja"
                 >
                   {wordDiff.tokens.map((tok, i) => {
-                    const cls = tok.isSeparator
-                      ? "text-gray-500"
-                      : wordDiff.matched.includes(tok.word)
+                    if (tok.isSeparator) {
+                      return (
+                        <span key={i} className="text-gray-500">
+                          {tok.word}
+                        </span>
+                      );
+                    }
+                    const status =
+                      tok.status ??
+                      (wordDiff.matched.includes(tok.word)
+                        ? "matched"
+                        : "mismatched");
+                    const baseCls =
+                      status === "matched"
                         ? "text-green-700"
                         : "text-red-600 line-through";
+                    // For kanji-reading mismatches the server may include
+                    // a kana transcriptForm — render it under the kanji
+                    // for instant feedback (no tooltip needed).
+                    if (
+                      status === "mismatched" &&
+                      tok.transcriptForm &&
+                      tok.target &&
+                      tok.transcriptForm !== tok.target
+                    ) {
+                      return (
+                        <span
+                          key={i}
+                          className={`${baseCls} mr-0.5`}
+                          title={`读了 ${tok.transcriptForm}（应为 ${tok.target}）`}
+                        >
+                          {tok.word}
+                          <span className="ml-0.5 text-[0.7em] text-red-400 not-italic font-mono">
+                            [{tok.transcriptForm}]
+                          </span>
+                        </span>
+                      );
+                    }
                     return (
-                      <span key={i} className={cls}>
+                      <span key={i} className={baseCls}>
                         {tok.word}
                       </span>
                     );
                   })}
                 </div>
+              </div>
+            )}
+
+            {/* P1.B — compact issues list (current shadow only). When the
+                server returns structured issues, surface the top ones with
+                type / severity / hint. Falls back to nothing for old
+                shadow-history entries that lack `issues`. */}
+            {tokenIssues.length > 0 && (
+              <div>
+                <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">
+                  结构化错误 · {tokenIssues.length} 条
+                </div>
+                <ul className="text-sm space-y-1.5">
+                  {tokenIssues.map((iss, i) => (
+                    <li
+                      key={`${iss.tokenIndex}-${iss.type}-${i}`}
+                      className="bg-red-50 border border-red-200 rounded-lg p-2.5"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span
+                          className={`text-[10px] font-medium px-1.5 py-0.5 rounded uppercase tracking-wide ${
+                            iss.severity === "critical"
+                              ? "bg-red-600 text-white"
+                              : iss.severity === "major"
+                                ? "bg-red-200 text-red-800"
+                                : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
+                          {SEVERITY_LABELS[iss.severity]}
+                        </span>
+                        <span className="text-xs font-medium text-red-800">
+                          {ISSUE_TYPE_LABELS[iss.type]}
+                        </span>
+                        {iss.expected && iss.heard && (
+                          <span className="text-xs text-gray-600 font-mono">
+                            听「{iss.heard}」应为「{iss.expected}」
+                          </span>
+                        )}
+                      </div>
+                      {iss.hint && (
+                        <div className="text-xs text-gray-700 leading-relaxed">
+                          💡 {iss.hint}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 
