@@ -23,6 +23,7 @@ import {
   ISSUE_TYPE_LABELS,
   SEVERITY_LABELS,
 } from "@/lib/grade-types";
+import { Tooltip } from "@/components/ui/tooltip";
 
 const PROGRESS_KEY = "japanese:listen-progress";
 const SHADOW_HISTORY_KEY = "japanese:shadow-history";
@@ -1228,7 +1229,9 @@ function ListeningPageContent() {
                         : "text-red-600 line-through";
                     // For kanji-reading mismatches the server may include
                     // a kana transcriptForm — render it under the kanji
-                    // for instant feedback (no tooltip needed).
+                    // and show a Tooltip with the full hint on hover/focus.
+                    // (Replaces the inline `[かな]` annotation + native
+                    // HTML `title` attribute — both had poor UX.)
                     if (
                       status === "mismatched" &&
                       tok.transcriptForm &&
@@ -1236,16 +1239,36 @@ function ListeningPageContent() {
                       tok.transcriptForm !== tok.target
                     ) {
                       return (
-                        <span
+                        <Tooltip
                           key={i}
-                          className={`${baseCls} mr-0.5`}
-                          title={`读了 ${tok.transcriptForm}（应为 ${tok.target}）`}
+                          side="top"
+                          content={`读了 ${tok.transcriptForm}（应为 ${tok.target}）`}
                         >
-                          {tok.word}
-                          <span className="ml-0.5 text-[0.7em] text-red-400 not-italic font-mono">
-                            [{tok.transcriptForm}]
+                          <span className={`${baseCls} mr-0.5`}>
+                            {tok.word}
+                            <span className="ml-0.5 text-[0.7em] text-red-400 not-italic font-mono">
+                              [{tok.transcriptForm}]
+                            </span>
                           </span>
-                        </span>
+                        </Tooltip>
+                      );
+                    }
+                    // Mismatched token without a kana transcriptForm —
+                    // wrap in a Tooltip so the user can hover/focus to
+                    // see the structured-issue hint if one is attached.
+                    if (status === "mismatched") {
+                      const issue = tokenIssues.find(
+                        (iss) => iss.tokenIndex === i
+                      );
+                      const hint = issue
+                        ? `${ISSUE_TYPE_LABELS[issue.type]} · ${SEVERITY_LABELS[issue.severity]}${issue.expected && issue.heard ? ` · 听「${issue.heard}」应为「${issue.expected}」` : ""}${issue.hint ? ` · ${issue.hint}` : ""}`
+                        : "听错了";
+                      return (
+                        <Tooltip key={i} side="top" content={hint}>
+                          <span className={`${baseCls} mr-0.5`}>
+                            {tok.word}
+                          </span>
+                        </Tooltip>
                       );
                     }
                     return (
