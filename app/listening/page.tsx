@@ -231,12 +231,26 @@ function ListeningPageContent() {
   // `shadowPhase === "result"`, so checking `shadowPhase === "grading"` inside
   // would always be false).
   const [isRegrading, setIsRegrading] = useState(false);
+  // P1.A — client-side notices (auto-stop notice + 4MB warning). No
+  // toast library installed in this project, so we surface these as a
+  // single inline notice that clears when the next recording starts.
+  const [clientWarning, setClientWarning] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const recordingStartRef = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const speakCancelRef = useRef(false);
+
+  // P1.A — client-side recording safety caps.
+  // 30s cap: average N3+ sentences + buffer; longer recordings blow past
+  // the 4MB Vercel Hobby body limit and trigger 413s. Auto-stop keeps
+  // the upload path clean.
+  const MAX_RECORDING_SEC = 30;
+  // 4MB warning: Vercel Hobby serverless function body limit is ~4.5MB;
+  // a single 4MB+ audio upload is rejected at the edge. Warn before
+  // POST so the user knows to re-record shorter chunks.
+  const MAX_BLOB_BYTES = 4 * 1024 * 1024;
 
   // Shadow chunked mode (Phase 4): play sentence in chunks with 1.5s delay between.
   const [chunkedMode, setChunkedMode] = useState(false);
@@ -397,6 +411,7 @@ function ListeningPageContent() {
     setShadowError(null);
     setRecordingTime(0);
     setSpeaking(false);
+    setClientWarning(null); // P1.A — clear stale notice on sentence change
     // intentionally only depending on sentence/category/level idx
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryIdx, sentenceIdx, levelIdx]);
@@ -432,6 +447,7 @@ function ListeningPageContent() {
     setGrade(null);
     setShadowError(null);
     setRecordingTime(0);
+    setClientWarning(null);
   }
 
   function changeCategory(i: number) {
@@ -550,6 +566,7 @@ function ListeningPageContent() {
     setShadowError(null);
     setTranscript(null);
     setGrade(null);
+    setClientWarning(null); // P1.A — clear stale notice on new recording
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -588,16 +605,35 @@ function ListeningPageContent() {
         const blob = new Blob(chunksRef.current, {
           type: recorder.mimeType || "audio/webm",
         });
+        // P1.A — 4MB Vercel body limit awareness. Warn (don't block) so
+        // the user understands why the server may 413.
+        if (blob.size > MAX_BLOB_BYTES) {
+          setClientWarning(
+            `录音 ${(blob.size / 1024 / 1024).toFixed(1)}MB，超过 4MB。Vercel 免费层 body 限制 ~4MB，建议分段重录或缩短到 ${MAX_RECORDING_SEC}s 以内。`
+          );
+        }
         await runShadowPipeline(blob);
       };
 
       recordingStartRef.current = Date.now();
       setRecordingTime(0);
       timerRef.current = setInterval(() => {
-        if (recordingStartRef.current) {
-          setRecordingTime(
-            Math.floor((Date.now() - recordingStartRef.current) / 1000)
+        if (!recordingStartRef.current) return;
+        const elapsed = Math.floor(
+          (Date.now() - recordingStartRef.current) / 1000
+        );
+        setRecordingTime(elapsed);
+        // P1.A — auto-stop at MAX_RECORDING_SEC. Calling stop() here is
+        // safe — recorder.onstop fires once and runs the pipeline.
+        if (
+          elapsed >= MAX_RECORDING_SEC &&
+          mediaRecorderRef.current &&
+          mediaRecorderRef.current.state === "recording"
+        ) {
+          setClientWarning(
+            `录音到 ${MAX_RECORDING_SEC}s 自动停止。正在转写 + 评分…`
           );
+          mediaRecorderRef.current.stop();
         }
       }, 250);
 
@@ -688,6 +724,7 @@ function ListeningPageContent() {
     setShadowPhase("idle");
     setEditableTranscript("");
     setIsTranscriptEdited(false);
+    setClientWarning(null);
   }
 
   // Phase 2: re-grade with user-edited transcript (without re-recording audio).
@@ -1043,6 +1080,12 @@ function ListeningPageContent() {
             {shadowError && (
               <div className="mt-3 text-sm text-red-600 text-center bg-red-50 border border-red-200 rounded-lg p-3">
                 ⚠️ {shadowError}
+              </div>
+            )}
+
+            {clientWarning && (
+              <div className="mt-3 text-sm text-amber-800 text-center bg-amber-50 border border-amber-200 rounded-lg p-3">
+                💡 {clientWarning}
               </div>
             )}
           </div>
