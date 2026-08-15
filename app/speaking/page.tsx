@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { createClient as createBrowserSupabaseClient } from "@/lib/supabase/client";
+import {
+  createMistakeStorage,
+  migrateLocalToSupabase,
+} from "@/lib/mistake-storage";
 
 type Turn = { role: "user" | "assistant"; content: string };
 
@@ -91,8 +96,44 @@ export default function SpeakingPage() {
   // toggle is removed — always render feedback in Chinese.
   const [feedbackLanguage] = useState<FeedbackLanguage>("zh");
 
+  // P1.C PR #3.1 — auth state for MistakeStorage. Defaults to false so
+  // the very first feedback (before the auth check resolves) falls back
+  // to localStorage. The check below upgrades to Supabase once the user
+  // is confirmed and triggers a one-time migration.
+  const [isAuthed, setIsAuthed] = useState(false);
+
+  // P1.C PR #3.1 — check auth on mount + migrate localStorage mistakes
+  // on first auth (idempotent; migrateLocalToSupabase sets a flag).
+  useEffect(() => {
+    let cancelled = false;
+    const checkAuth = async () => {
+      try {
+        const supabase = createBrowserSupabaseClient();
+        const { data } = await supabase.auth.getUser();
+        if (cancelled) return;
+        const authed = !!data.user;
+        setIsAuthed(authed);
+        if (authed) {
+          await migrateLocalToSupabase();
+        }
+      } catch (err) {
+        // Silent failure — fall back to localStorage for the rest of
+        // this session. The next mount will retry.
+        console.warn("[speaking] auth check failed:", err);
+      }
+    };
+    checkAuth();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Phase 4: save each generated feedback's mistakes to localStorage so
   // /today can show "最近弱点" as a live history instead of hardcoded text.
+  // P1.C PR #3.1 — also call MistakeStorage.record() once per grammar /
+  // vocabulary item so the structured storage layer (Supabase when authed,
+  // localStorage otherwise) gets the same data. The legacy localStorage
+  // write is preserved for backward compat with the existing /today view.
   useEffect(() => {
     if (!feedback) return;
     if (typeof window === "undefined") return;
@@ -106,15 +147,47 @@ export default function SpeakingPage() {
       grammar: string[];
       vocabulary: string[];
     }>;
+    const entryId = Date.now().toString();
+    const entryTs = Date.now();
     history.push({
-      id: Date.now().toString(),
-      timestamp: Date.now(),
+      id: entryId,
+      timestamp: entryTs,
       language: feedbackLanguage,
       grammar: feedback.grammar,
       vocabulary: feedback.vocabulary,
     });
     window.localStorage.setItem(KEY, JSON.stringify(history));
-  }, [feedback, feedbackLanguage]);
+
+    // P1.C PR #3.1 — structured MistakeStorage writes. The speaking
+    // feedback API returns free-text grammar[] / vocabulary[] (no
+    // structured issues[]), so we map each string to a Mistake record
+    // using the most generic IssueType ("missing-word") and conservative
+    // severity ("minor"). The hint carries the original feedback text so
+    // /today's review queue can show what was flagged.
+    const storage = createMistakeStorage(isAuthed);
+    const sessionId = `speaking-${entryId}`;
+    const sentenceTarget = "(speaking session)";
+    const items: Array<{ kind: "grammar" | "vocab"; text: string }> = [
+      ...feedback.grammar.map((g) => ({ kind: "grammar" as const, text: g })),
+      ...feedback.vocabulary.map((v) => ({ kind: "vocab" as const, text: v })),
+    ];
+    for (const item of items) {
+      // Fire-and-forget — storage.record() is async but the legacy
+      // localStorage write above already kept the existing /today view
+      // working. Failures are logged but never block the UI.
+      storage
+        .record({
+          sentenceId: sessionId,
+          sentenceTarget,
+          patternType: "missing-word",
+          severity: "minor",
+          hint: `[${item.kind}] ${item.text}`,
+        })
+        .catch((err) => {
+          console.warn("[speaking] MistakeStorage.record failed:", err);
+        });
+    }
+  }, [feedback, feedbackLanguage, isAuthed]);
 
   // Phase 2: voice input via Web Speech API
   const [recognizing, setRecognizing] = useState(false);
