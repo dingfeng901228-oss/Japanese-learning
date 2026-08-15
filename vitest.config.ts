@@ -47,7 +47,10 @@ export default defineConfig({
     },
   },
   esbuild: {
-    // @ts-ignore vitest 3.2.7 ESBuildOptions type missing jsx (added in later esbuild versions; runtime supports it)
+    // JSX transform for component tests (e.g. components/ui/tooltip.tsx).
+    // Vitest uses esbuild internally; `automatic` matches Next.js's
+    // React 17+ transform so client components can use `<X />` without
+    // an explicit `import React from "react"`.
     jsx: "automatic",
   },
   resolve: {
