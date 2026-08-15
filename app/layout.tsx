@@ -3,6 +3,19 @@ import "./globals.css";
 import { createClient } from "@/lib/supabase/server";
 import { UserMenu } from "@/components/UserMenu";
 
+// Force all routes through this layout to be server-rendered at request
+// time. The root layout calls supabase.auth.getUser() which reads session
+// cookies via @supabase/ssr createServerClient() — that's a dynamic op
+// that fails at build-time static prerendering (Next.js throws
+// DYNAMIC_SERVER_USAGE for any route that touches cookies during
+// prerender). Adding this here cascades the dynamic flag to every child
+// route (/, /login, /today, /listening, /speaking, /progress,
+// /auth/callback, etc.).
+//
+// Trade-off: no static optimization for these routes, but they're all
+// auth-gated anyway, so SSR is the right rendering mode.
+export const dynamic = "force-dynamic";
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
