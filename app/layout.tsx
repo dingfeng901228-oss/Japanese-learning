@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Link from "next/link";
 import "./globals.css";
 import { createClient } from "@/lib/supabase/server";
 import { UserMenu } from "@/components/UserMenu";
@@ -8,12 +9,8 @@ import { UserMenu } from "@/components/UserMenu";
 // cookies via @supabase/ssr createServerClient() — that's a dynamic op
 // that fails at build-time static prerendering (Next.js throws
 // DYNAMIC_SERVER_USAGE for any route that touches cookies during
-// prerender). Adding this here cascades the dynamic flag to every child
-// route (/, /login, /today, /listening, /speaking, /progress,
-// /auth/callback, etc.).
-//
-// Trade-off: no static optimization for these routes, but they're all
-// auth-gated anyway, so SSR is the right rendering mode.
+// prerender). Cascades to every child route.
+// (Originally added in cf4dd63 to fix Vercel build failures.)
 export const dynamic = "force-dynamic";
 
 export const viewport: Viewport = {
@@ -89,7 +86,39 @@ export default async function RootLayout({
       <body className="antialiased min-h-screen bg-gradient-to-b from-white to-gray-50 text-gray-900">
         {userInfo && (
           <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-gray-200">
-            <div className="max-w-3xl mx-auto px-6 py-3 flex justify-end">
+            <div className="max-w-3xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
+              <nav className="flex items-center gap-1 text-sm">
+                <Link
+                  href="/today"
+                  className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  今日
+                </Link>
+                <Link
+                  href="/listening"
+                  className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  听力
+                </Link>
+                <Link
+                  href="/speaking"
+                  className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  口语
+                </Link>
+                <Link
+                  href="/vocabulary"
+                  className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  收藏
+                </Link>
+                <Link
+                  href="/progress"
+                  className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  进度
+                </Link>
+              </nav>
               <UserMenu
                 email={userInfo.email}
                 displayName={userInfo.displayName}

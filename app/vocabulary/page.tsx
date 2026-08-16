@@ -1,0 +1,177 @@
+// /vocabulary — My Collection list page.
+// Server Component that reads searchParams (q / type / sort) and renders
+// the user's vocabulary_items via lib/vocabulary.ts.
+
+import Link from "next/link";
+import {
+  listVocabularyItems,
+  type VocabularyType,
+  type VocabularySort,
+} from "@/lib/vocabulary";
+
+export const dynamic = "force-dynamic";
+
+type SearchParams = {
+  q?: string;
+  type?: string;
+  sort?: string;
+};
+
+function asType(v: string | undefined): VocabularyType | undefined {
+  if (v === "word" || v === "phrase" || v === "grammar" || v === "sentence") {
+    return v;
+  }
+  return undefined;
+}
+
+function asSort(v: string | undefined): VocabularySort {
+  if (v === "oldest" || v === "word") return v;
+  return "newest";
+}
+
+const TYPE_LABEL: Record<VocabularyType, string> = {
+  word: "单词",
+  phrase: "词组",
+  grammar: "文法",
+  sentence: "句型",
+};
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+export default async function VocabularyListPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const sp = await searchParams;
+  const q = (sp.q ?? "").trim();
+  const type = asType(sp.type);
+  const sort = asSort(sp.sort);
+
+  const items = await listVocabularyItems({
+    search: q || undefined,
+    type,
+    sort,
+  });
+
+  return (
+    <main className="min-h-screen px-6 py-12 max-w-3xl mx-auto">
+      <header className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <Link
+            href="/today"
+            className="text-sm text-gray-500 hover:text-gray-900"
+          >
+            ← 返回
+          </Link>
+          <Link
+            href="/vocabulary/new"
+            className="text-sm text-gray-700 hover:text-gray-900 ml-auto px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+          >
+            + 手动添加
+          </Link>
+        </div>
+        <h1 className="text-3xl font-bold mt-2">我的收藏</h1>
+        <p className="text-gray-600 mt-2">
+          {items.length === 0
+            ? q || type
+              ? "没有匹配的收藏"
+              : "还没有收藏，先添加一个吧"
+            : `共 ${items.length} 项`}
+        </p>
+      </header>
+
+      <form method="get" className="mb-8 flex gap-2 flex-wrap">
+        <input
+          type="text"
+          name="q"
+          defaultValue={q}
+          placeholder="搜索 单词 / 假名 / 中文..."
+          className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
+        />
+        <select
+          name="type"
+          defaultValue={type ?? ""}
+          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
+        >
+          <option value="">全部类型</option>
+          <option value="word">单词</option>
+          <option value="phrase">词组</option>
+          <option value="grammar">文法</option>
+          <option value="sentence">句型</option>
+        </select>
+        <select
+          name="sort"
+          defaultValue={sort}
+          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
+        >
+          <option value="newest">最新收藏</option>
+          <option value="oldest">最早收藏</option>
+          <option value="word">按 A-Z</option>
+        </select>
+        <button
+          type="submit"
+          className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+        >
+          搜索
+        </button>
+      </form>
+
+      {items.length === 0 ? (
+        <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center">
+          <p className="text-gray-500 mb-4">
+            {q || type ? "换个关键词试试？" : "还没有任何收藏"}
+          </p>
+          <Link
+            href="/vocabulary/new"
+            className="inline-block px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+          >
+            + 添加第一个收藏
+          </Link>
+        </div>
+      ) : (
+        <ul className="grid gap-3">
+          {items.map((item) => (
+            <li key={item.id}>
+              <Link
+                href={`/vocabulary/${item.id}`}
+                className="block bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-400 hover:shadow-sm transition-all"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span className="text-lg font-semibold text-gray-900 truncate">
+                        {item.word}
+                      </span>
+                      {item.reading && (
+                        <span className="text-sm text-gray-500">
+                          {item.reading}
+                        </span>
+                      )}
+                      <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">
+                        {TYPE_LABEL[item.type]}
+                      </span>
+                      {item.level && (
+                        <span className="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-600">
+                          {item.level}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-600">{item.meaning}</div>
+                  </div>
+                  <div className="text-xs text-gray-400 whitespace-nowrap">
+                    {formatDate(item.created_at)}
+                  </div>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </main>
+  );
+}
