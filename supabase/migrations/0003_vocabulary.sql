@@ -3,7 +3,21 @@
 -- Per docs/0817requirement.docx §24 (数据库设计), §25 (用户数据隔离).
 --
 -- Run AFTER 0001_init.sql + 0002_rls.sql.
--- Reuses the public.set_updated_at() trigger function from 0001_init.sql.
+-- Defensive: re-creates public.set_updated_at() trigger function in case
+-- 0001_init.sql was never applied or the function was dropped later.
+-- CREATE OR REPLACE is idempotent — if the function already exists with
+-- the same definition, no-op.
+
+-- ==========================================================================
+-- Defensive: re-create the updated_at trigger function (idempotent).
+-- ==========================================================================
+create or replace function public.set_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
 
 -- ==========================================================================
 -- vocabulary_items
