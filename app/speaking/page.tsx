@@ -2,11 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { createClient as createBrowserSupabaseClient } from "@/lib/supabase/client";
-import {
-  createMistakeStorage,
-  migrateLocalToSupabase,
-} from "@/lib/mistake-storage";
+import { saveMistakeToVocabAction } from "./actions";
 
 type Turn = { role: "user" | "assistant"; content: string };
 
@@ -96,44 +92,8 @@ export default function SpeakingPage() {
   // toggle is removed — always render feedback in Chinese.
   const [feedbackLanguage] = useState<FeedbackLanguage>("zh");
 
-  // P1.C PR #3.1 — auth state for MistakeStorage. Defaults to false so
-  // the very first feedback (before the auth check resolves) falls back
-  // to localStorage. The check below upgrades to Supabase once the user
-  // is confirmed and triggers a one-time migration.
-  const [isAuthed, setIsAuthed] = useState(false);
-
-  // P1.C PR #3.1 — check auth on mount + migrate localStorage mistakes
-  // on first auth (idempotent; migrateLocalToSupabase sets a flag).
-  useEffect(() => {
-    let cancelled = false;
-    const checkAuth = async () => {
-      try {
-        const supabase = createBrowserSupabaseClient();
-        const { data } = await supabase.auth.getUser();
-        if (cancelled) return;
-        const authed = !!data.user;
-        setIsAuthed(authed);
-        if (authed) {
-          await migrateLocalToSupabase();
-        }
-      } catch (err) {
-        // Silent failure — fall back to localStorage for the rest of
-        // this session. The next mount will retry.
-        console.warn("[speaking] auth check failed:", err);
-      }
-    };
-    checkAuth();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   // Phase 4: save each generated feedback's mistakes to localStorage so
   // /today can show "最近弱点" as a live history instead of hardcoded text.
-  // P1.C PR #3.1 — also call MistakeStorage.record() once per grammar /
-  // vocabulary item so the structured storage layer (Supabase when authed,
-  // localStorage otherwise) gets the same data. The legacy localStorage
-  // write is preserved for backward compat with the existing /today view.
   useEffect(() => {
     if (!feedback) return;
     if (typeof window === "undefined") return;
@@ -147,47 +107,15 @@ export default function SpeakingPage() {
       grammar: string[];
       vocabulary: string[];
     }>;
-    const entryId = Date.now().toString();
-    const entryTs = Date.now();
     history.push({
-      id: entryId,
-      timestamp: entryTs,
+      id: Date.now().toString(),
+      timestamp: Date.now(),
       language: feedbackLanguage,
       grammar: feedback.grammar,
       vocabulary: feedback.vocabulary,
     });
     window.localStorage.setItem(KEY, JSON.stringify(history));
-
-    // P1.C PR #3.1 — structured MistakeStorage writes. The speaking
-    // feedback API returns free-text grammar[] / vocabulary[] (no
-    // structured issues[]), so we map each string to a Mistake record
-    // using the most generic IssueType ("missing-word") and conservative
-    // severity ("minor"). The hint carries the original feedback text so
-    // /today's review queue can show what was flagged.
-    const storage = createMistakeStorage(isAuthed);
-    const sessionId = `speaking-${entryId}`;
-    const sentenceTarget = "(speaking session)";
-    const items: Array<{ kind: "grammar" | "vocab"; text: string }> = [
-      ...feedback.grammar.map((g) => ({ kind: "grammar" as const, text: g })),
-      ...feedback.vocabulary.map((v) => ({ kind: "vocab" as const, text: v })),
-    ];
-    for (const item of items) {
-      // Fire-and-forget — storage.record() is async but the legacy
-      // localStorage write above already kept the existing /today view
-      // working. Failures are logged but never block the UI.
-      storage
-        .record({
-          sentenceId: sessionId,
-          sentenceTarget,
-          patternType: "missing-word",
-          severity: "minor",
-          hint: `[${item.kind}] ${item.text}`,
-        })
-        .catch((err) => {
-          console.warn("[speaking] MistakeStorage.record failed:", err);
-        });
-    }
-  }, [feedback, feedbackLanguage, isAuthed]);
+  }, [feedback, feedbackLanguage]);
 
   // Phase 2: voice input via Web Speech API
   const [recognizing, setRecognizing] = useState(false);
@@ -196,6 +124,37 @@ export default function SpeakingPage() {
   // Phase 6 MVP: TTS via Web Speech API — track which AI message is
   // currently being spoken so the button can show a stop state.
   const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
+
+  // Phase 1 enhancement: per-vocab-suggestion save state. `savingIdx` is
+  // the index currently in flight (button shows "..." + disabled);
+  // `savedSet` collects indices already saved this session (button shows
+  // "✓ 已保存" + disabled). Resets when "开始新对话" runs.
+  const [savingIdx, setSavingIdx] = useState<number | null>(null);
+  const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
+
+  async function handleSaveMistake(
+    idx: number,
+    word: string,
+    type: "word" | "phrase" | "grammar" | "sentence" = "word"
+  ) {
+    if (savedSet.has(idx) || savingIdx !== null) return;
+    setSavingIdx(idx);
+    try {
+      const fd = new FormData();
+      fd.set("word", word);
+      fd.set("type", type);
+      await saveMistakeToVocabAction(fd);
+      setSavedSet((prev) => {
+        const next = new Set(prev);
+        next.add(idx);
+        return next;
+      });
+    } catch (err) {
+      console.error("handleSaveMistake failed:", err);
+    } finally {
+      setSavingIdx(null);
+    }
+  }
 
   const labels = FEEDBACK_LABELS[feedbackLanguage];
 
@@ -261,6 +220,8 @@ export default function SpeakingPage() {
     setInput("");
     setError(null);
     setFeedback(null);
+    setSavedSet(new Set());
+    setSavingIdx(null);
   }
 
   function startRecognition() {
@@ -507,11 +468,46 @@ export default function SpeakingPage() {
 
               {feedback.vocabulary.length > 0 && (
                 <FeedbackBlock label={labels.vocabulary}>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {feedback.vocabulary.map((v, i) => (
-                      <li key={i}>{v}</li>
-                    ))}
+                  <ul className="space-y-2">
+                    {feedback.vocabulary.map((v, i) => {
+                      const saved = savedSet.has(i);
+                      const saving = savingIdx === i;
+                      return (
+                        <li
+                          key={i}
+                          className="flex items-center justify-between gap-3"
+                        >
+                          <span className="flex-1 text-sm text-gray-800">
+                            {v}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleSaveMistake(i, v)}
+                            disabled={saved || saving}
+                            aria-label={
+                              saved ? "已保存到词汇本" : "保存到词汇本"
+                            }
+                            className={`flex-shrink-0 px-3 py-1 text-xs rounded-lg transition-colors disabled:cursor-not-allowed ${
+                              saved
+                                ? "bg-green-50 text-green-700"
+                                : saving
+                                  ? "bg-gray-100 text-gray-500"
+                                  : "bg-gray-900 text-white hover:bg-gray-800"
+                            }`}
+                          >
+                            {saved
+                              ? "✓ 已保存"
+                              : saving
+                                ? "保存中…"
+                                : "📥 保存"}
+                          </button>
+                        </li>
+                      );
+                    })}
                   </ul>
+                  <p className="text-xs text-gray-400 mt-3">
+                    保存后 AI 自动补全读音/中文/JLPT/词性，生成例句，加入今日复习队列。
+                  </p>
                 </FeedbackBlock>
               )}
 
