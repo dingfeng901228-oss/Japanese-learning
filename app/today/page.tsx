@@ -1,7 +1,29 @@
 "use client";
 
+// /today — daily training dashboard.
+//
+// Phase 1.5: per Frank #6171, the Today's Goal section now has:
+//   1. End-of-day countdown ("距离今天结束还有 X 小时 Y 分钟")
+//   2. Completion check-in progress bar (X / 30 分钟)
+//   3. ✓ buttons next to each training item so the user can "打卡"
+// The state is date-keyed in localStorage (resets at midnight).
+//
+// The pre-existing localStorage-backed sections (listening / shadow /
+// recent recordings / weakness profile / empty state) are unchanged.
+
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import {
+  TRAINING_ITEMS,
+  TOTAL_TARGET_MINUTES,
+  loadDayProgress,
+  saveDayProgress,
+  toggleItem as toggleItemStorage,
+  getTimeUntilMidnight,
+  type DayProgress,
+  type CountdownParts,
+  type TrainingItemId,
+} from "@/lib/today-stats";
 
 type MistakeEntry = {
   id: string;
@@ -26,7 +48,7 @@ type AggregatedMistake = {
 };
 
 const HISTORY_KEY = "japaneseLearning.mistakeHistory";
-const SHADOW_HISTORY_KEY = "japanese:shadow-history";
+const SHADOW_HISTORY_KEY = "japaneseLearning.shadowHistory";
 
 const SHADOW_CATEGORY_LABELS: Record<
   string,
@@ -39,9 +61,6 @@ const SHADOW_CATEGORY_LABELS: Record<
   greetings: { emoji: "👋", label: "寒暄" },
 };
 
-// Phase 9: Real-World Missions (hardcoded list per category).
-// Each mission is a real-world task that connects AI practice to actual
-// Japanese usage. Users can mark as "done" (stored in localStorage).
 type RealWorldMission = {
   id: string;
   categoryId: string;
@@ -51,7 +70,6 @@ type RealWorldMission = {
 };
 
 const REAL_WORLD_MISSIONS: RealWorldMission[] = [
-  // 自我介绍
   {
     id: "m-self-intro-1",
     categoryId: "self-intro",
@@ -67,7 +85,6 @@ const REAL_WORLD_MISSIONS: RealWorldMission[] = [
     title: "向朋友介绍自己",
     description: "用日语向朋友介绍自己（姓名、职业、爱好）。",
   },
-  // 餐厅
   {
     id: "m-restaurant-1",
     categoryId: "restaurant",
@@ -82,7 +99,6 @@ const REAL_WORLD_MISSIONS: RealWorldMission[] = [
     title: "用日语问推荐",
     description: "用日语问服务员推荐什么菜（'おすすめは何ですか'）。",
   },
-  // 问路
   {
     id: "m-directions-1",
     categoryId: "directions",
@@ -98,7 +114,6 @@ const REAL_WORLD_MISSIONS: RealWorldMission[] = [
     description:
       "用日语告诉别人怎么走（'まっすぐ行って、右に曲がって'）。",
   },
-  // 数字时间
   {
     id: "m-numbers-time-1",
     categoryId: "numbers-time",
@@ -113,7 +128,6 @@ const REAL_WORLD_MISSIONS: RealWorldMission[] = [
     title: "用日语报日期",
     description: "用日语报出今天的日期（'今日は何日ですか' + 日期）。",
   },
-  // 寒暄
   {
     id: "m-greetings-1",
     categoryId: "greetings",
@@ -146,17 +160,12 @@ function formatDate(ts: number): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-// Phase 1 enhancement #3: compact MM-DD HH:MM format for timeline display.
 function formatMistakeTime(ts: number): string {
   const d = new Date(ts);
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-// Phase 4 follow-up: group identical mistakes across sessions so the
-// learner can see which patterns keep coming back. Normalize via
-// lowercase + trim + collapse whitespace, dedupe per (type, normalized),
-// count occurrences, sort by count desc then by last-seen desc.
 function aggregateMistakes(
   history: MistakeEntry[]
 ): AggregatedMistake[] {
@@ -206,8 +215,6 @@ function aggregateMistakes(
     .slice(0, 10);
 }
 
-// Phase 11: time-of-day greeting — computed client-side from current hour
-// to avoid hydration mismatch (initial state is empty string, set in useEffect).
 function getTimeBasedGreeting(): string {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) return "Good morning";
@@ -215,10 +222,6 @@ function getTimeBasedGreeting(): string {
   return "Good evening";
 }
 
-// Phase 11: consecutive training days from shadow history timestamps.
-// Counts unique training days (any shadow recording = training activity)
-// going back from today. If today has no training, allows yesterday as the
-// most recent day so the streak isn't broken before the user trains today.
 function computeStreak(history: { timestamp: number }[]): number {
   if (history.length === 0) return 0;
 
@@ -248,7 +251,6 @@ function computeStreak(history: { timestamp: number }[]): number {
 export default function TodayPage() {
   const [history, setHistory] = useState<MistakeEntry[]>([]);
   const [shadowHistory, setShadowHistory] = useState<ShadowHistoryEntry[]>([]);
-  // Phase 9: mission completions (missionId → completion timestamp).
   const [missionCompletions, setMissionCompletions] = useState<
     Record<string, number>
   >({});
@@ -264,7 +266,6 @@ export default function TodayPage() {
     }
   }, []);
 
-  // Phase 4 enhancement: load Shadow history (same key as /listening).
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
@@ -277,11 +278,37 @@ export default function TodayPage() {
     }
   }, []);
 
-  // Phase 11: time-based greeting — set on mount to avoid hydration mismatch.
+  // Phase 1.5: time-of-day greeting, set on mount to avoid hydration mismatch.
   const [greeting, setGreeting] = useState<string>("");
   useEffect(() => {
     setGreeting(getTimeBasedGreeting());
   }, []);
+
+  // Phase 1.5: end-of-day countdown (per Frank #6171).
+  const [countdown, setCountdown] = useState<CountdownParts>(() =>
+    getTimeUntilMidnight()
+  );
+  useEffect(() => {
+    setCountdown(getTimeUntilMidnight());
+    const id = window.setInterval(() => {
+      setCountdown(getTimeUntilMidnight());
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  // Phase 1.5: today's training check-in progress (per Frank #6171).
+  const [dayProgress, setDayProgress] = useState<DayProgress>(() => ({
+    date: "",
+    completed: {},
+    totalMinutes: 0,
+  }));
+  useEffect(() => {
+    setDayProgress(loadDayProgress());
+  }, []);
+  function handleToggleItem(id: TrainingItemId) {
+    const next = toggleItemStorage(id);
+    setDayProgress(next);
+  }
 
   // Phase 11: real consecutive training days from shadow history timestamps.
   const streakDays = useMemo(
@@ -296,7 +323,6 @@ export default function TodayPage() {
     setHistory([]);
   }
 
-  // Flatten grammar + vocabulary from every session, tag with type + ts
   const allItems: MistakeItem[] = history.flatMap((m) => [
     ...m.grammar.map((g) => ({
       type: "grammar" as const,
@@ -312,10 +338,6 @@ export default function TodayPage() {
     })),
   ]);
 
-  // Phase 4 enhancement: aggregate Shadow history to find weak sentences
-  // (accuracy < 80). Dedupe by sentenceId, keep the lowest accuracy, sort
-  // ascending by accuracy, take the worst 5. Gives the user concrete
-  // actionable items to re-practice.
   const weakShadowSentences = (() => {
     const WEAK_THRESHOLD = 80;
     const map = new Map<
@@ -344,8 +366,6 @@ export default function TodayPage() {
       .slice(0, 5);
   })();
 
-  // Phase 7 enhancement: find user's weakest category from Shadow history
-  // (lowest avg accuracy, min 2 samples). Used to recommend "今日重点".
   const weakestCategory = (() => {
     const MIN_SAMPLES = 2;
     const byCat: Record<string, { sum: number; count: number }> = {};
@@ -369,12 +389,10 @@ export default function TodayPage() {
     return worst;
   })();
 
-  // Sort newest first, take latest 10
   const recentItems = allItems
     .sort((a, b) => b.ts - a.ts)
     .slice(0, 10);
 
-  // Aggregate identical mistakes across sessions (Phase 4 follow-up)
   const topMistakes = aggregateMistakes(history);
 
   const sessionCount = history.length;
@@ -406,53 +424,96 @@ export default function TodayPage() {
               : "开始训练，记录你的连续天数"}
           </span>
         </p>
+
+        {/* Phase 1.5: end-of-day countdown (per Frank #6171). */}
+        <p
+          className="mt-3 text-sm text-gray-500 tabular-nums"
+          aria-live="polite"
+        >
+          � 距离今天结束还有{" "}
+          <span className="font-semibold text-gray-700">
+            {countdown.hours.toString().padStart(2, "0")}:
+            {countdown.minutes.toString().padStart(2, "0")}:
+            {countdown.seconds.toString().padStart(2, "0")}
+          </span>
+        </p>
       </header>
 
       <div className="bg-white border border-gray-200 rounded-2xl p-8 mb-8">
         <div className="text-sm text-gray-500 mb-2">Today's Goal</div>
-        <h2 className="text-2xl font-bold mb-8">约 30 分钟</h2>
+        <h2 className="text-2xl font-bold mb-2">约 30 分钟</h2>
+
+        {/* Phase 1.5: completion check-in progress bar (per Frank #6171).
+            Fills as the user ticks the ✓ buttons next to each item. */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-1 text-xs">
+            <span className="text-gray-500">
+              完成 {dayProgress.totalMinutes} / {TOTAL_TARGET_MINUTES} 分钟
+            </span>
+            <span className="text-gray-500 tabular-nums">
+              {Math.round(
+                (dayProgress.totalMinutes / TOTAL_TARGET_MINUTES) * 100
+              )}
+              %
+            </span>
+          </div>
+          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className={`h-full transition-all ${
+                dayProgress.totalMinutes >= TOTAL_TARGET_MINUTES
+                  ? "bg-green-500"
+                  : "bg-gray-900"
+              }`}
+              style={{
+                width: `${Math.min(
+                  100,
+                  (dayProgress.totalMinutes / TOTAL_TARGET_MINUTES) * 100
+                )}%`,
+              }}
+              role="progressbar"
+              aria-valuenow={dayProgress.totalMinutes}
+              aria-valuemin={0}
+              aria-valuemax={TOTAL_TARGET_MINUTES}
+            />
+          </div>
+        </div>
 
         <ul className="space-y-3">
-          <li>
-            <Link
-              href="/listening"
-              className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <span>🎧 听力</span>
-              <span className="text-sm text-gray-500">10 分钟 →</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/speaking"
-              className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <span>🎤 口语</span>
-              <span className="text-sm text-gray-500">10 分钟 →</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/listening?mode=shadow"
-              className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <span>🔁 Shadowing</span>
-              <span className="text-sm text-gray-500">5 分钟 →</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/review"
-              className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <span>📝 复习</span>
-              <span className="text-sm text-gray-500">5 分钟 →</span>
-            </Link>
-          </li>
+          {TRAINING_ITEMS.map((item) => {
+            const done = !!dayProgress.completed[item.id];
+            return (
+              <li key={item.id} className="flex items-center gap-2">
+                <Link
+                  href={item.href}
+                  className="flex-1 flex items-center justify-between py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <span className={done ? "text-gray-400 line-through" : ""}>
+                    {item.emoji} {item.label}
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    {item.minutes} 分钟 →
+                  </span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => handleToggleItem(item.id)}
+                  aria-label={done ? `取消打卡 ${item.label}` : `打卡 ${item.label}`}
+                  aria-pressed={done}
+                  className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg transition-colors ${
+                    done
+                      ? "bg-green-500 text-white hover:bg-green-600"
+                      : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                  }`}
+                >
+                  {done ? "✓" : "○"}
+                </button>
+              </li>
+            );
+          })}
         </ul>
 
-        <p className="text-xs text-gray-400 text-center mt-8">
-          点任意一项进入对应训练模式。
+        <p className="text-xs text-gray-400 text-center mt-6">
+          点左侧进入训练，完成后点右侧 ○ 打卡（自动累加时间到进度条）。
         </p>
       </div>
 
