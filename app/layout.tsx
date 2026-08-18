@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import { Inter, Noto_Sans_JP, Noto_Sans_SC } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 import { createClient } from "@/lib/supabase/server";
 import { UserMenu } from "@/components/UserMenu";
+import { MobileNav } from "@/components/dashboard/MobileNav";
 
 // Force all routes through this layout to be server-rendered at request
 // time. The root layout calls supabase.auth.getUser() which reads session
@@ -13,6 +15,29 @@ import { UserMenu } from "@/components/UserMenu";
 // (Originally added in cf4dd63 to fix Vercel build failures.)
 export const dynamic = "force-dynamic";
 
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const notoJP = Noto_Sans_JP({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  variable: "--font-noto-jp",
+});
+
+const notoSC = Noto_Sans_SC({
+  // Noto Sans SC only exposes cyrillic / latin / latin-ext / vietnamese
+  // subsets on Google Fonts — the CJK glyphs ride along in "latin".
+  // (next/font hard-requires a subset when preloading is enabled.)
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  variable: "--font-noto-sc",
+});
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -20,20 +45,30 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "FastStudy 2.0 — AI 日语口语教练",
+  title: "FastStudy — 日语学习中心",
   description: "Don't just study Japanese. Use Japanese.",
-  applicationName: "FastStudy 2.0",
+  applicationName: "FastStudy",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "FastStudy 2.0",
+    title: "FastStudy",
   },
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
   },
 };
+
+const NAV_ITEMS = [
+  { label: "今日", href: "/" },
+  { label: "学习", href: "/today" },
+  { label: "听力", href: "/listening" },
+  { label: "口语", href: "/speaking" },
+  { label: "收藏", href: "/vocabulary" },
+  { label: "复习", href: "/review" },
+  { label: "进度", href: "/progress" },
+];
 
 // Server Component: pulls the current Supabase user out of the session
 // cookies (set by middleware.ts on every request) and passes the relevant
@@ -82,54 +117,36 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="zh-CN">
-      <body className="antialiased min-h-screen bg-gradient-to-b from-white to-gray-50 text-gray-900">
+    <html
+      lang="zh-CN"
+      className={`${inter.variable} ${notoJP.variable} ${notoSC.variable}`}
+    >
+      <body className="font-sans antialiased min-h-screen bg-white text-ink">
         {userInfo && (
-          <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-gray-200">
-            <div className="max-w-3xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
-              <nav className="flex items-center gap-1 text-sm">
-                <Link
-                  href="/today"
-                  className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                  今日
-                </Link>
-                <Link
-                  href="/listening"
-                  className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                  听力
-                </Link>
-                <Link
-                  href="/speaking"
-                  className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                  口语
-                </Link>
-                <Link
-                  href="/vocabulary"
-                  className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                  收藏
-                </Link>
-                <Link
-                  href="/review"
-                  className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                  复习
-                </Link>
-                <Link
-                  href="/progress"
-                  className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                  进度
-                </Link>
+          <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-line">
+            <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
+              <Link href="/" className="font-bold text-base text-ink">
+                FastStudy
+              </Link>
+              <nav className="hidden md:flex items-center gap-1 text-[15px]">
+                {NAV_ITEMS.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
               </nav>
-              <UserMenu
-                email={userInfo.email}
-                displayName={userInfo.displayName}
-                avatarUrl={userInfo.avatarUrl}
-              />
+              <div className="hidden md:block">
+                <UserMenu
+                  email={userInfo.email}
+                  displayName={userInfo.displayName}
+                  avatarUrl={userInfo.avatarUrl}
+                />
+              </div>
+              <MobileNav items={NAV_ITEMS} userInfo={userInfo} />
             </div>
           </header>
         )}
