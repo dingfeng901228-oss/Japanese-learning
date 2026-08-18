@@ -1,22 +1,18 @@
 "use client";
 
-// /vocabulary/new — manual add form (Phase 2).
-// AI-generated examples / rephrase / user-edit come in Phase 3.
-
+// /vocabulary/new — quick add form. Only "word / phrase" is required;
+// AI auto-generates reading, meaning, JLPT level, and part of speech
+// behind the scenes (lib/vocabulary/enrich.ts → gpt-4o-mini).
+//
+// The detail page at /vocabulary/[id] shows the AI-filled fields; if
+// any look wrong, future Phase 3+ work will let users edit them
+// in-place.
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useFormStatus } from "react-dom";
 import { createVocabularyItemAction } from "../actions";
 
 type VocabularyType = "word" | "phrase" | "grammar" | "sentence";
-
-type SearchParams = {
-  error?: string;
-  word?: string;
-  reading?: string;
-  type?: string;
-  level?: string;
-  part_of_speech?: string;
-};
 
 const TYPE_OPTIONS: { value: VocabularyType; label: string }[] = [
   { value: "word", label: "单词" },
@@ -32,40 +28,32 @@ const TYPE_PLACEHOLDER: Record<VocabularyType, string> = {
   sentence: "例：「毎日練習して、〜」",
 };
 
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {pending ? "AI 补全中…" : "保存"}
+    </button>
+  );
+}
+
 export default function NewVocabularyPage({
   searchParams,
 }: {
-  searchParams: Promise<SearchParams>;
+  searchParams: Promise<{ error?: string }>;
 }) {
   const [type, setType] = useState<VocabularyType>("word");
   const [error, setError] = useState<string>("");
-  const [prefill, setPrefill] = useState<{
-    word: string;
-    reading: string;
-    level: string;
-    partOfSpeech: string;
-  }>({ word: "", reading: "", level: "", partOfSpeech: "" });
 
-  // Pull validation-error prefill from query params.
-  // searchParams is a Promise in Next.js 15 — resolve it in useEffect.
   useEffect(() => {
     let cancelled = false;
     searchParams.then((sp) => {
       if (cancelled) return;
-      setError(sp.error === "missing" ? "单词 / 词组 和中文意思都不能为空" : "");
-      setPrefill({
-        word: sp.word ?? "",
-        reading: sp.reading ?? "",
-        level: sp.level ?? "",
-        partOfSpeech: sp.part_of_speech ?? "",
-      });
-      if (
-        sp.type === "phrase" ||
-        sp.type === "grammar" ||
-        sp.type === "sentence"
-      ) {
-        setType(sp.type);
-      }
+      setError(sp.error === "missing_word" ? "单词 / 词组不能为空" : "");
     });
     return () => {
       cancelled = true;
@@ -83,7 +71,7 @@ export default function NewVocabularyPage({
         </Link>
         <h1 className="text-3xl font-bold mt-4">添加新收藏</h1>
         <p className="text-gray-600 mt-2">
-          手动添加单词或词组。后续阶段会接 AI 自动生成例句。
+          只输入单词 / 词组，其他字段（中文意思、假名读音、JLPT 等级、词性）由 AI 自动生成。
         </p>
       </header>
 
@@ -101,7 +89,11 @@ export default function NewVocabularyPage({
           <legend className="block text-sm font-medium text-gray-700 mb-2">
             类型
           </legend>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2" role="radiogroup" aria-label="类型">
+          <div
+            className="grid grid-cols-2 sm:grid-cols-4 gap-2"
+            role="radiogroup"
+            aria-label="类型"
+          >
             {TYPE_OPTIONS.map((opt) => (
               <button
                 key={opt.value}
@@ -137,93 +129,13 @@ export default function NewVocabularyPage({
             type="text"
             name="word"
             required
-            defaultValue={prefill.word}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
             placeholder={TYPE_PLACEHOLDER[type]}
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="vocab-reading"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            假名 / 读音（可选）
-          </label>
-          <input
-            id="vocab-reading"
-            type="text"
-            name="reading"
-            defaultValue={prefill.reading}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
-            placeholder="例：みにつける"
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="vocab-meaning"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            中文意思 *
-          </label>
-          <input
-            id="vocab-meaning"
-            type="text"
-            name="meaning"
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
-            placeholder="例：掌握、学会"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="vocab-level"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              JLPT 等级（可选）
-            </label>
-            <select
-              id="vocab-level"
-              name="level"
-              defaultValue={prefill.level}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
-            >
-              <option value="">不指定</option>
-              <option value="N5">N5</option>
-              <option value="N4">N4</option>
-              <option value="N3">N3</option>
-              <option value="N2">N2</option>
-              <option value="N1">N1</option>
-            </select>
-          </div>
-          <div>
-            <label
-              htmlFor="vocab-pos"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              词性（可选）
-            </label>
-            <input
-              id="vocab-pos"
-              type="text"
-              name="part_of_speech"
-              defaultValue={prefill.partOfSpeech}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
-              placeholder="例：他动词"
-            />
-          </div>
-        </div>
-
         <div className="flex gap-3 pt-4">
-          <button
-            type="submit"
-            className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            保存
-          </button>
+          <SubmitButton />
           <Link
             href="/vocabulary"
             className="px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -231,6 +143,10 @@ export default function NewVocabularyPage({
             取消
           </Link>
         </div>
+
+        <p className="text-xs text-gray-400 pt-2">
+          保存后 AI 用 gpt-4o-mini 自动补全，跳转到详情页即可看到全部内容（约 1-3 秒）。
+        </p>
       </form>
     </main>
   );

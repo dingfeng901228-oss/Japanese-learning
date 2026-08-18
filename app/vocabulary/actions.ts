@@ -21,26 +21,23 @@ function parseType(raw: FormDataEntryValue | null): VocabularyType {
 export async function createVocabularyItemAction(formData: FormData) {
   const type = parseType(formData.get("type"));
   const word = String(formData.get("word") ?? "").trim();
+
+  if (!word) {
+    redirect("/vocabulary/new?error=missing_word");
+  }
+
+  // Optional fields — user can override, but AI fills in if blank.
   const reading = String(formData.get("reading") ?? "").trim();
   const meaning = String(formData.get("meaning") ?? "").trim();
   const level = String(formData.get("level") ?? "").trim();
   const partOfSpeech = String(formData.get("part_of_speech") ?? "").trim();
 
-  if (!word || !meaning) {
-    const params = new URLSearchParams({ error: "missing" });
-    if (word) params.set("word", word);
-    if (reading) params.set("reading", reading);
-    if (level) params.set("level", level);
-    if (partOfSpeech) params.set("part_of_speech", partOfSpeech);
-    if (type !== "word") params.set("type", type);
-    redirect(`/vocabulary/new?${params.toString()}`);
-  }
-
   const item = await createVocabularyItem({
     type,
     word,
     reading: reading || null,
-    meaning,
+    // Pass undefined so createVocabularyItem triggers AI enrichment when blank.
+    meaning: meaning || undefined,
     level: level || null,
     part_of_speech: partOfSpeech || null,
   });
