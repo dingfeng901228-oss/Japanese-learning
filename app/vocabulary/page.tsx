@@ -14,12 +14,24 @@ export const dynamic = "force-dynamic";
 type SearchParams = {
   q?: string;
   type?: string;
+  level?: string;
   sort?: string;
 };
+
+const JLPT_LEVELS = ["N5", "N4", "N3", "N2", "N1"] as const;
 
 function asType(v: string | undefined): VocabularyType | undefined {
   if (v === "word" || v === "phrase" || v === "grammar" || v === "sentence") {
     return v;
+  }
+  return undefined;
+}
+
+function asLevel(
+  v: string | undefined
+): (typeof JLPT_LEVELS)[number] | undefined {
+  if (v && (JLPT_LEVELS as readonly string[]).includes(v)) {
+    return v as (typeof JLPT_LEVELS)[number];
   }
   return undefined;
 }
@@ -50,11 +62,13 @@ export default async function VocabularyListPage({
   const sp = await searchParams;
   const q = (sp.q ?? "").trim();
   const type = asType(sp.type);
+  const level = asLevel(sp.level);
   const sort = asSort(sp.sort);
 
   const items = await listVocabularyItems({
     search: q || undefined,
     type,
+    level,
     sort,
   });
 
@@ -103,6 +117,18 @@ export default async function VocabularyListPage({
           <option value="phrase">词组</option>
           <option value="grammar">文法</option>
           <option value="sentence">句型</option>
+        </select>
+        <select
+          name="level"
+          defaultValue={level ?? ""}
+          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
+        >
+          <option value="">全部等级</option>
+          {JLPT_LEVELS.map((lvl) => (
+            <option key={lvl} value={lvl}>
+              {lvl}
+            </option>
+          ))}
         </select>
         <select
           name="sort"
@@ -162,6 +188,24 @@ export default async function VocabularyListPage({
                       )}
                     </div>
                     <div className="text-sm text-gray-600">{item.meaning}</div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full transition-all ${
+                            item.mastery >= 80
+                              ? "bg-green-500"
+                              : item.mastery >= 50
+                                ? "bg-yellow-500"
+                                : "bg-red-400"
+                          }`}
+                          style={{ width: `${item.mastery}%` }}
+                          aria-label={`掌握度 ${item.mastery}%`}
+                        />
+                      </div>
+                      <span className="text-xs text-gray-500 tabular-nums w-8 text-right">
+                        {item.mastery}%
+                      </span>
+                    </div>
                   </div>
                   <div className="text-xs text-gray-400 whitespace-nowrap">
                     {formatDate(item.created_at)}

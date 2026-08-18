@@ -42,6 +42,7 @@ export type VocabularySort = "newest" | "oldest" | "word";
 
 export type ListVocabularyOpts = {
   type?: VocabularyType;
+  level?: string;
   search?: string;
   sort?: VocabularySort;
 };
@@ -79,6 +80,10 @@ export async function listVocabularyItems(
 
   if (opts.type) {
     query = query.eq("type", opts.type);
+  }
+
+  if (opts.level) {
+    query = query.eq("level", opts.level);
   }
 
   const q = opts.search?.trim();
