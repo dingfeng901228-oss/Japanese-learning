@@ -18,6 +18,7 @@ import Link from "next/link";
 import type { ReviewItem } from "@/lib/vocabulary/reviews";
 import { recordReviewAction } from "./actions";
 import { SpeakButton } from "@/components/SpeakButton";
+import { useSessionTimer, formatDuration } from "@/lib/today-stats";
 
 export type ReviewMode = "fill-in" | "dictation";
 
@@ -44,6 +45,10 @@ export function ReviewSession({
   const [answer, setAnswer] = useState("");
   const [checked, setChecked] = useState<null | { correct: boolean }>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Phase 1.5+ real-time session timer (per Frank #6175). Each
+  // ReviewSession instance owns its own timer keyed to "review".
+  const { elapsed: reviewElapsed } = useSessionTimer("review");
 
   const done = index >= initialItems.length;
   const current = done ? null : initialItems[index];
@@ -141,7 +146,17 @@ export function ReviewSession({
         {mode === "fill-in" && (
           <div className="border-t border-gray-100 pt-4 flex items-start gap-2">
             <div className="flex-1">
-              <div className="text-xs text-gray-500 mb-2">例句（挖空）</div>
+              <div className="flex items-center justify-between mb-2">
+        <div className="text-xs text-gray-500">
+          第 {index + 1} / {initialItems.length} 题
+        </div>
+        <span
+          aria-label="本次复习时长"
+          className="text-xs text-gray-500 tabular-nums"
+        >
+          🕐 {formatDuration(reviewElapsed)}
+        </span>
+      </div>
               <p className="text-lg text-gray-900 whitespace-pre-wrap break-words">
                 {blanked}
               </p>

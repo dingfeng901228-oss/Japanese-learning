@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { saveMistakeToVocabAction } from "./actions";
+import { useSessionTimer, formatDuration } from "@/lib/today-stats";
 
 type Turn = { role: "user" | "assistant"; content: string };
 
@@ -91,6 +92,11 @@ export default function SpeakingPage() {
   // Default to Chinese. Per Frank's request (#5945), the feedback language
   // toggle is removed — always render feedback in Chinese.
   const [feedbackLanguage] = useState<FeedbackLanguage>("zh");
+
+  // Phase 1.5+ real-time session timer (per Frank #6175). Hook re-runs
+  // when the user navigates between Speaking and other pages, so each
+  // session's time gets attributed to "speaking" specifically.
+  const { elapsed: speakingElapsed } = useSessionTimer("speaking");
 
   // Phase 4: save each generated feedback's mistakes to localStorage so
   // /today can show "最近弱点" as a live history instead of hardcoded text.
@@ -335,11 +341,19 @@ export default function SpeakingPage() {
 
   return (
     <main className="min-h-screen flex flex-col px-6 py-8 max-w-3xl mx-auto">
-      <header className="mb-6 flex items-center justify-between">
+      <header className="mb-6 flex items-center justify-between gap-3">
         <Link href="/today" className="text-sm text-gray-500 hover:text-gray-900">
           ← 今日训练
         </Link>
-        <span className="text-sm text-gray-400">AI 口语教练</span>
+        <div className="flex items-center gap-3">
+          <span
+            aria-label="本次学习时长"
+            className="text-sm text-gray-500 tabular-nums"
+          >
+            🕐 {formatDuration(speakingElapsed)}
+          </span>
+          <span className="text-sm text-gray-400">AI 口语教练</span>
+        </div>
       </header>
 
       <h1 className="text-2xl font-bold mb-2">自由对话</h1>
