@@ -1,10 +1,21 @@
-// /vocabulary/[id] — detail page (Phase 2: basics only).
-// Examples + reviews + TTS come in Phase 3+.
+// /vocabulary/[id] — detail page.
+//
+// Phase 2 basics: type badges, word/reading/meaning, delete.
+// Phase 3: auto-attached primary example (sentence/reading/translation).
+// Phase 4 lite: "重新生成" button to swap the example for a fresh one.
+// Phase 5+: SRS, edit-on-page, TTS button. Placeholder section below.
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getVocabularyItem, type VocabularyType } from "@/lib/vocabulary";
-import { deleteVocabularyItemAction } from "../actions";
+import {
+  getPrimaryExample,
+  getVocabularyItem,
+  type VocabularyType,
+} from "@/lib/vocabulary";
+import {
+  deleteVocabularyItemAction,
+  regenerateExampleAction,
+} from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +40,7 @@ export default async function VocabularyDetailPage({
   const { id } = await params;
   const item = await getVocabularyItem(id);
   if (!item) notFound();
+  const example = await getPrimaryExample(id);
 
   return (
     <main className="min-h-screen px-6 py-12 max-w-2xl mx-auto">
@@ -69,10 +81,42 @@ export default async function VocabularyDetailPage({
       </article>
 
       <section className="bg-white border border-gray-200 rounded-2xl p-8 mb-6">
-        <h2 className="text-lg font-semibold mb-3">📝 例句</h2>
-        <p className="text-sm text-gray-500">
-          例句功能将在 Phase 3 启用。届时收藏后 AI 会自动生成多个常用例句。
-        </p>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold">📝 例句</h2>
+          <form action={regenerateExampleAction}>
+            <input type="hidden" name="id" value={item.id} />
+            <button
+              type="submit"
+              className="text-xs text-gray-500 hover:text-gray-900 underline-offset-2 hover:underline"
+            >
+              {example ? "重新生成" : "生成例句"}
+            </button>
+          </form>
+        </div>
+        {example ? (
+          <div className="space-y-2">
+            <p className="text-lg text-gray-900 break-words">
+              {example.sentence}
+            </p>
+            {example.reading && (
+              <p className="text-sm text-gray-500 break-words">
+                {example.reading}
+              </p>
+            )}
+            {example.translation && (
+              <p className="text-sm text-gray-600 break-words">
+                {example.translation}
+              </p>
+            )}
+            {example.user_edited && (
+              <p className="text-xs text-gray-400 italic">已手动编辑</p>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500">
+            还没有例句，点"生成例句"让 AI 生成一个。
+          </p>
+        )}
       </section>
 
       <section className="bg-white border border-gray-200 rounded-2xl p-8 mb-6">

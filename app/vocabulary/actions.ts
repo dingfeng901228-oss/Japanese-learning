@@ -9,8 +9,11 @@ import { redirect } from "next/navigation";
 import {
   createVocabularyItem,
   deleteVocabularyItem,
+  getPrimaryExample,
+  getVocabularyItem,
   type VocabularyType,
 } from "@/lib/vocabulary";
+import { generateExample } from "@/lib/vocabulary/examples";
 
 function parseType(raw: FormDataEntryValue | null): VocabularyType {
   const v = String(raw ?? "word");
@@ -52,4 +55,66 @@ export async function deleteVocabularyItemAction(formData: FormData) {
   await deleteVocabularyItem(id);
   revalidatePath("/vocabulary");
   redirect("/vocabulary");
+}
+
+export async function regenerateExampleAction(formData: FormData) {
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) redirect("/vocabulary");
+
+  const item = await getVocabularyItem(id);
+  if (!item) redirect("/vocabulary");
+
+  // Generate a new example. If AI fails or returns nothing, redirect
+  // back without changing anything (user can retry).
+  let generated;
+  try {
+    generated = await generateExample({
+      word: item.word,
+      meaning: item.meaning,
+      reading: item.reading,
+      type: item.type,
+    });
+  } catch (err) {
+    console.error("regenerateExampleAction: AI failed", err);
+    redirect(`/vocabulary/${id}`);
+  }
+  if (!generated.sentence) redirect(`/vocabulary/${id}`);
+
+  const supabase = await (await import("@/lib/supabase/server")).createClient();
+
+  // Partial unique index on (vocabulary_id) WHERE is_primary: at most
+  // one primary per vocab. Either UPDATE the existing primary or INSERT.
+  const existing = await getPrimaryExample(id);
+  if (existing) {
+    const { error } = await supabase
+      .from("vocabulary_examples")
+      .update({
+        sentence: generated.sentence,
+        translation: generated.translation,
+        reading: generated.reading,
+        generated_by_ai: true,
+        user_edited: false,
+      })
+      .eq("id", existing.id);
+    if (error) {
+      console.error("regenerateExampleAction: update failed", error);
+      redirect(`/vocabulary/${id}`);
+    }
+  } else {
+    const { error } = await supabase.from("vocabulary_examples").insert({
+      vocabulary_id: id,
+      sentence: generated.sentence,
+      translation: generated.translation,
+      reading: generated.reading,
+      is_primary: true,
+      generated_by_ai: true,
+    });
+    if (error) {
+      console.error("regenerateExampleAction: insert failed", error);
+      redirect(`/vocabulary/${id}`);
+    }
+  }
+
+  revalidatePath(`/vocabulary/${id}`);
+  redirect(`/vocabulary/${id}`);
 }

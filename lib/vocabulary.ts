@@ -7,6 +7,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { enrichVocabulary } from "./vocabulary/enrich";
+import { generateExample } from "./vocabulary/examples";
 
 export type VocabularyType = "word" | "phrase" | "grammar" | "sentence";
 
@@ -42,6 +43,19 @@ export type ListVocabularyOpts = {
   type?: VocabularyType;
   search?: string;
   sort?: VocabularySort;
+};
+
+export type VocabularyExample = {
+  id: string;
+  vocabulary_id: string;
+  sentence: string;
+  translation: string | null;
+  reading: string | null;
+  is_primary: boolean;
+  generated_by_ai: boolean;
+  user_edited: boolean;
+  created_at: string;
+  updated_at: string;
 };
 
 // Wrap supabase errors so callers can throw without leaking SDK details.
@@ -131,7 +145,7 @@ export async function createVocabularyItem(
     }
   }
 
-  return ensureData(
+  const inserted = ensureData(
     await supabase
       .from("vocabulary_items")
       .insert({
@@ -148,6 +162,40 @@ export async function createVocabularyItem(
       .single(),
     null as unknown as VocabularyItem
   );
+
+  // Auto-attach a primary example sentence (Phase 3). Don't fail the
+  // whole create if AI generation hiccups — user can regenerate later
+  // from the detail page (Phase 4 lite).
+  try {
+    const example = await generateExample({
+      word: inserted.word,
+      meaning: inserted.meaning,
+      reading: inserted.reading,
+      type: inserted.type,
+    });
+    if (example.sentence) {
+      const { error: exampleErr } = await supabase
+        .from("vocabulary_examples")
+        .insert({
+          vocabulary_id: inserted.id,
+          sentence: example.sentence,
+          translation: example.translation,
+          reading: example.reading,
+          is_primary: true,
+          generated_by_ai: true,
+        });
+      if (exampleErr) {
+        console.error(
+          "vocabulary example insert failed (vocab created ok):",
+          exampleErr,
+        );
+      }
+    }
+  } catch (err) {
+    console.error("vocabulary example generation failed:", err);
+  }
+
+  return inserted;
 }
 
 export async function deleteVocabularyItem(id: string): Promise<void> {
@@ -169,4 +217,19 @@ export async function countVocabularyItems(): Promise<number> {
     .eq("user_id", user.id);
   if (error) throw new Error(error.message);
   return count ?? 0;
+}
+
+export async function getPrimaryExample(
+  vocabularyId: string
+): Promise<VocabularyExample | null> {
+  const supabase = await createClient();
+  return ensureData(
+    await supabase
+      .from("vocabulary_examples")
+      .select("*")
+      .eq("vocabulary_id", vocabularyId)
+      .eq("is_primary", true)
+      .maybeSingle(),
+    null
+  );
 }
