@@ -132,6 +132,15 @@ export default function SpeakingPage() {
   const [savingIdx, setSavingIdx] = useState<number | null>(null);
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
 
+  // Phase 1 enhancement follow-up: grammar items get their own
+  // saving/saved sets so vocab and grammar indices don't collide.
+  const [savingGrammarIdx, setSavingGrammarIdx] = useState<number | null>(
+    null
+  );
+  const [savedGrammarSet, setSavedGrammarSet] = useState<Set<number>>(
+    new Set()
+  );
+
   async function handleSaveMistake(
     idx: number,
     word: string,
@@ -153,6 +162,26 @@ export default function SpeakingPage() {
       console.error("handleSaveMistake failed:", err);
     } finally {
       setSavingIdx(null);
+    }
+  }
+
+  async function handleSaveGrammar(idx: number, grammar: string) {
+    if (savedGrammarSet.has(idx) || savingGrammarIdx !== null) return;
+    setSavingGrammarIdx(idx);
+    try {
+      const fd = new FormData();
+      fd.set("word", grammar);
+      fd.set("type", "grammar");
+      await saveMistakeToVocabAction(fd);
+      setSavedGrammarSet((prev) => {
+        const next = new Set(prev);
+        next.add(idx);
+        return next;
+      });
+    } catch (err) {
+      console.error("handleSaveGrammar failed:", err);
+    } finally {
+      setSavingGrammarIdx(null);
     }
   }
 
@@ -222,6 +251,8 @@ export default function SpeakingPage() {
     setFeedback(null);
     setSavedSet(new Set());
     setSavingIdx(null);
+    setSavedGrammarSet(new Set());
+    setSavingGrammarIdx(null);
   }
 
   function startRecognition() {
@@ -458,10 +489,44 @@ export default function SpeakingPage() {
 
               {feedback.grammar.length > 0 && (
                 <FeedbackBlock label={labels.grammar}>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {feedback.grammar.map((g, i) => (
-                      <li key={i}>{g}</li>
-                    ))}
+                  <ul className="space-y-2">
+                    {feedback.grammar.map((g, i) => {
+                      const saved = savedGrammarSet.has(i);
+                      const saving = savingGrammarIdx === i;
+                      return (
+                        <li
+                          key={i}
+                          className="flex items-center justify-between gap-3"
+                        >
+                          <span className="flex-1 text-sm text-gray-800">
+                            {g}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleSaveGrammar(i, g)}
+                            disabled={saved || saving}
+                            aria-label={
+                              saved
+                                ? `已保存语法 ${g}`
+                                : `保存语法到词汇本`
+                            }
+                            className={`flex-shrink-0 px-3 py-1 text-xs rounded-lg transition-colors disabled:cursor-not-allowed ${
+                              saved
+                                ? "bg-green-50 text-green-700"
+                                : saving
+                                  ? "bg-gray-100 text-gray-500"
+                                  : "bg-gray-900 text-white hover:bg-gray-800"
+                            }`}
+                          >
+                            {saved
+                              ? "✓ 已保存"
+                              : saving
+                                ? "保存中…"
+                                : "📥 保存"}
+                          </button>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </FeedbackBlock>
               )}
