@@ -19,10 +19,7 @@ import { redirect } from "next/navigation";
 export async function signInWithGoogleAction() {
   const supabase = await createClient();
   const headerList = await headers();
-  const origin =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    headerList.get("origin") ??
-    "http://localhost:3000";
+  const origin = resolveOriginOrThrow(headerList);
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
@@ -49,10 +46,7 @@ export async function signInWithGoogleAction() {
 export async function signInWithMagicLinkAction(formData: FormData) {
   const supabase = await createClient();
   const headerList = await headers();
-  const origin =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    headerList.get("origin") ??
-    "http://localhost:3000";
+  const origin = resolveOriginOrThrow(headerList);
 
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   // Server-side format check — never trust the client alone.
@@ -87,4 +81,25 @@ export async function signOutAction() {
     redirect("/?error=signout_failed");
   }
   redirect("/login");
+}
+
+// Resolve the public site origin for OAuth / magic-link redirect targets.
+// Order:
+//   1. NEXT_PUBLIC_SITE_URL — explicit env var (set in Vercel Project Settings)
+//   2. request Origin header — set by the incoming HTTP request
+// Never fall back to localhost — that's the bug that produced magic-link
+// emails pointing at the dev machine (Supabase ignores emailRedirectTo
+// when Site URL is localhost and substitutes its own value into the
+// email template's {{ .ConfirmationURL }}).
+function resolveOriginOrThrow(headerList: Awaited<ReturnType<typeof headers>>) {
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    headerList.get("origin");
+  if (!origin) {
+    throw new Error(
+      "auth: cannot determine site origin. Set NEXT_PUBLIC_SITE_URL " +
+        "(e.g. https://jp.frank2025.com) in Vercel Project Settings.",
+    );
+  }
+  return origin;
 }
