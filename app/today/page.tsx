@@ -472,7 +472,7 @@ export default function TodayPage() {
           className="mt-3 text-sm text-gray-500 tabular-nums"
           aria-live="polite"
         >
-          � 距离今天结束还有{" "}
+          距离今天结束还有{" "}
           <span className="font-semibold text-gray-700">
             {countdown.hours.toString().padStart(2, "0")}:
             {countdown.minutes.toString().padStart(2, "0")}:
