@@ -18,9 +18,12 @@ import {
   TOTAL_TARGET_MINUTES,
   loadDayProgress,
   saveDayProgress,
+  loadAccumulated,
   toggleItem as toggleItemStorage,
   getTimeUntilMidnight,
+  formatDuration,
   type DayProgress,
+  type DayAccumulated,
   type CountdownParts,
   type TrainingItemId,
 } from "@/lib/today-stats";
@@ -310,6 +313,45 @@ export default function TodayPage() {
     setDayProgress(next);
   }
 
+  // Phase 1.5+ (per Frank #6175): real-time accumulated minutes per
+  // item, written by useSessionTimer on training pages. Refreshes on
+  // mount, on focus, and every 3s so the progress bar updates live as
+  // the user spends time in /listening / /speaking / /review.
+  const [accumulated, setAccumulated] = useState<DayAccumulated>(() => ({
+    date: "",
+    accumulated: {},
+  }));
+  useEffect(() => {
+    const refresh = () => setAccumulated(loadAccumulated());
+    refresh();
+    window.addEventListener("focus", refresh);
+    const id = window.setInterval(refresh, 3000);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.clearInterval(id);
+    };
+  }, []);
+
+  // Real-time total: sum of accumulated minutes per item, capped at the
+  // target. The progress bar uses this so manual check-ins and timer
+  // contributions don't double-count.
+  const accumulatedTotalMinutes = TRAINING_ITEMS.reduce(
+    (s, item) => s + (accumulated.accumulated[item.id] ?? 0),
+    0
+  );
+  const cappedMinutes = Math.min(
+    TOTAL_TARGET_MINUTES,
+    accumulatedTotalMinutes
+  );
+
+  // Per-item "auto-completed" state — derived from accumulated time.
+  // The manual ✓ still works as an override.
+  function isAutoCompleted(id: TrainingItemId): boolean {
+    const item = TRAINING_ITEMS.find((i) => i.id === id);
+    if (!item) return false;
+    return (accumulated.accumulated[id] ?? 0) >= item.minutes;
+  }
+
   // Phase 11: real consecutive training days from shadow history timestamps.
   const streakDays = useMemo(
     () => computeStreak(shadowHistory),
@@ -443,35 +485,37 @@ export default function TodayPage() {
         <div className="text-sm text-gray-500 mb-2">Today's Goal</div>
         <h2 className="text-2xl font-bold mb-2">约 30 分钟</h2>
 
-        {/* Phase 1.5: completion check-in progress bar (per Frank #6171).
-            Fills as the user ticks the ✓ buttons next to each item. */}
+        {/* Phase 1.5+ completion check-in progress bar (per Frank #6171
+            + #6175). Now driven by real-time accumulated minutes
+            (useSessionTimer writes to localStorage when training pages
+            unmount). The bar auto-refreshes every 3s while the user is
+            on /today. */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-1 text-xs">
             <span className="text-gray-500">
-              完成 {dayProgress.totalMinutes} / {TOTAL_TARGET_MINUTES} 分钟
+              完成 {Math.round(cappedMinutes)} / {TOTAL_TARGET_MINUTES} 分钟
+              {accumulatedTotalMinutes > TOTAL_TARGET_MINUTES && (
+                <span className="ml-1 text-gray-400">
+                  (实际 {Math.round(accumulatedTotalMinutes)})
+                </span>
+              )}
             </span>
             <span className="text-gray-500 tabular-nums">
-              {Math.round(
-                (dayProgress.totalMinutes / TOTAL_TARGET_MINUTES) * 100
-              )}
-              %
+              {Math.round((cappedMinutes / TOTAL_TARGET_MINUTES) * 100)}%
             </span>
           </div>
           <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
             <div
               className={`h-full transition-all ${
-                dayProgress.totalMinutes >= TOTAL_TARGET_MINUTES
+                cappedMinutes >= TOTAL_TARGET_MINUTES
                   ? "bg-green-500"
                   : "bg-gray-900"
               }`}
               style={{
-                width: `${Math.min(
-                  100,
-                  (dayProgress.totalMinutes / TOTAL_TARGET_MINUTES) * 100
-                )}%`,
+                width: `${Math.min(100, (cappedMinutes / TOTAL_TARGET_MINUTES) * 100)}%`,
               }}
               role="progressbar"
-              aria-valuenow={dayProgress.totalMinutes}
+              aria-valuenow={Math.round(cappedMinutes)}
               aria-valuemin={0}
               aria-valuemax={TOTAL_TARGET_MINUTES}
             />
@@ -480,7 +524,15 @@ export default function TodayPage() {
 
         <ul className="space-y-3">
           {TRAINING_ITEMS.map((item) => {
-            const done = !!dayProgress.completed[item.id];
+            // Per Frank #6175: ✓ auto-ticks once the user has spent
+            // >= item.minutes in that training mode (timer-driven).
+            // Manual click is still allowed as an override.
+            const autoDone = isAutoCompleted(item.id);
+            const manualDone = !!dayProgress.completed[item.id];
+            const done = manualDone || autoDone;
+            const itemMinutes = Math.round(
+              accumulated.accumulated[item.id] ?? 0
+            );
             return (
               <li key={item.id} className="flex items-center gap-2">
                 <Link
@@ -489,9 +541,16 @@ export default function TodayPage() {
                 >
                   <span className={done ? "text-gray-400 line-through" : ""}>
                     {item.emoji} {item.label}
+                    {autoDone && (
+                      <span className="ml-2 text-xs text-green-600 tabular-nums">
+                        {item.minutes}/{item.minutes} 分
+                      </span>
+                    )}
                   </span>
-                  <span className="text-sm text-gray-500">
-                    {item.minutes} 分钟 →
+                  <span className="text-sm text-gray-500 tabular-nums">
+                    {itemMinutes > 0
+                      ? `${itemMinutes} 分 / ${item.minutes} 分`
+                      : `${item.minutes} 分钟 →`}
                   </span>
                 </Link>
                 <button
@@ -513,7 +572,7 @@ export default function TodayPage() {
         </ul>
 
         <p className="text-xs text-gray-400 text-center mt-6">
-          点左侧进入训练，完成后点右侧 ○ 打卡（自动累加时间到进度条）。
+          进入训练页自动开始计时，离开自动累加到进度条。手动 ✓ 仅作 override 用。
         </p>
       </div>
 

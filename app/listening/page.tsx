@@ -16,6 +16,7 @@ import {
   LEVELS,
   CATEGORY_LABELS,
 } from "@/lib/sentences";
+import { useSessionTimer, formatDuration } from "@/lib/today-stats";
 
 const PROGRESS_KEY = "japanese:listen-progress";
 const SHADOW_HISTORY_KEY = "japanese:shadow-history";
@@ -212,6 +213,14 @@ function ListeningPageContent() {
     const params = new URLSearchParams(window.location.search);
     return params.get("mode") === "shadow" ? "shadow" : "listen";
   });
+
+  // Real-time session timer (per Frank #6175). When the user toggles
+  // between Listen and Shadow, the hook re-runs (because `type` is in
+  // its dependency list), the cleanup fires, and elapsed time gets
+  // attributed to the previous mode before the new session starts.
+  const sessionType =
+    mode === "shadow" ? "shadowing" : "listening";
+  const { elapsed } = useSessionTimer(sessionType);
 
   // Difficulty level (N5/N4/N3/N2/N1) — index into LEVELS array.
   const [levelIdx, setLevelIdx] = useState<0 | 1 | 2 | 3 | 4>(0);
@@ -755,12 +764,20 @@ function ListeningPageContent() {
         >
           ← 今日训练
         </Link>
-        <Link
-          href="/speaking"
-          className="text-sm text-gray-500 hover:text-gray-900"
-        >
-          口语训练 →
-        </Link>
+        <div className="flex items-center gap-3">
+          <span
+            aria-label="本次学习时长"
+            className="text-sm text-gray-500 tabular-nums"
+          >
+            🕐 {formatDuration(elapsed)}
+          </span>
+          <Link
+            href="/speaking"
+            className="text-sm text-gray-500 hover:text-gray-900"
+          >
+            口语训练 →
+          </Link>
+        </div>
       </header>
 
       <h1 className="text-2xl font-bold mb-2">

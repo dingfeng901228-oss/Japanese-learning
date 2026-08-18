@@ -8,6 +8,10 @@
 // Phase 5 lite: "🔊 朗读" button — Web Speech API TTS, browser-native,
 //   zero-cost. Quality varies by browser; OpenAI tts-1 swap-in is
 //   straightforward when quality matters more than cost.
+// Phase 1.7: top word card now also has "🔊 朗读" + "编辑" + inline
+//   editor (headword / reading / meaning / level / part of speech),
+//   controlled by ?edit_word=1 — separate from the example editor
+//   (?edit=1) so the two can be edited independently.
 // Phase 7+: SRS, today queue, listening mode. Placeholder section below.
 
 import Link from "next/link";
@@ -22,6 +26,7 @@ import {
   deleteVocabularyItemAction,
   regenerateExampleAction,
   updateExampleAction,
+  updateWordAction,
 } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -32,6 +37,8 @@ const TYPE_LABEL: Record<VocabularyType, string> = {
   grammar: "文法",
   sentence: "句型",
 };
+
+const JLPT_OPTIONS = ["", "N5", "N4", "N3", "N2", "N1"] as const;
 
 function formatDateTime(iso: string): string {
   const d = new Date(iso);
@@ -44,11 +51,12 @@ export default async function VocabularyDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ edit?: string }>;
+  searchParams: Promise<{ edit?: string; edit_word?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
   const editing = sp.edit === "1";
+  const editingWord = sp.edit_word === "1";
 
   const item = await getVocabularyItem(id);
   if (!item) notFound();
@@ -80,16 +88,143 @@ export default async function VocabularyDetailPage({
         </div>
       </header>
 
+      {/* Top card: word / reading / meaning. Edit toggle (Phase 1.7)
+         rewrites the same card as a form when ?edit_word=1 is set. */}
       <article className="bg-white border border-gray-200 rounded-2xl p-8 mb-6">
-        <h1 className="text-4xl font-bold mb-2 break-words">{item.word}</h1>
-        {item.reading && (
-          <p className="text-lg text-gray-500 mb-4">{item.reading}</p>
-        )}
-        <p className="text-xl text-gray-800 mb-6">{item.meaning}</p>
+        {editingWord ? (
+          <form action={updateWordAction} className="space-y-4">
+            <input type="hidden" name="id" value={id} />
+            <div className="flex items-start justify-between gap-3">
+              <label
+                htmlFor="word-word"
+                className="block text-sm font-medium text-gray-700 mb-1 flex-1"
+              >
+                单词 / 词组 *
+              </label>
+            </div>
+            <input
+              id="word-word"
+              type="text"
+              name="word"
+              required
+              defaultValue={item.word}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
+            />
 
-        <div className="text-xs text-gray-400 pt-4 border-t border-gray-100">
-          收藏于 {formatDateTime(item.created_at)}
-        </div>
+            <div>
+              <label
+                htmlFor="word-reading"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                假名 / 读音
+              </label>
+              <input
+                id="word-reading"
+                type="text"
+                name="reading"
+                defaultValue={item.reading ?? ""}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
+                placeholder="例：みにつける"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="word-meaning"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                中文意思 *
+              </label>
+              <input
+                id="word-meaning"
+                type="text"
+                name="meaning"
+                required
+                defaultValue={item.meaning}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label
+                  htmlFor="word-level"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  JLPT 等级
+                </label>
+                <select
+                  id="word-level"
+                  name="level"
+                  defaultValue={item.level ?? ""}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
+                >
+                  {JLPT_OPTIONS.map((lvl) => (
+                    <option key={lvl} value={lvl}>
+                      {lvl === "" ? "不指定" : lvl}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label
+                  htmlFor="word-pos"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  词性
+                </label>
+                <input
+                  id="word-pos"
+                  type="text"
+                  name="part_of_speech"
+                  defaultValue={item.part_of_speech ?? ""}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
+                  placeholder="例：他动词"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="submit"
+                className="px-5 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                保存
+              </button>
+              <Link
+                href={`/vocabulary/${id}`}
+                className="px-5 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                取消
+              </Link>
+            </div>
+          </form>
+        ) : (
+          <>
+            <div className="flex items-start gap-3 mb-2">
+              <h1 className="flex-1 text-4xl font-bold break-words">
+                {item.word}
+              </h1>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <SpeakButton text={item.word} />
+                <Link
+                  href={`/vocabulary/${id}?edit_word=1`}
+                  className="text-xs text-gray-500 hover:text-gray-900 underline-offset-2 hover:underline"
+                >
+                  编辑
+                </Link>
+              </div>
+            </div>
+            {item.reading && (
+              <p className="text-lg text-gray-500 mb-4">{item.reading}</p>
+            )}
+            <p className="text-xl text-gray-800 mb-6">{item.meaning}</p>
+
+            <div className="text-xs text-gray-400 pt-4 border-t border-gray-100">
+              收藏于 {formatDateTime(item.created_at)}
+            </div>
+          </>
+        )}
       </article>
 
       <section className="bg-white border border-gray-200 rounded-2xl p-8 mb-6">

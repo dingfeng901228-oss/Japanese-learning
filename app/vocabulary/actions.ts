@@ -16,6 +16,11 @@ import {
 } from "@/lib/vocabulary";
 import { generateExample } from "@/lib/vocabulary/examples";
 
+const JLPT_LEVELS = new Set(["N5", "N4", "N3", "N2", "N1"]);
+function normalizeLevel(raw: string): string {
+  return JLPT_LEVELS.has(raw) ? raw : "";
+}
+
 function parseType(raw: FormDataEntryValue | null): VocabularyType {
   const v = String(raw ?? "word");
   if (v === "phrase" || v === "grammar" || v === "sentence") return v;
@@ -56,6 +61,50 @@ export async function deleteVocabularyItemAction(formData: FormData) {
   await deleteVocabularyItem(id);
   revalidatePath("/vocabulary");
   redirect("/vocabulary");
+}
+
+// Phase 1.7: edit the word itself (headword / reading / meaning /
+// JLPT level / part of speech) on the detail page. Triggered by the
+// "编辑" link next to the 🔊 button on the top card. Uses a separate
+// query param (?edit_word=1) so it doesn't collide with the existing
+// example editor (?edit=1).
+export async function updateWordAction(formData: FormData) {
+  const id = String(formData.get("id") ?? "").trim();
+  const word = String(formData.get("word") ?? "").trim();
+  const reading = String(formData.get("reading") ?? "").trim();
+  const meaning = String(formData.get("meaning") ?? "").trim();
+  const levelRaw = String(formData.get("level") ?? "").trim();
+  const partOfSpeech = String(formData.get("part_of_speech") ?? "").trim();
+
+  if (!id) redirect("/vocabulary");
+  // word + meaning are required (meaning is NOT NULL in the schema).
+  if (!word || !meaning) redirect(`/vocabulary/${id}?edit_word=1`);
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { error } = await supabase
+    .from("vocabulary_items")
+    .update({
+      word,
+      reading: reading || null,
+      meaning,
+      level: normalizeLevel(levelRaw) || null,
+      part_of_speech: partOfSpeech || null,
+    })
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("updateWordAction: update failed", error);
+    redirect(`/vocabulary/${id}?edit_word=1`);
+  }
+
+  revalidatePath(`/vocabulary/${id}`);
+  // Also revalidate /vocabulary list since the headword may have changed.
+  revalidatePath("/vocabulary");
+  redirect(`/vocabulary/${id}`);
 }
 
 export async function regenerateExampleAction(formData: FormData) {
