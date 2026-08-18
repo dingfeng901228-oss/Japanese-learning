@@ -19,6 +19,7 @@ const PROTECTED_PREFIXES = [
   "/today",
   "/progress",
   "/vocabulary",
+  "/review",
 ] as const;
 
 export async function updateSession(request: NextRequest) {

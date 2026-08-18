@@ -113,6 +113,12 @@ export default async function RootLayout({
                   收藏
                 </Link>
                 <Link
+                  href="/review"
+                  className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  复习
+                </Link>
+                <Link
                   href="/progress"
                   className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
                 >

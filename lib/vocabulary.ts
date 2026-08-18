@@ -8,6 +8,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { enrichVocabulary } from "./vocabulary/enrich";
 import { generateExample } from "./vocabulary/examples";
+import { ensureReviewRecord } from "./vocabulary/reviews";
 
 export type VocabularyType = "word" | "phrase" | "grammar" | "sentence";
 
@@ -193,6 +194,16 @@ export async function createVocabularyItem(
     }
   } catch (err) {
     console.error("vocabulary example generation failed:", err);
+  }
+
+  // Phase 7: queue the new vocab for first-pass review (next_review_at=now).
+  // Idempotent — safe to call even if the row already exists. Failure here
+  // doesn't break the create — vocab shows up fine, just won't appear in
+  // /review until something else enqueues it.
+  try {
+    await ensureReviewRecord(inserted.id);
+  } catch (err) {
+    console.error("vocabulary ensureReviewRecord failed:", err);
   }
 
   return inserted;
