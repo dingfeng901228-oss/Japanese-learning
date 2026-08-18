@@ -6,6 +6,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import {
   createVocabularyItem,
   deleteVocabularyItem,
@@ -117,4 +118,54 @@ export async function regenerateExampleAction(formData: FormData) {
 
   revalidatePath(`/vocabulary/${id}`);
   redirect(`/vocabulary/${id}`);
+}
+
+export async function updateExampleAction(formData: FormData) {
+  const vocabularyId = String(formData.get("vocabulary_id") ?? "").trim();
+  const sentence = String(formData.get("sentence") ?? "").trim();
+  const reading = String(formData.get("reading") ?? "").trim();
+  const translation = String(formData.get("translation") ?? "").trim();
+
+  if (!vocabularyId) redirect("/vocabulary");
+  // Sentence is the only required field — the others can be empty.
+  if (!sentence) redirect(`/vocabulary/${vocabularyId}`);
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const existing = await getPrimaryExample(vocabularyId);
+  if (existing) {
+    const { error } = await supabase
+      .from("vocabulary_examples")
+      .update({
+        sentence,
+        reading: reading || null,
+        translation: translation || null,
+        user_edited: true,
+        generated_by_ai: false,
+      })
+      .eq("id", existing.id);
+    if (error) {
+      console.error("updateExampleAction: update failed", error);
+      redirect(`/vocabulary/${vocabularyId}?edit=1`);
+    }
+  } else {
+    const { error } = await supabase.from("vocabulary_examples").insert({
+      vocabulary_id: vocabularyId,
+      sentence,
+      reading: reading || null,
+      translation: translation || null,
+      is_primary: true,
+      generated_by_ai: false,
+      user_edited: true,
+    });
+    if (error) {
+      console.error("updateExampleAction: insert failed", error);
+      redirect(`/vocabulary/${vocabularyId}?edit=1`);
+    }
+  }
+
+  revalidatePath(`/vocabulary/${vocabularyId}`);
+  redirect(`/vocabulary/${vocabularyId}`);
 }
