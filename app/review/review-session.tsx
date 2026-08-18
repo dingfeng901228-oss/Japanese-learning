@@ -1,35 +1,68 @@
 "use client";
 
-// Fill-in review session (Phase 8). One vocab at a time, the example
-// sentence blanks out the target word, the user types it back. On Enter
-// → check correctness locally (no API call) and surface 3 difficulty
-// buttons that map to SM-2 quality scores (easy=5, medium=4, hard=3).
-// Incorrect answers always use q=2.
+// Fill-in + dictation review session (Phase 7 + Phase 8 lite).
+//
+// Mode "fill-in" (default):
+//   - User sees the blanked example sentence + meaning/reading hint.
+//   - Types the word back. Enter to check. 3 difficulty buttons.
+//   - 🔊 button plays the original (unblanked) sentence.
+//
+// Mode "dictation":
+//   - Blank sentence is HIDDEN until after the user answers (forces
+//     listening instead of reading). Only the meaning hint is shown.
+//   - TTS auto-plays the example sentence on each new item.
+//   - "🔁 再听一次" replays it manually.
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { ReviewItem } from "@/lib/vocabulary/reviews";
 import { recordReviewAction } from "./actions";
+import { SpeakButton } from "@/components/SpeakButton";
+
+export type ReviewMode = "fill-in" | "dictation";
+
+function speakJa(text: string) {
+  if (typeof window === "undefined") return;
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = "ja-JP";
+  utt.rate = 0.9;
+  window.speechSynthesis.speak(utt);
+}
 
 export function ReviewSession({
   initialItems,
+  mode = "fill-in",
 }: {
   initialItems: ReviewItem[];
+  mode?: ReviewMode;
 }) {
+  // --- All hooks at the top, in a stable order across renders ---
+  // (rules-of-hooks: never put a hook after a conditional return.)
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState("");
   const [checked, setChecked] = useState<null | { correct: boolean }>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-focus the answer input on each new item. We use a ref instead
-  // of the `autoFocus` attribute because the project's eslint config
-  // (jsx-a11y/no-autofocus) disallows it — a ref + useEffect is the
-  // accepted pattern.
+  const done = index >= initialItems.length;
+  const current = done ? null : initialItems[index];
+
+  // Auto-focus the answer input on each new item (ref + useEffect to
+  // satisfy jsx-a11y/no-autofocus).
   useEffect(() => {
     inputRef.current?.focus();
   }, [index]);
 
-  if (index >= initialItems.length) {
+  // Dictation mode: auto-play TTS on each new item.
+  useEffect(() => {
+    if (mode !== "dictation") return;
+    if (!current?.example_sentence) return;
+    speakJa(current.example_sentence);
+  }, [index, mode, current?.example_sentence]);
+
+  // --- Now safe to early-return ---
+  if (done) {
     return (
       <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
         <div className="text-4xl mb-4">🎉</div>
@@ -47,26 +80,25 @@ export function ReviewSession({
     );
   }
 
-  const current = initialItems[index];
-  // Blank out the word in the example sentence for fill-in. We use
-  // split/join instead of replaceAll for broader runtime support.
-  // Limitation: only blanks the literal word string. If the example
-  // inflects the word (e.g., "本編を" when word is "本編"), it won't
-  // match — Phase 7+ would need a token-aware blanker.
+  if (!current) return null;
+
+  // Blank out the word in the example sentence for fill-in. Limitation:
+  // only blanks the literal word string. If the example inflects the
+  // word ("本編を" when word is "本編"), it won't match — Phase 7+ would
+  // need a token-aware blanker.
   const blanked = current.example_sentence
     ? current.example_sentence.split(current.word).join("_____")
     : "(例句缺失)";
 
   function handleCheck() {
-    if (!answer.trim()) return;
+    if (!answer.trim() || !current) return;
     const userAnswer = answer.trim();
     const correct = userAnswer === current.word;
     setChecked({ correct });
   }
 
   async function handleNext(difficulty: "easy" | "medium" | "hard") {
-    // Only POST if the user actually checked an answer. (We shouldn't
-    // reach here otherwise — the buttons are only rendered after check.)
+    if (!current) return;
     if (checked) {
       const fd = new FormData();
       fd.set("review_id", current.id);
@@ -85,23 +117,58 @@ export function ReviewSession({
       <div className="bg-white border border-gray-200 rounded-2xl p-8">
         <div className="flex items-center justify-between mb-4">
           <div className="text-xs text-gray-500">
-            第 {index + 1} / {initialItems.length} 题
+            {mode === "dictation"
+              ? "🎧 听写"
+              : `第 ${index + 1} / ${initialItems.length} 题`}
           </div>
           <div className="text-xs text-gray-400">
             间隔 {current.interval_days} 天 · 难度 {current.ease_factor.toFixed(2)}
           </div>
         </div>
+
+        {/* Hint: meaning + reading are always shown (they're the same
+            across modes — only the example sentence is hidden in
+            dictation mode until after answer). */}
         <div className="text-xs text-gray-500 mb-1">提示</div>
         <div className="text-base text-gray-700 mb-4">
           {current.reading && `${current.reading} · `}
           {current.meaning}
         </div>
-        <div className="border-t border-gray-100 pt-4">
-          <div className="text-xs text-gray-500 mb-2">例句（挖空）</div>
-          <p className="text-lg text-gray-900 whitespace-pre-wrap break-words">
-            {blanked}
-          </p>
-        </div>
+
+        {/* Fill-in mode: show the blanked example sentence + a 🔊 to
+            hear the original. Dictation mode: show nothing here —
+            the TTS auto-played above is the only source. */}
+        {mode === "fill-in" && (
+          <div className="border-t border-gray-100 pt-4 flex items-start gap-2">
+            <div className="flex-1">
+              <div className="text-xs text-gray-500 mb-2">例句（挖空）</div>
+              <p className="text-lg text-gray-900 whitespace-pre-wrap break-words">
+                {blanked}
+              </p>
+            </div>
+            <div className="flex-shrink-0 -mt-1">
+              {current.example_sentence && (
+                <SpeakButton text={current.example_sentence} />
+              )}
+            </div>
+          </div>
+        )}
+        {mode === "dictation" && (
+          <div className="border-t border-gray-100 pt-4 flex items-center gap-3">
+            <div className="flex-1 text-sm text-gray-500">
+              例句已自动播放。听完写下单词。
+            </div>
+            {current.example_sentence && (
+              <button
+                type="button"
+                onClick={() => speakJa(current.example_sentence ?? "")}
+                className="text-sm text-gray-700 hover:text-gray-900 underline-offset-2 hover:underline"
+              >
+                🔁 再听一次
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {checked ? (
@@ -118,7 +185,25 @@ export function ReviewSession({
               正确答案是：<strong>{current.word}</strong>
             </p>
           )}
-          {current.example_translation && (
+          {/* In dictation mode, reveal the original sentence after the
+              answer so the user can compare what they heard vs. what
+              they wrote. */}
+          {mode === "dictation" && current.example_sentence && (
+            <div className="bg-gray-50 rounded-lg p-3 mb-3 text-sm">
+              <div className="text-gray-900">{current.example_sentence}</div>
+              {current.example_reading && (
+                <div className="text-gray-500 mt-1">
+                  {current.example_reading}
+                </div>
+              )}
+              {current.example_translation && (
+                <div className="text-gray-600 mt-1">
+                  {current.example_translation}
+                </div>
+              )}
+            </div>
+          )}
+          {mode === "fill-in" && current.example_translation && (
             <p className="text-sm text-gray-500 mb-4">
               {current.example_translation}
             </p>

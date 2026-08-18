@@ -1,17 +1,27 @@
 // /review — today's SRS queue (Phase 7 + Phase 8 lite).
 //
-// Server Component fetches up to 20 due reviews from Supabase and hands
-// them to the Client Component (review-session.tsx) for the fill-in
-// interaction. If the queue is empty, show a friendly "nothing due"
-// message + a link to /vocabulary so the user can keep adding.
+// Two review modes (Phase 8):
+//   - "fill-in" (default): see the blanked example sentence + meaning
+//     hint, type the missing word back.
+//   - "dictation": TTS auto-plays the example sentence, the sentence
+//     is HIDDEN until after you answer (forces listening, not reading).
+//
+// Same SM-2 recordReview mechanism for both modes. Mode is a query
+// param: /review (fill-in) vs /review?mode=dictation.
 
 import Link from "next/link";
 import { getDueReviews } from "@/lib/vocabulary/reviews";
-import { ReviewSession } from "./review-session";
+import { ReviewSession, type ReviewMode } from "./review-session";
 
 export const dynamic = "force-dynamic";
 
-export default async function ReviewPage() {
+export default async function ReviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mode?: string }>;
+}) {
+  const sp = await searchParams;
+  const mode: ReviewMode = sp.mode === "dictation" ? "dictation" : "fill-in";
   const items = await getDueReviews(20);
 
   return (
@@ -25,8 +35,32 @@ export default async function ReviewPage() {
         </Link>
         <h1 className="text-3xl font-bold mt-4">🔁 今日复习</h1>
         <p className="text-gray-600 mt-2">
-          用例句挖空来考自己。输入单词，按 Enter 检查。
+          {mode === "dictation"
+            ? "听例句，写出听到的单词。按 Enter 检查。"
+            : "用例句挖空来考自己。输入单词，按 Enter 检查。"}
         </p>
+        <nav className="flex gap-2 mt-4">
+          <Link
+            href="/review"
+            className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
+              mode === "fill-in"
+                ? "bg-gray-900 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            填空
+          </Link>
+          <Link
+            href="/review?mode=dictation"
+            className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
+              mode === "dictation"
+                ? "bg-gray-900 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            🎧 听写
+          </Link>
+        </nav>
       </header>
 
       {items.length === 0 ? (
@@ -44,7 +78,7 @@ export default async function ReviewPage() {
           </Link>
         </div>
       ) : (
-        <ReviewSession initialItems={items} />
+        <ReviewSession initialItems={items} mode={mode} />
       )}
     </main>
   );
