@@ -16,14 +16,6 @@ import {
   LEVELS,
   CATEGORY_LABELS,
 } from "@/lib/sentences";
-import {
-  type Diff,
-  type GradeResponse,
-  type Issue,
-  ISSUE_TYPE_LABELS,
-  SEVERITY_LABELS,
-} from "@/lib/grade-types";
-import { Tooltip } from "@/components/ui/tooltip";
 
 const PROGRESS_KEY = "japanese:listen-progress";
 const SHADOW_HISTORY_KEY = "japanese:shadow-history";
@@ -36,9 +28,6 @@ type ShadowGrade = {
   encouragement: string;
 };
 
-// P1.B — server-returned per-token diff + structured issue list. Both
-// optional so old shadow-history entries (Phase 1 base / Phase 2) keep
-// loading; client falls back to computeWordDiff() when missing.
 type ShadowHistoryEntry = {
   id: string;
   sentenceId: string;
@@ -46,8 +35,6 @@ type ShadowHistoryEntry = {
   timestamp: number;
   transcript: string;
   grade: ShadowGrade;
-  diff?: Diff;
-  issues?: Issue[];
 };
 
 function loadProgress(): Record<string, Set<string>> {
@@ -113,30 +100,15 @@ function tokenizeWithSeparators(
     }));
 }
 
-// P1.B — token shape used by both the server and client diff paths. The
-// `status` field is set by the server; the client fallback (below)
-// derives it from a transcript substring check.
-type DiffRenderToken = {
-  word: string;
-  isSeparator: boolean;
-  status?: "matched" | "mismatched";
-  target?: string;
-  transcript?: string;
-  transcriptForm?: string;
-};
-
-// Phase 1 enhancement (fallback only since P1.B): compare target sentence
-// against transcript at the word level. Returns the tokens (for rendering)
-// and the matched/missed sets (for stats). When the server returns a
-// structured diff it is used directly and this helper is skipped.
+// Phase 1 enhancement: compare target sentence against transcript at the word level.
+// Returns the tokens (for rendering), and the matched/missed sets (for stats).
 function computeWordDiff(
   target: string,
   transcript: string
 ): {
-  tokens: DiffRenderToken[];
+  tokens: { word: string; isSeparator: boolean }[];
   matched: string[];
   missed: string[];
-  source: "client";
 } {
   const tokens = tokenizeWithSeparators(target);
   const transcriptWords = new Set(
@@ -144,29 +116,15 @@ function computeWordDiff(
   );
   const matched: string[] = [];
   const missed: string[] = [];
-  const renderTokens: DiffRenderToken[] = [];
   for (const tok of tokens) {
-    if (tok.isSeparator) {
-      renderTokens.push({ word: tok.word, isSeparator: true });
-      continue;
-    }
+    if (tok.isSeparator) continue;
     if (transcriptWords.has(tok.word) || transcript.includes(tok.word)) {
       matched.push(tok.word);
-      renderTokens.push({
-        word: tok.word,
-        isSeparator: false,
-        status: "matched",
-      });
     } else {
       missed.push(tok.word);
-      renderTokens.push({
-        word: tok.word,
-        isSeparator: false,
-        status: "mismatched",
-      });
     }
   }
-  return { tokens: renderTokens, matched, missed, source: "client" };
+  return { tokens, matched, missed };
 }
 
 // Phase 4: chunk Japanese sentence by 読点/句点 (、。); fall back to fixed-length chunks
@@ -245,7 +203,15 @@ export default function ListeningPage() {
 }
 
 function ListeningPageContent() {
-  const [mode, setMode] = useState<Mode>("listen");
+  const [mode, setMode] = useState<Mode>(() => {
+    // Deep-link support: /today's "Shadowing" item links to
+    // /listening?mode=shadow so the user lands directly in Shadow mode
+    // (no need to click the Shadow tab manually). Lazy init avoids a
+    // "flash of listen mode" on first paint.
+    if (typeof window === "undefined") return "listen";
+    const params = new URLSearchParams(window.location.search);
+    return params.get("mode") === "shadow" ? "shadow" : "listen";
+  });
 
   // Difficulty level (N5/N4/N3/N2/N1) — index into LEVELS array.
   const [levelIdx, setLevelIdx] = useState<0 | 1 | 2 | 3 | 4>(0);
@@ -273,26 +239,12 @@ function ListeningPageContent() {
   // `shadowPhase === "result"`, so checking `shadowPhase === "grading"` inside
   // would always be false).
   const [isRegrading, setIsRegrading] = useState(false);
-  // P1.A — client-side notices (auto-stop notice + 4MB warning). No
-  // toast library installed in this project, so we surface these as a
-  // single inline notice that clears when the next recording starts.
-  const [clientWarning, setClientWarning] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const recordingStartRef = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const speakCancelRef = useRef(false);
-
-  // P1.A — client-side recording safety caps.
-  // 30s cap: average N3+ sentences + buffer; longer recordings blow past
-  // the 4MB Vercel Hobby body limit and trigger 413s. Auto-stop keeps
-  // the upload path clean.
-  const MAX_RECORDING_SEC = 30;
-  // 4MB warning: Vercel Hobby serverless function body limit is ~4.5MB;
-  // a single 4MB+ audio upload is rejected at the edge. Warn before
-  // POST so the user knows to re-record shorter chunks.
-  const MAX_BLOB_BYTES = 4 * 1024 * 1024;
 
   // Shadow chunked mode (Phase 4): play sentence in chunks with 1.5s delay between.
   const [chunkedMode, setChunkedMode] = useState(false);
@@ -317,46 +269,11 @@ function ListeningPageContent() {
     ? chunkJapanese(sentence.ja)
     : [];
 
-  // P1.B — prefer server-returned `diff` (structured per-token alignment
-  // with kana-form hints); fall back to client `computeWordDiff()` for
-  // older shadow-history entries that don't carry one. The two shapes
-  // are unified into a single `wordDiff` shape so the render section
-  // below doesn't branch on source.
-  //
-  // `tokenIssues` is an index → issues[] map for hover tooltips.
-  const currentShadowEntry =
-    mode === "shadow" && shadowPhase === "result" && transcript
-      ? shadowHistory.find(
-          (e) => e.sentenceId === sentence.id && e.transcript === transcript
-        ) ?? null
-      : null;
-  const serverDiff = currentShadowEntry?.diff;
-  const serverIssues = currentShadowEntry?.issues;
-  const tokenIssues: Issue[] =
-    serverIssues && serverIssues.length > 0 ? serverIssues : [];
+  // Phase 1 enhancement: word-level diff between target and transcript.
+  // Null when not in Shadow result phase (or transcript missing).
   const wordDiff =
     mode === "shadow" && shadowPhase === "result" && transcript
-      ? serverDiff && serverDiff.tokens.length > 0
-        ? {
-            // server shape — tokens already aligned, no need to recompute.
-            // Each token has an explicit `status` from the model.
-            tokens: serverDiff.tokens.map((t) => ({
-              word: t.text,
-              isSeparator: false,
-              status: t.status as "matched" | "mismatched",
-              target: t.target,
-              transcript: t.transcript,
-              transcriptForm: t.transcriptForm,
-            })),
-            matched: serverDiff.tokens
-              .filter((t) => t.status === "matched")
-              .map((t) => t.text),
-            missed: serverDiff.tokens
-              .filter((t) => t.status === "mismatched")
-              .map((t) => t.text),
-            source: "server" as const,
-          }
-        : computeWordDiff(sentence.ja, transcript)
+      ? computeWordDiff(sentence.ja, transcript)
       : null;
 
   // Phase 3 enhancement: previous attempt lookup (for delta display).
@@ -488,7 +405,6 @@ function ListeningPageContent() {
     setShadowError(null);
     setRecordingTime(0);
     setSpeaking(false);
-    setClientWarning(null); // P1.A — clear stale notice on sentence change
     // intentionally only depending on sentence/category/level idx
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryIdx, sentenceIdx, levelIdx]);
@@ -524,7 +440,6 @@ function ListeningPageContent() {
     setGrade(null);
     setShadowError(null);
     setRecordingTime(0);
-    setClientWarning(null);
   }
 
   function changeCategory(i: number) {
@@ -643,7 +558,6 @@ function ListeningPageContent() {
     setShadowError(null);
     setTranscript(null);
     setGrade(null);
-    setClientWarning(null); // P1.A — clear stale notice on new recording
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -682,35 +596,16 @@ function ListeningPageContent() {
         const blob = new Blob(chunksRef.current, {
           type: recorder.mimeType || "audio/webm",
         });
-        // P1.A — 4MB Vercel body limit awareness. Warn (don't block) so
-        // the user understands why the server may 413.
-        if (blob.size > MAX_BLOB_BYTES) {
-          setClientWarning(
-            `录音 ${(blob.size / 1024 / 1024).toFixed(1)}MB，超过 4MB。Vercel 免费层 body 限制 ~4MB，建议分段重录或缩短到 ${MAX_RECORDING_SEC}s 以内。`
-          );
-        }
         await runShadowPipeline(blob);
       };
 
       recordingStartRef.current = Date.now();
       setRecordingTime(0);
       timerRef.current = setInterval(() => {
-        if (!recordingStartRef.current) return;
-        const elapsed = Math.floor(
-          (Date.now() - recordingStartRef.current) / 1000
-        );
-        setRecordingTime(elapsed);
-        // P1.A — auto-stop at MAX_RECORDING_SEC. Calling stop() here is
-        // safe — recorder.onstop fires once and runs the pipeline.
-        if (
-          elapsed >= MAX_RECORDING_SEC &&
-          mediaRecorderRef.current &&
-          mediaRecorderRef.current.state === "recording"
-        ) {
-          setClientWarning(
-            `录音到 ${MAX_RECORDING_SEC}s 自动停止。正在转写 + 评分…`
+        if (recordingStartRef.current) {
+          setRecordingTime(
+            Math.floor((Date.now() - recordingStartRef.current) / 1000)
           );
-          mediaRecorderRef.current.stop();
         }
       }, 250);
 
@@ -772,10 +667,7 @@ function ListeningPageContent() {
           .catch(() => ({}))) as { error?: string };
         throw new Error(j.error || `Grade HTTP ${gRes.status}`);
       }
-      // P1.B — full GradeResponse (grade + optional diff + optional issues).
-      // We capture `diff` and `issues` so the next render can use the
-      // server-aligned tokens instead of the client substring fallback.
-      const gData = (await gRes.json()) as GradeResponse;
+      const gData = (await gRes.json()) as { grade: ShadowGrade };
       setGrade(gData.grade);
       setShadowPhase("result");
 
@@ -787,8 +679,6 @@ function ListeningPageContent() {
         timestamp: Date.now(),
         transcript: tData.text,
         grade: gData.grade,
-        diff: gData.diff,
-        issues: gData.issues,
       };
       const newHistory = [entry, ...shadowHistory].slice(0, 50);
       setShadowHistory(newHistory);
@@ -806,7 +696,6 @@ function ListeningPageContent() {
     setShadowPhase("idle");
     setEditableTranscript("");
     setIsTranscriptEdited(false);
-    setClientWarning(null);
   }
 
   // Phase 2: re-grade with user-edited transcript (without re-recording audio).
@@ -831,10 +720,10 @@ function ListeningPageContent() {
           .catch(() => ({}))) as { error?: string };
         throw new Error(j.error || `Grade HTTP ${gRes.status}`);
       }
-      const gData = (await gRes.json()) as GradeResponse;
+      const gData = (await gRes.json()) as { grade: ShadowGrade };
       setGrade(gData.grade);
-      // Update history entry (if id matches) so the corrected transcript +
-      // grade + fresh diff/issues are persisted in localStorage history.
+      // Update history entry (if id matches) so the corrected transcript + grade
+      // are persisted in the localStorage history.
       setShadowHistory((prev) => {
         const idx = prev.findIndex(
           (e) => e.sentenceId === sentence.id && e.transcript === transcript
@@ -845,8 +734,6 @@ function ListeningPageContent() {
           ...next[idx],
           transcript: editableTranscript,
           grade: gData.grade,
-          diff: gData.diff,
-          issues: gData.issues,
         };
         return next;
       });
@@ -1166,12 +1053,6 @@ function ListeningPageContent() {
                 ⚠️ {shadowError}
               </div>
             )}
-
-            {clientWarning && (
-              <div className="mt-3 text-sm text-amber-800 text-center bg-amber-50 border border-amber-200 rounded-lg p-3">
-                💡 {clientWarning}
-              </div>
-            )}
           </div>
         )}
 
@@ -1196,10 +1077,7 @@ function ListeningPageContent() {
               </div>
             </div>
 
-            {/* P1.B — 逐字对照 (target vs transcript). When the server returned
-                a structured `diff`, each token has an explicit `status` and a
-                `transcriptForm` for kanji → kana mismatches. Otherwise we
-                use the Phase 1 client fallback (substring match). */}
+            {/* Phase 1 enhancement:逐字对照 (target vs transcript) */}
             {wordDiff && (
               <div>
                 <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">
@@ -1211,120 +1089,18 @@ function ListeningPageContent() {
                   lang="ja"
                 >
                   {wordDiff.tokens.map((tok, i) => {
-                    if (tok.isSeparator) {
-                      return (
-                        <span key={i} className="text-gray-500">
-                          {tok.word}
-                        </span>
-                      );
-                    }
-                    const status =
-                      tok.status ??
-                      (wordDiff.matched.includes(tok.word)
-                        ? "matched"
-                        : "mismatched");
-                    const baseCls =
-                      status === "matched"
+                    const cls = tok.isSeparator
+                      ? "text-gray-500"
+                      : wordDiff.matched.includes(tok.word)
                         ? "text-green-700"
                         : "text-red-600 line-through";
-                    // For kanji-reading mismatches the server may include
-                    // a kana transcriptForm — render it under the kanji
-                    // and show a Tooltip with the full hint on hover/focus.
-                    // (Replaces the inline `[かな]` annotation + native
-                    // HTML `title` attribute — both had poor UX.)
-                    if (
-                      status === "mismatched" &&
-                      tok.transcriptForm &&
-                      tok.target &&
-                      tok.transcriptForm !== tok.target
-                    ) {
-                      return (
-                        <Tooltip
-                          key={i}
-                          side="top"
-                          content={`读了 ${tok.transcriptForm}（应为 ${tok.target}）`}
-                        >
-                          <span className={`${baseCls} mr-0.5`}>
-                            {tok.word}
-                            <span className="ml-0.5 text-[0.7em] text-red-400 not-italic font-mono">
-                              [{tok.transcriptForm}]
-                            </span>
-                          </span>
-                        </Tooltip>
-                      );
-                    }
-                    // Mismatched token without a kana transcriptForm —
-                    // wrap in a Tooltip so the user can hover/focus to
-                    // see the structured-issue hint if one is attached.
-                    if (status === "mismatched") {
-                      const issue = tokenIssues.find(
-                        (iss) => iss.tokenIndex === i
-                      );
-                      const hint = issue
-                        ? `${ISSUE_TYPE_LABELS[issue.type]} · ${SEVERITY_LABELS[issue.severity]}${issue.expected && issue.heard ? ` · 听「${issue.heard}」应为「${issue.expected}」` : ""}${issue.hint ? ` · ${issue.hint}` : ""}`
-                        : "听错了";
-                      return (
-                        <Tooltip key={i} side="top" content={hint}>
-                          <span className={`${baseCls} mr-0.5`}>
-                            {tok.word}
-                          </span>
-                        </Tooltip>
-                      );
-                    }
                     return (
-                      <span key={i} className={baseCls}>
+                      <span key={i} className={cls}>
                         {tok.word}
                       </span>
                     );
                   })}
                 </div>
-              </div>
-            )}
-
-            {/* P1.B — compact issues list (current shadow only). When the
-                server returns structured issues, surface the top ones with
-                type / severity / hint. Falls back to nothing for old
-                shadow-history entries that lack `issues`. */}
-            {tokenIssues.length > 0 && (
-              <div>
-                <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">
-                  结构化错误 · {tokenIssues.length} 条
-                </div>
-                <ul className="text-sm space-y-1.5">
-                  {tokenIssues.map((iss, i) => (
-                    <li
-                      key={`${iss.tokenIndex}-${iss.type}-${i}`}
-                      className="bg-red-50 border border-red-200 rounded-lg p-2.5"
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <span
-                          className={`text-[10px] font-medium px-1.5 py-0.5 rounded uppercase tracking-wide ${
-                            iss.severity === "critical"
-                              ? "bg-red-600 text-white"
-                              : iss.severity === "major"
-                                ? "bg-red-200 text-red-800"
-                                : "bg-yellow-100 text-yellow-800"
-                          }`}
-                        >
-                          {SEVERITY_LABELS[iss.severity]}
-                        </span>
-                        <span className="text-xs font-medium text-red-800">
-                          {ISSUE_TYPE_LABELS[iss.type]}
-                        </span>
-                        {iss.expected && iss.heard && (
-                          <span className="text-xs text-gray-600 font-mono">
-                            听「{iss.heard}」应为「{iss.expected}」
-                          </span>
-                        )}
-                      </div>
-                      {iss.hint && (
-                        <div className="text-xs text-gray-700 leading-relaxed">
-                          💡 {iss.hint}
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
               </div>
             )}
 
