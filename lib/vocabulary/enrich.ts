@@ -1,18 +1,38 @@
 // AI enrichment for vocabulary items. Given just the headword,
 // generate missing fields (reading, meaning, JLPT level, part of
 // speech) using gpt-4o-mini. Called from lib/vocabulary.ts
-// `createVocabularyItem` when the caller doesn't supply those fields.
+// `createVocabularyItem` — auto-fills when the caller leaves fields
+// blank.
 //
-// Designed for Japanese — the rest of the app hardcodes language="ja".
-// response_format: json_object guarantees parseable output.
+// Phase 1.5+ (per Frank #6176 — Vercel build was failing because
+// `new OpenAI()` at module load threw when OPENAI_API_KEY wasn't set,
+// even on pages like /vocabulary/[id] that only READ vocab data and
+// never call AI functions). Fix: lazy-init the client so the SDK is
+// only constructed when an AI function is actually invoked. Pages
+// that just import `enrichVocabulary` as a type or read vocab data
+// never trigger client creation → no more module-load error → builds
+// pass even without OPENAI_API_KEY configured.
 //
-// Cost: ~$0.001 per call (gpt-4o-mini, ~150 input tokens + ~80 output).
-// Latency: 1-3 s typical. The form's submit button shows "AI 补全中…"
-// via useFormStatus so the user knows the request is in flight.
+// Cost: ~$0.001 per call (gpt-4o-mini, ~150 input + ~80 output tokens).
+// Latency: 1-3s typical.
 
 import OpenAI from "openai";
 
-const openai = new OpenAI();
+// Lazy OpenAI client — only constructed on first AI call. This keeps
+// module load side-effect-free so Vercel builds succeed without
+// OPENAI_API_KEY (which only matters for write paths that actually
+// invoke AI).
+let _openai: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  if (!_openai) {
+    // Constructor reads OPENAI_API_KEY from env; throws if missing.
+    // That throw is fine here — it only fires the first time someone
+    // calls an AI function without the env var set, and the caller
+    // already wraps in try/catch + falls back gracefully.
+    _openai = new OpenAI();
+  }
+  return _openai;
+}
 
 export type EnrichmentResult = {
   reading: string | null;
@@ -21,7 +41,7 @@ export type EnrichmentResult = {
   part_of_speech: string | null;
 };
 
-const SYSTEM_PROMPT = `You are a Japanese vocabulary learning assistant. Given a Japanese word, phrase, grammar pattern, or sentence, return a JSON object with exactly these keys:
+const SYSTEM_PROMPT = `You are a Japanese language learning assistant. Given a Japanese word, phrase, grammar pattern, or sentence, return a JSON object with exactly these keys:
 
 {
   "reading": "<hiragana reading, no romaji, no kanji — or null if not applicable (e.g., already-kana text, kanji compound without standard reading)>",
@@ -32,19 +52,22 @@ const SYSTEM_PROMPT = `You are a Japanese vocabulary learning assistant. Given a
 
 Rules:
 - Return ONLY the JSON object, no other text, no markdown fences.
+- The reading field is helpful for kanji-heavy vocabulary; use null if the input has no kanji (e.g., already-hiragana-only text).
 - For grammar patterns (e.g., 「〜ようにする」) and sentence templates, part_of_speech should be "句型" or "表达".
 - For multi-word phrases, reading is the full kana reading of the whole phrase.
-- If unsure about any field, use null rather than guessing. Part of speech and JLPT level are the fields most often null.`;
+- If unsure about any field, use null rather than guessing. JLPT level and part_of_speech are the fields most often null.`;
 
 export async function enrichVocabulary(
   word: string,
   _type: "word" | "phrase" | "grammar" | "sentence"
 ): Promise<EnrichmentResult> {
-  const response = await openai.chat.completions.create({
+  const userContent = JSON.stringify({ word, type: _type });
+
+  const response = await getOpenAI().chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: word },
+      { role: "user", content: userContent },
     ],
     response_format: { type: "json_object" },
     temperature: 0.3,
@@ -55,7 +78,7 @@ export async function enrichVocabulary(
   try {
     parsed = JSON.parse(content);
   } catch {
-    // Bad JSON — leave parsed empty so caller falls back to word-as-meaning.
+    // Bad JSON — caller will see empty fields and fall back to word-as-meaning.
   }
 
   return {

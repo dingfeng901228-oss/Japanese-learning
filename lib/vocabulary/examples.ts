@@ -10,12 +10,25 @@
 //     the primary example when the user clicks "重新生成" on the
 //     detail page (Phase 4 lite).
 //
+// Phase 1.5+ (per Frank #6176): same lazy OpenAI init pattern as
+// `enrich.ts` — the SDK is only constructed on first AI call so
+// Vercel builds don't fail when OPENAI_API_KEY isn't configured.
+// Pages that only READ vocab data (like /vocabulary/[id]) never
+// touch the client.
+//
 // Cost: ~$0.001 per call (gpt-4o-mini, ~250 input + ~80 output tokens).
 // Latency: 1-3s typical.
 
 import OpenAI from "openai";
 
-const openai = new OpenAI();
+// Lazy OpenAI client — see `enrich.ts` for the rationale.
+let _openai: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  if (!_openai) {
+    _openai = new OpenAI();
+  }
+  return _openai;
+}
 
 export type GeneratedExample = {
   sentence: string;
@@ -52,7 +65,7 @@ export async function generateExample(item: {
     type: item.type,
   });
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
