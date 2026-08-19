@@ -1,17 +1,28 @@
 "use client";
 
-// Streak counter — spec §13. Reads localStorage accumulated training
-// minutes via useStreak() (in lib/today-stats.ts) and shows current +
-// longest streak. Refreshes on focus + every 5s so the dashboard updates
-// live as the user spends time in /listening / /speaking / /review.
+// Streak counter — spec §13. Per Frank #6295: reads daily_rollups from
+// Supabase (cross-device) instead of scanning localStorage. Falls back
+// to 0/0/0 if the user hasn't trained yet (no rows in the table).
 
-import { useStreak } from "@/lib/today-stats";
+import { useMemo } from "react";
+import { computeStreakFromDays } from "@/lib/today-stats";
+import { useDailyRollups } from "@/lib/use-daily-rollups";
 
 export function StreakCounter() {
-  const streak = useStreak();
+  const { data: rollups } = useDailyRollups(365);
+
+  const streak = useMemo(() => {
+    const days = new Set(
+      rollups.filter((r) => r.minutes > 0).map((r) => r.date)
+    );
+    return computeStreakFromDays(days);
+  }, [rollups]);
+
   return (
     <div className="flex items-center gap-4">
-      <span className="text-3xl" aria-hidden="true">🔥</span>
+      <span className="text-3xl" aria-hidden="true">
+        🔥
+      </span>
       <div>
         <p className="text-3xl font-bold tabular-nums text-ink">
           {streak.current}

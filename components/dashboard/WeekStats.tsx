@@ -1,11 +1,10 @@
 "use client";
 
-// Week stats — spec §14. Renders the two real-time stats (本周学习 /
-// 学习天数) by reading localStorage accumulated minutes via the
-// useWeekStats() hook. The other two stats in the grid (新增单词 /
-// 完成复习) come from Supabase via the parent server component.
+// Week stats — spec §14. Per Frank #6295: pulls daily_rollups from
+// Supabase (cross-device) instead of scanning localStorage. Two stats:
+// total training minutes + days studied in the last 7 days.
 
-import { useWeekStats } from "@/lib/today-stats";
+import { useDailyRollups } from "@/lib/use-daily-rollups";
 
 function formatHM(minutes: number): string {
   const h = Math.floor(minutes / 60);
@@ -14,19 +13,29 @@ function formatHM(minutes: number): string {
 }
 
 export function WeekStats() {
-  const stats = useWeekStats();
+  const { data: rollups } = useDailyRollups(7);
+
+  let minutes = 0;
+  let daysStudied = 0;
+  for (const r of rollups) {
+    if (r.minutes > 0) {
+      minutes += r.minutes;
+      daysStudied++;
+    }
+  }
+
   return (
     <>
       <div>
         <p className="text-xs text-gray-500 mb-1">本周学习</p>
         <p className="text-lg font-bold tabular-nums text-ink">
-          {formatHM(stats.minutes)}
+          {formatHM(minutes)}
         </p>
       </div>
       <div>
         <p className="text-xs text-gray-500 mb-1">学习天数</p>
         <p className="text-lg font-bold tabular-nums text-ink">
-          {stats.daysStudied} / 7
+          {daysStudied} / 7
         </p>
       </div>
     </>
