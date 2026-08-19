@@ -14,6 +14,7 @@ import {
   getDueReviews,
   getUserVocabCount,
   userHasVocabWithExamples,
+  getUserReviewRowCount,
 } from "@/lib/vocabulary/reviews";
 import { backfillUserReviewsAction } from "./actions";
 import { ReviewSession, type ReviewMode } from "./review-session";
@@ -28,6 +29,9 @@ export default async function ReviewPage({
   const sp = await searchParams;
   const mode: ReviewMode = sp.mode === "dictation" ? "dictation" : "fill-in";
   const items = await getDueReviews(20);
+  // TEMP DEBUG per Frank #6364: surface how many review rows exist
+  // for this user — splits the failure modes with the page debug strip.
+  const reviewRowCount = await getUserReviewRowCount();
   // Per Frank #6348 + #6353: drive the empty-state UI from server-side
   // data, not URL search params (the previous ?notice=no_examples flag
   // was getting stripped somewhere in the redirect chain and the page
@@ -165,7 +169,8 @@ export default async function ReviewPage({
           Frank confirms the right UI shows. */}
       <div className="mt-4 text-[10px] text-gray-400 text-center font-mono opacity-60 select-all">
         debug · items={items.length} · vocab={vocabCount} ·
-        hasExample={String(userHasAnyExample)}
+        hasExample={String(userHasAnyExample)} ·
+        reviewsInDb={reviewRowCount}
       </div>
     </main>
   );

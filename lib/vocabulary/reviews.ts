@@ -378,3 +378,24 @@ export async function userHasVocabWithExamples(): Promise<boolean> {
   if (error) return false;
   return (count ?? 0) > 0;
 }
+
+// TEMP DEBUG per Frank #6364: report how many rows exist in
+// vocabulary_reviews for the current user. Combined with the page
+// debug strip's items=0, this splits the failure modes:
+//   - reviewsInDb=0 → the backfill INSERT never succeeded for
+//     this user (no rows for getDueReviews to return); we need
+//     to manually seed the queue or fix the insert path.
+//   - reviewsInDb>0 → rows exist but the nested-embedding fix
+//     in 7ff8cec didn't actually deploy (Vercel build/cache
+//     issue) or the embed still has another PostgREST gotcha.
+export async function getUserReviewRowCount(): Promise<number> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return 0;
+  const { count, error } = await supabase
+    .from("vocabulary_reviews")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+  if (error) return 0;
+  return count ?? 0;
+}
