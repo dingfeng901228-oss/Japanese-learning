@@ -248,6 +248,9 @@ function ListeningPageContent() {
   // `shadowPhase === "result"`, so checking `shadowPhase === "grading"` inside
   // would always be false).
   const [isRegrading, setIsRegrading] = useState(false);
+  // Per Frank #6338: translation toggle — hidden until user clicks, so the
+  // learner tries to understand the Japanese sentence first.
+  const [showTranslation, setShowTranslation] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -425,6 +428,9 @@ function ListeningPageContent() {
     setShadowError(null);
     setRecordingTime(0);
     setSpeaking(false);
+    // Per Frank #6338: reset translation toggle when sentence changes so
+    // each new sentence starts hidden (forces learner to read Japanese).
+    setShowTranslation(false);
     // intentionally only depending on sentence/category/level idx
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryIdx, sentenceIdx, levelIdx]);
@@ -1029,8 +1035,25 @@ function ListeningPageContent() {
           )}
         </div>
 
-        <div className="text-base text-gray-600 text-center mb-6">
-          {sentence.zh}
+        {/* Per Frank #6338: translation toggle (default hidden).
+           Default state hides zh so the learner must first try to
+           understand the Japanese sentence; click "🌐 显示翻译" to
+           reveal the Chinese translation. Button stays visible so the
+           user always knows the affordance is there. */}
+        <div className="flex flex-col items-center justify-center mb-6 min-h-[2.5rem]">
+          {showTranslation && (
+            <div className="text-base text-gray-600 text-center mb-2">
+              {sentence.zh}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => setShowTranslation((v) => !v)}
+            aria-pressed={showTranslation}
+            className="text-xs px-3 py-1 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            {showTranslation ? "🌐 隐藏翻译" : "🌐 显示翻译"}
+          </button>
         </div>
 
         {mode === "listen" ? (
