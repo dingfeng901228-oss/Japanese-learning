@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { UserMenu } from "@/components/UserMenu";
 import { MobileNav } from "@/components/dashboard/MobileNav";
 import { GlassHeader } from "@/components/dashboard/GlassHeader";
+import { PageTransition } from "@/components/PageTransition";
 
 // Force all routes through this layout to be server-rendered at request
 // time. The root layout calls supabase.auth.getUser() which reads session
@@ -125,7 +126,7 @@ export default async function RootLayout({
     >
       <body className="font-sans antialiased min-h-screen bg-soft text-ink">
         {userInfo && <GlassHeader navItems={NAV_ITEMS} userInfo={userInfo} />}
-        {children}
+        <PageTransition>{children}</PageTransition>
       </body>
     </html>
   );

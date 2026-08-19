@@ -27,3 +27,28 @@ rt {
   line-height: 1.2;
   letter-spacing: 0;
 }
+
+/* Phase 7+ (#6300): iOS-style page transition. Re-plays on every
+   pathname change (PageTransition.tsx forces re-mount via key={pathname}).
+   280ms with an iOS-ish easing curve — subtle, not distracting. */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Respect users who've asked the OS for reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
+    animation: none;
+  }
+}
