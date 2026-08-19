@@ -13,6 +13,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { flushSync, queueLength } from "@/lib/training-queue";
 
 export type DailyRollup = {
   date: string; // YYYY-MM-DD
@@ -100,6 +101,30 @@ export function useDailyRollups(days: number = 365) {
     return () => {
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [refresh]);
+
+  // Drain the localStorage-backed retry queue on every render trigger
+  // (mount / focus / visibility / 5-min poll). Each queue item is
+  // processed at most once — and only on success it's removed from
+  // localStorage, so retries are idempotent. Per Frank #6314 +
+  // #6318 — this is the surgical fix for "today's minutes missing
+  // from the dashboard because recordDailyActivity was fire-and-forget".
+  useEffect(() => {
+    function drain() {
+      if (queueLength() === 0) return;
+      flushSync().catch((err) => {
+        console.error("sync flush failed (will retry on next trigger):", err);
+      });
+    }
+    window.addEventListener("focus", drain);
+    document.addEventListener("visibilitychange", drain);
+    drain();
+    const id = window.setInterval(drain, 5 * 60 * 1000);
+    return () => {
+      window.removeEventListener("focus", drain);
+      document.removeEventListener("visibilitychange", drain);
+      window.clearInterval(id);
     };
   }, [refresh]);
 

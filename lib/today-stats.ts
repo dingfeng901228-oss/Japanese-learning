@@ -16,6 +16,7 @@
 // keys (YYYY-MM-DD).
 
 import { useEffect, useState } from "react";
+import { enqueueSync, flushSync } from "@/lib/training-queue";
 
 export type TrainingItemId = "listening" | "speaking" | "shadowing" | "review";
 
@@ -141,18 +142,26 @@ export function accumulateMinutes(
     Math.round((prev + minutes) * 100) / 100;
   saveAccumulated(acc);
 
-  // Fire-and-forget sync to daily_rollups (server-side, see
-  // app/actions/record-activity.ts). localStorage stays the source of
-  // truth for the dashboard; this just keeps the server rollup in
-  // sync so the heatmap eventually goes real too.
+  // Sync to daily_rollups via the localStorage-backed retry queue
+  // (lib/training-queue.ts). Each call enqueues exactly one
+  // (date, type, minutes) item; flushSync() drains and tries each
+  // item against the recordDailyActivity server action. On failure
+  // the item stays in the queue and use-daily-rollups.ts retries it
+  // on every focus / visibilitychange / 5-min poll. The RPC
+  // upsert_daily_rollup is additive, so as long as each item is
+  // processed at most once retries are safe — and the queue's
+  // drainQueue() removes items only after a successful server call.
   if (typeof window !== "undefined" && minutes > 0) {
-    import("@/app/actions/record-activity")
-      .then(({ recordDailyActivity }) =>
-        recordDailyActivity(todayKey(), minutes, 0)
-      )
-      .catch((err) => {
-        console.error("daily_rollups sync failed:", err);
-      });
+    const delta = Math.round(minutes * 100) / 100;
+    enqueueSync({
+      date: todayKey(),
+      type,
+      minutes: delta,
+      enqueuedAt: Date.now(),
+    });
+    flushSync().catch((err) => {
+      console.error("sync flush failed (will retry on next focus):", err);
+    });
   }
 
   return acc;
