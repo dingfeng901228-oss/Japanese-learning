@@ -5,6 +5,12 @@ import Link from "next/link";
 import { saveMistakeToVocabAction } from "./actions";
 import { useSessionTimer, formatDuration } from "@/lib/today-stats";
 
+// Phase 7+ (#6280): persist the conversation across reloads so the
+// user doesn't lose their context every time they come back. Single
+// per-browser key — if a different user signs in on the same machine
+// they'd see the previous conversation; "开始新对话" clears it.
+const TURNS_STORAGE_KEY = "japaneseLearning.speakingTurns";
+
 type Turn = { role: "user" | "assistant"; content: string };
 
 type Feedback = {
@@ -126,6 +132,48 @@ export default function SpeakingPage() {
   // Phase 2: voice input via Web Speech API
   const [recognizing, setRecognizing] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  // Mirror of `recognizing` kept in a ref so the onend closure (which
+  // captures stale state by default) can see the latest value when deciding
+  // whether to auto-restart (continuous: true) or settle to idle.
+  const recognizingRef = useRef(false);
+
+  // Phase 7 (#6280): real-time waveform during voice input. Same
+  // pattern as the shadow mode recorder: AnalyserNode + raw time-domain
+  // PCM samples + SVG path mutated via ref (no React re-render @ 60fps).
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const waveformPathRef = useRef<SVGPathElement | null>(null);
+  const voiceStreamRef = useRef<MediaStream | null>(null);
+  const voiceFrameRef = useRef<number | null>(null);
+
+  // Phase 7 (#6280): persist conversation turns across reloads.
+  const turnsStorageKey = TURNS_STORAGE_KEY;
+
+  // Phase 7 (#6280): load saved conversation on mount, save on change.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(turnsStorageKey);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Turn[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setTurns(parsed);
+        }
+      }
+    } catch {
+      // ignore corrupt storage
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(turnsStorageKey, JSON.stringify(turns));
+    } catch {
+      // storage quota — silently ignore
+    }
+  }, [turns, turnsStorageKey]);
 
   // Phase 6 MVP: TTS via Web Speech API — track which AI message is
   // currently being spoken so the button can show a stop state.
@@ -259,9 +307,12 @@ export default function SpeakingPage() {
     setSavingIdx(null);
     setSavedGrammarSet(new Set());
     setSavingGrammarIdx(null);
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(turnsStorageKey);
+    }
   }
 
-  function startRecognition() {
+  async function startRecognition() {
     if (recognizing) return;
     const recognition = getSpeechRecognition();
     if (!recognition) {
@@ -272,7 +323,11 @@ export default function SpeakingPage() {
     }
     setError(null);
     recognition.lang = "ja-JP";
-    recognition.continuous = false;
+    // Phase 7 (#6280): keep recording across pauses — the user used to
+    // get cut off if they paused too long (continuous: false). We also
+    // auto-restart on `onend` (see below) so a stray end doesn't drop
+    // the session.
+    recognition.continuous = true;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
@@ -284,10 +339,27 @@ export default function SpeakingPage() {
       setInput(transcript);
     };
     recognition.onerror = (event: any) => {
-      setError(`语音识别错误: ${event.error || "unknown"}`);
-      setRecognizing(false);
+      const err = event.error || "unknown";
+      // "no-speech" / "aborted" are normal lifecycle events when the
+      // user toggles off or the tab loses focus — don't surface them as
+      // errors.
+      if (err !== "no-speech" && err !== "aborted") {
+        setError(`语音识别错误: ${err}`);
+      }
     };
     recognition.onend = () => {
+      stopVoiceMeter();
+      // User still wants to record (hasn't pressed stop or re-record)?
+      // Auto-restart so a stray `onend` (e.g. browser idle timeout)
+      // doesn't drop the session mid-thought.
+      if (recognizingRef.current) {
+        try {
+          recognition.start();
+        } catch {
+          // already running — fine
+        }
+        return;
+      }
       setRecognizing(false);
     };
 
@@ -295,13 +367,115 @@ export default function SpeakingPage() {
       recognition.start();
       recognitionRef.current = recognition;
       setRecognizing(true);
+      recognizingRef.current = true;
+
+      // Phase 7 (#6280): real-time waveform via the mic stream.
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        voiceStreamRef.current = stream;
+        startVoiceMeter(stream);
+      } catch {
+        // Mic permission denied — recognition still works, no waveform.
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
       setRecognizing(false);
+      recognizingRef.current = false;
+    }
+  }
+
+  // Phase 7 (#6280): cancel current recognition + clear input +
+  // re-start fresh. Used by the 重录 button.
+  function reRecord() {
+    setInput("");
+    if (recognizing) {
+      // Force-stop, then startRecognition below will spin up again.
+      setRecognizing(false);
+      recognizingRef.current = false;
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {
+          // already stopped
+        }
+      }
+    }
+    stopVoiceMeter();
+    // Defer slightly so onend has a chance to clean up before we
+    // restart.
+    setTimeout(() => {
+      startRecognition();
+    }, 150);
+  }
+
+  // Phase 7 (#6280): Web Audio volume meter (time-domain waveform).
+  // Reuses the same pattern as the shadow mode recorder: AnalyserNode
+  // + getByteTimeDomainData + SVG path mutated via ref.
+  function startVoiceMeter(stream: MediaStream) {
+    try {
+      const Ctor =
+        (window as any).AudioContext ||
+        (window as any).webkitAudioContext;
+      if (!Ctor) return;
+      const audioContext: AudioContext = new Ctor();
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+
+      const data = new Uint8Array(analyser.fftSize);
+      const tick = () => {
+        if (!analyserRef.current) return;
+        analyserRef.current.getByteTimeDomainData(data);
+        const w = 220;
+        const h = 24;
+        const mid = h / 2;
+        const sliceWidth = w / data.length;
+        let path = "";
+        for (let i = 0; i < data.length; i++) {
+          const v = data[i] / 128.0; // 0–2, 1.0 = silence
+          const y = mid - (v - 1) * mid;
+          const x = i * sliceWidth;
+          if (i === 0) path += `M ${x.toFixed(2)} ${y.toFixed(2)}`;
+          else path += ` L ${x.toFixed(2)} ${y.toFixed(2)}`;
+        }
+        if (waveformPathRef.current) {
+          waveformPathRef.current.setAttribute("d", path);
+        }
+        voiceFrameRef.current = requestAnimationFrame(tick);
+      };
+      tick();
+    } catch (e) {
+      console.error("voice meter failed:", e);
+    }
+  }
+
+  function stopVoiceMeter() {
+    if (voiceFrameRef.current) {
+      cancelAnimationFrame(voiceFrameRef.current);
+      voiceFrameRef.current = null;
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close().catch(() => {});
+      audioContextRef.current = null;
+    }
+    analyserRef.current = null;
+    if (voiceStreamRef.current) {
+      voiceStreamRef.current.getTracks().forEach((t) => t.stop());
+      voiceStreamRef.current = null;
+    }
+    if (waveformPathRef.current) {
+      waveformPathRef.current.setAttribute("d", "");
     }
   }
 
   function stopRecognition() {
+    setRecognizing(false);
+    recognizingRef.current = false;
     if (recognitionRef.current) {
       try {
         recognitionRef.current.stop();
@@ -310,7 +484,7 @@ export default function SpeakingPage() {
       }
       recognitionRef.current = null;
     }
-    setRecognizing(false);
+    stopVoiceMeter();
   }
 
   // Phase 6 MVP: speak an AI message aloud via Web Speech API.
@@ -432,6 +606,34 @@ export default function SpeakingPage() {
             disabled={busy}
           />
 
+          {/* Phase 7 (#6280): real-time raw waveform during voice input.
+             Only visible while recording. SVG path is mutated directly via
+             ref (see startVoiceMeter) so we don't re-render React @ 60fps. */}
+          {recognizing && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
+              <span className="text-xs text-red-600 font-medium flex-shrink-0">
+                🎙️ 正在听
+              </span>
+              <svg
+                width={220}
+                height={24}
+                viewBox="0 0 220 24"
+                className="block flex-1"
+                aria-hidden="true"
+              >
+                <path
+                  ref={waveformPathRef}
+                  d=""
+                  stroke="rgb(220, 38, 38)"
+                  strokeWidth="1.5"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          )}
+
           {/* Row 2: voice + keyboard hint + send */}
           <div className="flex items-center gap-2">
             <button
@@ -451,6 +653,16 @@ export default function SpeakingPage() {
             >
               {recognizing ? "⏹" : "🎤"}
             </button>
+            {recognizing && (
+              <button
+                type="button"
+                onClick={reRecord}
+                title="清空 input + 立即重新开始识别"
+                className="flex-shrink-0 px-3 py-2.5 rounded-lg text-sm border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                🔁 重录
+              </button>
+            )}
             <span className="flex-1 text-xs text-gray-400 text-center whitespace-nowrap">
               Enter 发送 · Shift+Enter 换行
             </span>
