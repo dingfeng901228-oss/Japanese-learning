@@ -46,6 +46,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://jp.frank2025.com"),
   title: "FastStudy — 日语学习中心",
   description: "Don't just study Japanese. Use Japanese.",
   applicationName: "FastStudy",
