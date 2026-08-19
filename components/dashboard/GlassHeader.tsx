@@ -38,8 +38,8 @@ export function GlassHeader({ navItems, userInfo }: GlassHeaderProps) {
     <header
       className={`sticky top-0 z-30 border-b border-line transition-shadow duration-200 ease-out ${
         scrolled
-          ? "bg-gradient-to-b from-white/60 to-white/40 backdrop-blur-2xl shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
-          : "bg-gradient-to-b from-white/60 to-white/40 backdrop-blur-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)]"
+          ? "bg-gradient-to-b from-white/45 to-white/25 backdrop-blur-2xl shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
+          : "bg-gradient-to-b from-white/45 to-white/25 backdrop-blur-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)]"
       }`}
     >
       <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
