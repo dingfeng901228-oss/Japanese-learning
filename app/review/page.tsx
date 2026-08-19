@@ -22,10 +22,14 @@ export const dynamic = "force-dynamic";
 export default async function ReviewPage({
   searchParams,
 }: {
-  searchParams: Promise<{ mode?: string }>;
+  searchParams: Promise<{ mode?: string; notice?: string }>;
 }) {
   const sp = await searchParams;
   const mode: ReviewMode = sp.mode === "dictation" ? "dictation" : "fill-in";
+  // Per Frank #6351: notice flag set by backfillUserReviewsAction when
+  // the user has vocab but no item has an example attached yet
+  // (silent no-op without this branch). Drives the 3rd empty-state UI.
+  const notice = sp.notice;
   const items = await getDueReviews(20);
   // Per Frank #6348: distinguish "no vocab at all" from "vocab exists
   // but none queued for review (needs backfill)" so we can show the
@@ -72,10 +76,40 @@ export default async function ReviewPage({
       </header>
 
       {items.length === 0 ? (
-        vocabCount > 0 ? (
+        notice === "no_examples" && vocabCount > 0 ? (
+          // Per Frank #6351: user has vocab but no item has an
+          // example attached yet, so backfill can't queue anything
+          // (getDueReviews filters out items lacking examples).
+          // Fill-in mode needs the example sentence to blank, so
+          // direct the user to /vocabulary to regenerate examples
+          // one click per word. A batch-generate button would be
+          // nicer — Phase 7+ polish.
+          <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
+            <div className="text-4xl mb-4">📝</div>
+            <p className="text-lg font-medium">单词还没例句</p>
+            <p className="text-sm text-gray-500 mt-2">
+              你已收藏 <strong>{vocabCount}</strong> 个单词，但都还没生成例句。
+              先到单词详情页点"重新生成"按钮给单词加上例句，然后回来再试。
+            </p>
+            <Link
+              href="/vocabulary"
+              className="inline-block mt-6 px-5 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800"
+            >
+              去收藏列表生成例句
+            </Link>
+            <form action={backfillUserReviewsAction} className="mt-3">
+              <button
+                type="submit"
+                className="text-xs text-gray-400 hover:text-gray-700 underline-offset-2 hover:underline"
+              >
+                已生成例句？点这里再试 →
+              </button>
+            </form>
+          </div>
+        ) : vocabCount > 0 ? (
           // User has vocab but queue is empty (predates the
-          // ensureReviewRecord hook). One-click backfill
-          // (per Frank #6348).
+          // ensureReviewRecord hook, or all queued items have been
+          // reviewed out). One-click backfill (per Frank #6348).
           <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
             <div className="text-4xl mb-4">🔄</div>
             <p className="text-lg font-medium">还没有复习队列</p>

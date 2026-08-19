@@ -209,57 +209,95 @@ export async function recordReview(
     .eq("id", reviewId);
 }
 
-// Per Frank #6348: vocabulary items created before ensureReviewRecord()
+// Per Frank #6348 + #6351: vocab items created before ensureReviewRecord
 // was wired into createVocabularyItemAction never got a review row, so
 // /review was permanently empty even for users with vocab. Backfill
-// inserts review rows for every (user, vocabulary) pair that's missing
-// one — idempotent (skips existing ids). Items without a primary
-// example stay queued but getDueReviews filters them out, so they
-// don't appear in /review until they get an example.
-export async function backfillUserReviews(): Promise<number> {
+// inserts review rows for every (user, vocabulary) pair that has at
+// least one example attached and is missing a review — items without
+// examples stay invisible to fill-in mode (getDueReviews filters them
+// out), so queueing them would be a silent no-op (Frank #6351).
+// Idempotent: existing review rows are left untouched.
+//
+// Returns a structured result so the action layer (and UI) can react
+// differently to "nothing to backfill because no examples yet" vs
+// "backfilled N items".
+export type BackfillResult = {
+  inserted: number;
+  eligible: number; // vocab ids that have ≥1 example attached
+  totalVocab: number; // total vocab the user owns (any state)
+};
+
+export async function backfillUserReviews(): Promise<BackfillResult> {
+  const empty: BackfillResult = { inserted: 0, eligible: 0, totalVocab: 0 };
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return 0;
+  if (!user) return empty;
 
   // 1) All vocab ids the user owns.
   const { data: vocabItems, error: vErr } = await supabase
     .from("vocabulary_items")
     .select("id")
     .eq("user_id", user.id);
-  if (vErr || !vocabItems || vocabItems.length === 0) return 0;
+  if (vErr || !vocabItems) {
+    console.error("backfillUserReviews vocab fetch failed:", vErr);
+    return empty;
+  }
+  const totalVocab = vocabItems.length;
+  if (totalVocab === 0) return empty;
+  const vocabIds = vocabItems.map((v) => v.id);
 
-  // 2) Ids that already have a review record (don't overwrite progress).
+  // 2) Restrict the queue to vocab that already have ≥1 example
+  // attached. Per Frank #6351: queueing items without examples was a
+  // silent no-op (getDueReviews filtered them out).
+  const { data: withExamples } = await supabase
+    .from("vocabulary_examples")
+    .select("vocabulary_id")
+    .in("vocabulary_id", vocabIds);
+  const eligibleIds = Array.from(
+    new Set((withExamples ?? []).map((e) => e.vocabulary_id))
+  );
+  if (eligibleIds.length === 0) {
+    return { inserted: 0, eligible: 0, totalVocab };
+  }
+
+  // 3) Review rows that already exist for the eligible subset. Don't
+  // overwrite progress — backfill is additive only.
   const { data: existing } = await supabase
     .from("vocabulary_reviews")
     .select("vocabulary_id")
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .in("vocabulary_id", eligibleIds);
   const existingSet = new Set(
     (existing ?? []).map((r) => r.vocabulary_id)
   );
 
-  // 3) Build the missing insert list.
-  const toInsert = vocabItems
-    .filter((v) => !existingSet.has(v.id))
-    .map((v) => ({
+  const toInsert = eligibleIds
+    .filter((id) => !existingSet.has(id))
+    .map((vocabulary_id) => ({
       user_id: user.id,
-      vocabulary_id: v.id,
+      vocabulary_id,
       next_review_at: new Date().toISOString(),
       interval_days: 0,
       ease_factor: DEFAULT_EASE,
       mastery: 0,
     }));
 
-  if (toInsert.length === 0) return 0;
+  if (toInsert.length === 0) {
+    return { inserted: 0, eligible: eligibleIds.length, totalVocab };
+  }
 
-  // 4) Bulk insert. Supabase returns per-row errors; log but don't throw.
   const { error: insErr } = await supabase
     .from("vocabulary_reviews")
     .insert(toInsert);
   if (insErr) {
     console.error("backfillUserReviews insert failed:", insErr);
-    return 0;
+    return { inserted: 0, eligible: eligibleIds.length, totalVocab };
   }
-  return toInsert.length;
+  return {
+    inserted: toInsert.length,
+    eligible: eligibleIds.length,
+    totalVocab,
+  };
 }
 
 // Cheap count query for /review empty-state branching — distinguishes

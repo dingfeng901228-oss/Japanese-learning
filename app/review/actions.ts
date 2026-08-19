@@ -34,8 +34,18 @@ export async function recordReviewAction(formData: FormData) {
 // words into the SRS queue. Triggered by the "把已收藏的词加入复习队列"
 // button on /review's empty state (only shown when dueItems is empty
 // but vocabCount > 0).
+//
+// Per Frank #6351: surface the "user has vocab but no item has an
+// example attached yet" case as a dedicated ?notice=no_examples query
+// so the page UI can explain what's missing instead of silently
+// reloading to the same empty state.
 export async function backfillUserReviewsAction() {
-  await backfillUserReviews();
+  const result = await backfillUserReviews();
+
+  if (result.totalVocab > 0 && result.eligible === 0) {
+    redirect("/review?notice=no_examples");
+  }
+
   revalidatePath("/review");
   redirect("/review");
 }
