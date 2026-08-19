@@ -16,7 +16,16 @@ import {
 // they'd see the previous conversation; "开始新对话" clears it.
 const TURNS_STORAGE_KEY = "japaneseLearning.speakingTurns";
 
-type Turn = { role: "user" | "assistant"; content: string };
+// Per Frank #6342: each assistant turn carries optional jaHtml (with
+// <ruby> furigana annotations) and translation (Chinese) so the
+// learner can read the Japanese with kanji readings + reveal the
+// Chinese on demand.
+type Turn = {
+  role: "user" | "assistant";
+  content: string;
+  translation?: string;
+  jaHtml?: string;
+};
 
 type Feedback = {
   overall: string;
@@ -34,6 +43,9 @@ const INITIAL_TURNS: Turn[] = [
   {
     role: "assistant",
     content: "こんにちは！今日はどんな一日でしたか？",
+    jaHtml:
+      'こんにちは！<ruby>今日<rt>きょう</rt></ruby>はどんな<ruby>一日<rt>いちにち</rt></ruby>でしたか？',
+    translation: "你好！今天过得怎么样？",
   },
 ];
 
@@ -91,8 +103,19 @@ const FEEDBACK_LABELS: Record<FeedbackLanguage, Record<string, string>> = {
 
 // STORAGE_KEY removed along with the feedback language toggle (see #5945).
 
+// Per Frank #6342: GPT generates jaHtml with <ruby>/<rt>. Sanitize as
+// defense in depth — should never be needed if GPT follows the prompt,
+// but cheap insurance against prompt drift. Keeps text content intact.
+function sanitizeRubyHtml(html: string): string {
+  return html.replace(/<(?!\/?(?:ruby|rt)\b)[^>]*>/gi, "");
+}
+
 export default function SpeakingPage() {
   const [turns, setTurns] = useState<Turn[]>(INITIAL_TURNS);
+  // Per Frank #6342: which assistant turn currently has its Chinese
+  // translation visible. null = none. Default hidden so the learner
+  // tries to read the Japanese first.
+  const [showTranslationIdx, setShowTranslationIdx] = useState<number | null>(null);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -272,7 +295,15 @@ export default function SpeakingPage() {
         throw new Error(j.error || `HTTP ${r.status}`);
       }
       const data = (await r.json()) as { reply: string };
-      setTurns([...next, { role: "assistant", content: data.reply }]);
+      setTurns([
+        ...next,
+        {
+          role: "assistant",
+          content: data.reply,
+          translation: data.translation,
+          jaHtml: data.jaHtml,
+        },
+      ]);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -654,7 +685,44 @@ export default function SpeakingPage() {
               >
                 {t.role === "user" ? "You" : "AI 教练"}
               </div>
-              <div className="whitespace-pre-wrap">{t.content}</div>
+              <div className="whitespace-pre-wrap">
+                {/* Per Frank #6342: render ruby HTML if present (kanji
+                    annotated with furigana), otherwise fall back to
+                    plain content. Safe — sanitizeRubyHtml strips any
+                    tags that aren't <ruby>/<rt>. */}
+                {t.jaHtml ? (
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizeRubyHtml(t.jaHtml),
+                    }}
+                  />
+                ) : (
+                  t.content
+                )}
+              </div>
+              {t.role === "assistant" && t.translation && (
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowTranslationIdx(
+                        showTranslationIdx === i ? null : i
+                      )
+                    }
+                    aria-pressed={showTranslationIdx === i}
+                    className="text-xs px-2 py-0.5 rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors"
+                  >
+                    {showTranslationIdx === i
+                      ? "🌐 隐藏翻译"
+                      : "🌐 显示翻译"}
+                  </button>
+                  {showTranslationIdx === i && (
+                    <div className="mt-2 text-sm text-gray-600 bg-gray-50 rounded-lg p-2 leading-relaxed">
+                      {t.translation}
+                    </div>
+                  )}
+                </div>
+              )}
               {t.role === "assistant" && (
                 <button
                   type="button"
