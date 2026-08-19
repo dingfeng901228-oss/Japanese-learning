@@ -7,7 +7,11 @@
 // mastery in Supabase.
 
 import { revalidatePath } from "next/cache";
-import { recordReview } from "@/lib/vocabulary/reviews";
+import { redirect } from "next/navigation";
+import {
+  recordReview,
+  backfillUserReviews,
+} from "@/lib/vocabulary/reviews";
 
 export async function recordReviewAction(formData: FormData) {
   const reviewId = String(formData.get("review_id") ?? "").trim();
@@ -23,4 +27,15 @@ export async function recordReviewAction(formData: FormData) {
 
   await recordReview(reviewId, answer, correct, difficulty);
   revalidatePath("/review");
+}
+
+// Per Frank #6348: one-shot backfill so users whose vocabulary predates
+// the ensureReviewRecord hook (in createVocabularyItemAction) get their
+// words into the SRS queue. Triggered by the "把已收藏的词加入复习队列"
+// button on /review's empty state (only shown when dueItems is empty
+// but vocabCount > 0).
+export async function backfillUserReviewsAction() {
+  await backfillUserReviews();
+  revalidatePath("/review");
+  redirect("/review");
 }

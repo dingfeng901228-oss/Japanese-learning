@@ -15,6 +15,7 @@ import {
   type VocabularyType,
 } from "@/lib/vocabulary";
 import { generateExample } from "@/lib/vocabulary/examples";
+import { ensureReviewRecord } from "@/lib/vocabulary/reviews";
 
 const JLPT_LEVELS = new Set(["N5", "N4", "N3", "N2", "N1"]);
 function normalizeLevel(raw: string): string {
@@ -50,6 +51,11 @@ export async function createVocabularyItemAction(formData: FormData) {
     level: level || null,
     part_of_speech: partOfSpeech || null,
   });
+
+  // Per Frank #6348: hook up the SRS queue. Without this, the new
+  // vocab never lands in vocabulary_reviews and /review stays empty
+  // for the user until they manually trigger a backfill.
+  await ensureReviewRecord(item.id);
 
   revalidatePath("/vocabulary");
   redirect(`/vocabulary/${item.id}`);
