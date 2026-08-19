@@ -5,6 +5,7 @@ import "./globals.css";
 import { createClient } from "@/lib/supabase/server";
 import { UserMenu } from "@/components/UserMenu";
 import { MobileNav } from "@/components/dashboard/MobileNav";
+import { GlassHeader } from "@/components/dashboard/GlassHeader";
 
 // Force all routes through this layout to be server-rendered at request
 // time. The root layout calls supabase.auth.getUser() which reads session
@@ -122,34 +123,7 @@ export default async function RootLayout({
       className={`${inter.variable} ${notoJP.variable} ${notoSC.variable}`}
     >
       <body className="font-sans antialiased min-h-screen bg-soft text-ink">
-        {userInfo && (
-          <header className="sticky top-0 z-30 bg-white/70 backdrop-blur-xl border-b border-line shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-            <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
-              <Link href="/" className="font-bold text-base text-ink">
-                FastStudy
-              </Link>
-              <nav className="hidden md:flex items-center gap-1 text-[15px]">
-                {NAV_ITEMS.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
-              <div className="hidden md:block">
-                <UserMenu
-                  email={userInfo.email}
-                  displayName={userInfo.displayName}
-                  avatarUrl={userInfo.avatarUrl}
-                />
-              </div>
-              <MobileNav items={NAV_ITEMS} userInfo={userInfo} />
-            </div>
-          </header>
-        )}
+        {userInfo && <GlassHeader navItems={NAV_ITEMS} userInfo={userInfo} />}
         {children}
       </body>
     </html>
