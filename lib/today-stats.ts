@@ -140,6 +140,21 @@ export function accumulateMinutes(
   acc.accumulated[type] =
     Math.round((prev + minutes) * 100) / 100;
   saveAccumulated(acc);
+
+  // Fire-and-forget sync to daily_rollups (server-side, see
+  // app/actions/record-activity.ts). localStorage stays the source of
+  // truth for the dashboard; this just keeps the server rollup in
+  // sync so the heatmap eventually goes real too.
+  if (typeof window !== "undefined" && minutes > 0) {
+    import("@/app/actions/record-activity")
+      .then(({ recordDailyActivity }) =>
+        recordDailyActivity(todayKey(), minutes, 0)
+      )
+      .catch((err) => {
+        console.error("daily_rollups sync failed:", err);
+      });
+  }
+
   return acc;
 }
 

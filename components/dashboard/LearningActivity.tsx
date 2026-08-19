@@ -1,9 +1,16 @@
 // Learning Activity heatmap — spec §16, §17. 365 days, hand-rolled SVG
 // (per spec §21 "不要制造大量新的 UI 组件" → no react-calendar-heatmap).
-// Data is fixed mock from lib/dashboard-mock.ts (deterministic per day
-// so hot-reload doesn't flicker).
+//
+// Reads from daily_rollups (Supabase) when available. Falls back to the
+// fixed mock from lib/dashboard-mock.ts if the table is empty / missing
+// / the user isn't logged in — so the UI never breaks (e.g. while the
+// migration is still pending on the user's Supabase instance).
 
-import { buildHeatmapData } from "@/lib/dashboard-mock";
+import { getDailyRollups } from "@/lib/daily-rollups";
+import {
+  buildHeatmapData,
+  type HeatmapDay,
+} from "@/lib/dashboard-mock";
 
 // Tailwind fill-* / bg-* need to be statically detectable for the
 // compiler to include them, so we list them explicitly here.
@@ -25,8 +32,48 @@ const LEVEL_BG = [
   "bg-green-500",
 ] as const;
 
-export function LearningActivity() {
-  const data = buildHeatmapData();
+function minutesToLevel(minutes: number): 0 | 1 | 2 | 3 | 4 | 5 {
+  if (minutes <= 0) return 0;
+  if (minutes < 15) return 1;
+  if (minutes < 30) return 2;
+  if (minutes < 45) return 3;
+  if (minutes < 60) return 4;
+  return 5;
+}
+
+function realToHeatmap(rollups: Array<{ date: string; minutes: number }>): HeatmapDay[] {
+  const map = new Map(rollups.map((r) => [r.date, r.minutes]));
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const out: HeatmapDay[] = [];
+  for (let i = 364; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    const minutes = map.get(dateStr) ?? 0;
+    out.push({
+      date: dateStr,
+      level: minutesToLevel(minutes),
+      minutes,
+    });
+  }
+  return out;
+}
+
+export async function LearningActivity() {
+  let data: HeatmapDay[] = buildHeatmapData(); // fallback
+  let usingReal = false;
+
+  try {
+    const rollups = await getDailyRollups(365);
+    if (rollups.length > 0) {
+      data = realToHeatmap(rollups);
+      usingReal = true;
+    }
+  } catch {
+    // Supabase not ready / table missing / etc. — keep mock.
+  }
+
   const totalDays = data.filter((d) => d.level > 0).length;
   const totalMinutes = data.reduce((s, d) => s + d.minutes, 0);
   const hours = Math.floor(totalMinutes / 60);
@@ -48,7 +95,9 @@ export function LearningActivity() {
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
           学习足迹
         </h2>
-        <span className="text-xs text-gray-400">过去一年</span>
+        <span className="text-xs text-gray-400">
+          过去一年{usingReal ? "" : " · 演示数据"}
+        </span>
       </div>
 
       <p className="text-sm text-gray-700 mb-4">
