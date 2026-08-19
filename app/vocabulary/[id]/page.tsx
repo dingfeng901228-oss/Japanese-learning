@@ -19,6 +19,7 @@ import { notFound } from "next/navigation";
 import {
   getPrimaryExample,
   getVocabularyItem,
+  listVocabularyItems,
   type VocabularyType,
 } from "@/lib/vocabulary";
 import { SpeakButton } from "@/components/SpeakButton";
@@ -61,6 +62,22 @@ export default async function VocabularyDetailPage({
   const item = await getVocabularyItem(id);
   if (!item) notFound();
   const example = await getPrimaryExample(id);
+
+  // Phase 7+ (#6334): fetch the full list to compute prev/next neighbours.
+  // Default sort matches the /vocabulary list page (newest first) so the
+  // “up/down/left/right” order feels consistent with where the user
+  // came from. For very large vocabularies this scan gets expensive, but
+  // the SELECT only reads (date, word, reading, meaning) — still a single
+  // small round-trip. If/when the catalog grows past a few hundred
+  // items, swap to a server action that precomputes neighbours on save.
+  const allItems = await listVocabularyItems({});
+  const currentIndex = allItems.findIndex((x) => x.id === item.id);
+  const prevItem =
+    currentIndex > 0 ? allItems[currentIndex - 1] : null;
+  const nextItem =
+    currentIndex >= 0 && currentIndex < allItems.length - 1
+      ? allItems[currentIndex + 1]
+      : null;
 
   return (
     <main className="min-h-screen px-6 py-12 max-w-2xl mx-auto">
@@ -352,6 +369,68 @@ export default async function VocabularyDetailPage({
           复习功能将在 Phase 7 启用。届时会基于 SRS 间隔复习算法自动安排。
         </p>
       </section>
+
+      {/* Phase 7+ (#6334): prev / next word preview. Click either card to
+         jump to that word's detail page — no need to go back to the
+         list first. Each card shows a tiny preview (word + reading +
+         meaning) so the user can decide at a glance whether to jump.
+         If currentIndex is -1 (item not in list, shouldn't happen) or at
+         the boundary, the missing side is hidden. */}
+      {(prevItem || nextItem) && (
+        <section className="mb-6">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+            切换单词
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            {prevItem ? (
+              <Link
+                href={`/vocabulary/${prevItem.id}`}
+                className="block p-4 rounded-lg border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors group"
+              >
+                <div className="text-xs text-gray-500 mb-1 group-hover:text-gray-700">
+                  ← 上一个词
+                </div>
+                <div className="text-lg font-bold text-ink break-words">
+                  {prevItem.word}
+                </div>
+                {prevItem.reading && (
+                  <div className="text-sm text-gray-500 mt-0.5">
+                    {prevItem.reading}
+                  </div>
+                )}
+                <div className="text-xs text-gray-600 mt-1 line-clamp-2">
+                  {prevItem.meaning}
+                </div>
+              </Link>
+            ) : (
+              <div /> /* keeps the grid 2-col when only "next" exists */
+            )}
+            {nextItem ? (
+              <Link
+                href={`/vocabulary/${nextItem.id}`}
+                className="block p-4 rounded-lg border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors group text-right"
+              >
+                <div className="text-xs text-gray-500 mb-1 group-hover:text-gray-700">
+                  下一个词 →
+                </div>
+                <div className="text-lg font-bold text-ink break-words">
+                  {nextItem.word}
+                </div>
+                {nextItem.reading && (
+                  <div className="text-sm text-gray-500 mt-0.5">
+                    {nextItem.reading}
+                  </div>
+                )}
+                <div className="text-xs text-gray-600 mt-1 line-clamp-2">
+                  {nextItem.meaning}
+                </div>
+              </Link>
+            ) : (
+              <div />
+            )}
+          </div>
+        </section>
+      )}
 
       <form action={deleteVocabularyItemAction} className="pt-4">
         <input type="hidden" name="id" value={item.id} />
