@@ -175,6 +175,166 @@ export function setActiveSession(session: ActiveSession | null): void {
   }
 }
 
+// --- Real streak + week stats (localStorage-derived) ----------------------
+//
+// Per Frank #6219: streak + week stats should be real (from localStorage
+// accumulated session data), not the mock 12/38 day values. All four
+// TRAINING_ITEMS write to `japaneseLearning.accumulated.YYYY-MM-DD` via
+// accumulateMinutes(), so we can scan the localStorage keyspace to find
+// days with any activity.
+
+export function getActiveTrainingDays(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  const days = new Set<string>();
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key || !key.startsWith(ACCUMULATED_KEY_PREFIX)) continue;
+    const dateStr = key.slice(ACCUMULATED_KEY_PREFIX.length);
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw) as { accumulated: Record<string, number> };
+      const total = Object.values(parsed.accumulated).reduce(
+        (s, m) => s + m,
+        0
+      );
+      if (total > 0) days.add(dateStr);
+    } catch {
+      // ignore corrupt keys
+    }
+  }
+  return days;
+}
+
+export function computeStreakFromDays(days: Set<string>): {
+  current: number;
+  longest: number;
+} {
+  if (days.size === 0) return { current: 0, longest: 0 };
+
+  const sorted = Array.from(days).sort();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayStr = todayKey();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = `${yesterday.getFullYear()}-${String(
+    yesterday.getMonth() + 1
+  ).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
+
+  // Longest streak: walk sorted days, reset run when gap > 1.
+  let longest = 0;
+  let run = 0;
+  let prev: Date | null = null;
+  for (const d of sorted) {
+    const dt = new Date(d + "T00:00:00");
+    run =
+      prev &&
+      Math.round((dt.getTime() - prev.getTime()) / 86400000) === 1
+        ? run + 1
+        : 1;
+    if (run > longest) longest = run;
+    prev = dt;
+  }
+
+  // Current streak: only counts if the most-recent activity is today or
+  // yesterday (so missing today doesn't immediately zero out the streak).
+  let current = 0;
+  const lastDay = sorted[sorted.length - 1];
+  if (lastDay === todayStr || lastDay === yesterdayStr) {
+    current = 1;
+    for (let i = sorted.length - 2; i >= 0; i--) {
+      const d1 = new Date(sorted[i + 1] + "T00:00:00");
+      const d2 = new Date(sorted[i] + "T00:00:00");
+      if (Math.round((d1.getTime() - d2.getTime()) / 86400000) === 1) {
+        current++;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return { current, longest };
+}
+
+export function getWeekStats(): { minutes: number; daysStudied: number } {
+  if (typeof window === "undefined") return { minutes: 0, daysStudied: 0 };
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const weekAgo = new Date(today);
+  weekAgo.setDate(weekAgo.getDate() - 7);
+
+  let minutes = 0;
+  let daysStudied = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key || !key.startsWith(ACCUMULATED_KEY_PREFIX)) continue;
+    const dateStr = key.slice(ACCUMULATED_KEY_PREFIX.length);
+    const d = new Date(dateStr + "T00:00:00");
+    if (d < weekAgo || d > today) continue;
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw) as { accumulated: Record<string, number> };
+      const total = Object.values(parsed.accumulated).reduce(
+        (s, m) => s + m,
+        0
+      );
+      if (total > 0) {
+        minutes += total;
+        daysStudied++;
+      }
+    } catch {
+      // ignore
+    }
+  }
+  return { minutes, daysStudied };
+}
+
+// React hook for the dashboard's weekly stats. Refreshes on focus and
+// every 5s so the UI updates live as the user spends time in /listening
+// / /speaking / /review.
+export function useWeekStats(): { minutes: number; daysStudied: number } {
+  const [stats, setStats] = useState<{ minutes: number; daysStudied: number }>(
+    { minutes: 0, daysStudied: 0 }
+  );
+  useEffect(() => {
+    function refresh() {
+      setStats(getWeekStats());
+    }
+    refresh();
+    window.addEventListener("focus", refresh);
+    const id = window.setInterval(refresh, 5000);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.clearInterval(id);
+    };
+  }, []);
+  return stats;
+}
+
+// React hook for the dashboard's streak. Same refresh strategy as
+// useWeekStats.
+export function useStreak(): { current: number; longest: number } {
+  const [streak, setStreak] = useState<{ current: number; longest: number }>({
+    current: 0,
+    longest: 0,
+  });
+  useEffect(() => {
+    function refresh() {
+      setStreak(computeStreakFromDays(getActiveTrainingDays()));
+    }
+    refresh();
+    window.addEventListener("focus", refresh);
+    const id = window.setInterval(refresh, 5000);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.clearInterval(id);
+    };
+  }, []);
+  return streak;
+}
+
 // React hook for tracking session time on a training page. Returns:
 //   - elapsed: ms since the timer started (updates every second)
 //   - running: true while the timer is active
