@@ -8,7 +8,6 @@ import {
   type VocabularyType,
   type VocabularySort,
 } from "@/lib/vocabulary";
-import { batchGenerateExamplesAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -152,10 +151,15 @@ export default async function VocabularyListPage({
         </div>
       )}
 
-      {/* Per Frank #6367: batch-generate button. Server Action calls
-          generateExample() for every vocab without a primary example,
-          inserts results, redirects back with batch=G-S-E summary. */}
-      <form action={batchGenerateExamplesAction} className="mb-4">
+      {/* Per Frank #6367: batch-generate button. Submits to the API
+          route at /api/vocabulary/batch-generate-examples (maxDuration
+          60s; route handler returns redirect to /vocabulary?batch=… with
+          generated/skipped/errors counts). */}
+      <form
+        action="/api/vocabulary/batch-generate-examples"
+        method="post"
+        className="mb-4"
+      >
         <button
           type="submit"
           className="w-full sm:w-auto px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg hover:bg-amber-100 transition-colors text-sm font-medium"
