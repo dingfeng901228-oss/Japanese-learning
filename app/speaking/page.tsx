@@ -294,7 +294,14 @@ export default function SpeakingPage() {
         const j = await r.json().catch(() => ({} as { error?: string }));
         throw new Error(j.error || `HTTP ${r.status}`);
       }
-      const data = (await r.json()) as { reply: string };
+      // /api/chat returns { reply, translation?, jaHtml? } per Frank #6342.
+// Without optional fields in the cast, TS narrows to { reply: string }
+// and `data.translation` / `data.jaHtml` fail strict type-check.
+const data = (await r.json()) as {
+  reply: string;
+  translation?: string;
+  jaHtml?: string;
+};
       setTurns([
         ...next,
         {
