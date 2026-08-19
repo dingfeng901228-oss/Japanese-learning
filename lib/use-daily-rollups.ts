@@ -13,7 +13,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { flushSync, queueLength } from "@/lib/training-queue";
+import { flushSync, queueLength, shimTodayGap } from "@/lib/training-queue";
 
 export type DailyRollup = {
   date: string; // YYYY-MM-DD
@@ -112,9 +112,19 @@ export function useDailyRollups(days: number = 365) {
   // from the dashboard because recordDailyActivity was fire-and-forget".
   useEffect(() => {
     function drain() {
-      if (queueLength() === 0) return;
-      flushSync().catch((err) => {
-        console.error("sync flush failed (will retry on next trigger):", err);
+      if (queueLength() > 0) {
+        flushSync().catch((err) => {
+          console.error("sync flush failed (will retry on next trigger):", err);
+        });
+      }
+      // Migration shim (Per Frank #6314 + #6325): on every render
+      // trigger, push today's localStorage total to Supabase if it
+      // exceeds what's there. The shim is naturally idempotent — future
+      // runs see localStorage=Supabase, delta=0, no-op. Run on the
+      // same triggers as flushSync so any new dashboard mount
+      // converges the data.
+      shimTodayGap().catch((err) => {
+        console.error("shim failed (will retry on next trigger):", err);
       });
     }
     window.addEventListener("focus", drain);

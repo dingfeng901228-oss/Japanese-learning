@@ -116,3 +116,93 @@ export async function flushSync(): Promise<void> {
     }
   }
 }
+
+// --- Migration shim (Per Frank #6314 + #6325) -----------------------------
+//
+// Problem: today's minutes existed in localStorage on the device that
+// trained (e.g. Android saw 74 min, desktop saw 19 min) but the
+// fire-and-forget recordDailyActivity call dropped before reaching
+// Supabase. /today's accumulated[] reads from localStorage, so the
+// per-section time on /today still looked right — but the dashboard
+// streak / week stats (which read from Supabase via use-daily-rollups)
+// showed 0. The retry queue in this file only catches FUTURE writes.
+//
+// Fix: when the dashboard mounts, check today's localStorage total
+// against Supabase's daily_rollups.minutes. If localStorage has
+// more, push the delta via recordDailyActivity (additive). The shim
+// is idempotent: future runs see localStorage=Supabase, delta=0,
+// no-op. We intentionally do NOT clear localStorage — /today still
+// reads from it (and the values are now an exact mirror of Supabase).
+//
+// Multiple devices shimming simultaneously can each push their own
+// delta; the additive RPC means the total converges to the sum of
+// each device's local view, which is the true cross-device total.
+
+const ACCUMULATED_KEY_PREFIX = "japaneseLearning.accumulated.";
+
+function getLocalAccumulatedTotal(date: string): number {
+  const w = safeWindow();
+  if (!w) return 0;
+  try {
+    const raw = w.localStorage.getItem(ACCUMULATED_KEY_PREFIX + date);
+    if (!raw) return 0;
+    const parsed = JSON.parse(raw) as {
+      accumulated: Record<string, number>;
+    };
+    return Object.values(parsed.accumulated ?? {}).reduce(
+      (s, m) => s + (Number(m) || 0),
+      0
+    );
+  } catch {
+    return 0;
+  }
+}
+
+// Compute YYYY-MM-DD locally — todayKey() in lib/today-stats isn't
+// exported, and we don't want to pull in the whole hook module just
+// for this one helper.
+function resolveTodayKey(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+export async function shimTodayGap(): Promise<void> {
+  const w = safeWindow();
+  if (!w) return;
+
+  const today = resolveTodayKey();
+  const localTotal = getLocalAccumulatedTotal(today);
+  if (localTotal <= 0) return;
+
+  try {
+    const { createClient } = await import("@/lib/supabase/client");
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: rollup } = await supabase
+      .from("daily_rollups")
+      .select("minutes")
+      .eq("user_id", user.id)
+      .eq("date", today)
+      .maybeSingle();
+
+    const supabaseMinutes = Number(rollup?.minutes ?? 0);
+
+    if (localTotal > supabaseMinutes) {
+      const delta = localTotal - supabaseMinutes;
+      const { recordDailyActivity } = await import(
+        "@/app/actions/record-activity"
+      );
+      await recordDailyActivity(today, delta, 0);
+    }
+    // No localStorage clear — the shim is idempotent (next run sees
+    // localStorage=Supabase, delta=0). Leaving the data lets /today
+    // continue to read per-section minutes from localStorage as before.
+  } catch (err) {
+    console.error("shim today gap failed (will retry on next mount):", err);
+  }
+}

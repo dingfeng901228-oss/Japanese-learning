@@ -39,7 +39,7 @@ export interface LearningActivityClientProps {
 export function LearningActivityClient({
   data,
   totalDays,
-  totalHours,
+  totalHours: _totalHours,
   peakMinutes,
 }: LearningActivityClientProps) {
   const [range, setRange] = useState<Range>("1M");
@@ -60,6 +60,20 @@ export function LearningActivityClient({
     Math.max(...filtered.map((d) => d.minutes), 0),
     30
   );
+
+  // Per Frank #6325: "总学习时间 0h" looked empty when total was 3.4 min
+  // (the server-rendered totalHours = floor(min/60) rounds down to 0).
+  // Compute from data here and show "Xh Ym" / "Xm" / "Xh" so anything
+  // > 0 is visible.
+  const totalMinutes = data.reduce((s, d) => s + d.minutes, 0);
+  const totalH = Math.floor(totalMinutes / 60);
+  const totalM = Math.round(totalMinutes % 60);
+  const totalDisplay =
+    totalH > 0
+      ? totalM > 0
+        ? `${totalH}h ${totalM}m`
+        : `${totalH}h`
+      : `${totalM}m`;
 
   const pts = filtered.map((d, i) => ({
     x:
@@ -120,7 +134,7 @@ export function LearningActivityClient({
       <p className="text-sm text-gray-700 mb-4">
         学习天数：<span className="font-bold text-ink">{totalDays}</span>
         <span className="mx-2 text-gray-300">·</span>
-        总学习时间：<span className="font-bold text-ink">{totalHours}h</span>
+        总学习时间：<span className="font-bold text-ink">{totalDisplay}</span>
         <span className="mx-2 text-gray-300">·</span>
         最高：<span className="font-bold text-ink">{peakMinutes} 分</span>
       </p>
