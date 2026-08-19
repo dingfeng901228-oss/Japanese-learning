@@ -1,93 +1,87 @@
-// Learning Activity heatmap — spec §16, §17. 365 days, hand-rolled SVG
-// (per spec §21 "不要制造大量新的 UI 组件" → no react-calendar-heatmap).
+// Learning Activity line chart — spec §16 (originally heatmap).
+// Per Frank #6227: switch from heatmap to a 365-day line chart.
 //
 // Reads from daily_rollups (Supabase) when available. Falls back to the
-// fixed mock from lib/dashboard-mock.ts if the table is empty / missing
-// / the user isn't logged in — so the UI never breaks (e.g. while the
-// migration is still pending on the user's Supabase instance).
+// fixed mock from lib/dashboard-mock.ts if the table is empty /
+// migration pending / user isn't logged in.
 
 import { getDailyRollups } from "@/lib/daily-rollups";
-import {
-  buildHeatmapData,
-  type HeatmapDay,
-} from "@/lib/dashboard-mock";
+import { buildHeatmapData } from "@/lib/dashboard-mock";
 
-// Tailwind fill-* / bg-* need to be statically detectable for the
-// compiler to include them, so we list them explicitly here.
-const LEVEL_FILL = [
-  "fill-gray-100", // 0
-  "fill-green-100", // 1
-  "fill-green-200", // 2
-  "fill-green-300", // 3
-  "fill-green-400", // 4
-  "fill-green-500", // 5
+const MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ] as const;
-
-const LEVEL_BG = [
-  "bg-gray-100",
-  "bg-green-100",
-  "bg-green-200",
-  "bg-green-300",
-  "bg-green-400",
-  "bg-green-500",
-] as const;
-
-function minutesToLevel(minutes: number): 0 | 1 | 2 | 3 | 4 | 5 {
-  if (minutes <= 0) return 0;
-  if (minutes < 15) return 1;
-  if (minutes < 30) return 2;
-  if (minutes < 45) return 3;
-  if (minutes < 60) return 4;
-  return 5;
-}
-
-function realToHeatmap(rollups: Array<{ date: string; minutes: number }>): HeatmapDay[] {
-  const map = new Map(rollups.map((r) => [r.date, r.minutes]));
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const out: HeatmapDay[] = [];
-  for (let i = 364; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().slice(0, 10);
-    const minutes = map.get(dateStr) ?? 0;
-    out.push({
-      date: dateStr,
-      level: minutesToLevel(minutes),
-      minutes,
-    });
-  }
-  return out;
-}
 
 export async function LearningActivity() {
-  let data: HeatmapDay[] = buildHeatmapData(); // fallback
-  let usingReal = false;
-
+  let realData: Array<{ date: string; minutes: number }> = [];
   try {
     const rollups = await getDailyRollups(365);
-    if (rollups.length > 0) {
-      data = realToHeatmap(rollups);
-      usingReal = true;
-    }
+    realData = rollups.map((r) => ({
+      date: typeof r.date === "string" ? r.date : String(r.date),
+      minutes: Number(r.minutes) || 0,
+    }));
   } catch {
-    // Supabase not ready / table missing / etc. — keep mock.
+    // Supabase not ready / table missing / etc. — fall back to mock.
   }
 
-  const totalDays = data.filter((d) => d.level > 0).length;
+  let data: Array<{ date: string; minutes: number }>;
+  let usingReal = false;
+
+  if (realData.length > 0) {
+    data = realData;
+    usingReal = true;
+  } else {
+    data = buildHeatmapData().map((d) => ({
+      date: d.date,
+      minutes: d.minutes,
+    }));
+  }
+
+  const totalDays = data.filter((d) => d.minutes > 0).length;
   const totalMinutes = data.reduce((s, d) => s + d.minutes, 0);
   const hours = Math.floor(totalMinutes / 60);
+  const peakMinutes = Math.max(...data.map((d) => d.minutes), 0);
 
-  // Group by week (rows = days-of-week, columns = weeks). 53 weeks.
-  const weeks: typeof data[] = [];
-  for (let i = 0; i < data.length; i += 7) {
-    weeks.push(data.slice(i, i + 7));
+  // SVG dimensions
+  const width = 600;
+  const height = 120;
+  const padding = { top: 12, right: 0, bottom: 22, left: 0 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+  // Use a sensible Y-axis ceiling so a single heavy day doesn't
+  // flatten the rest of the line.
+  const maxMinutes = Math.max(peakMinutes, 30);
+
+  const pts = data.map((d, i) => ({
+    x: padding.left + (i / Math.max(1, data.length - 1)) * chartWidth,
+    y:
+      padding.top +
+      chartHeight -
+      (d.minutes / maxMinutes) * chartHeight,
+    date: d.date,
+    minutes: d.minutes,
+  }));
+
+  // Smooth line via Catmull-Rom → cubic Bezier (tension 0.5).
+  const path = pointsToSmoothPath(pts);
+  const areaPath = `${path} L ${pts[pts.length - 1].x.toFixed(1)} ${(
+    padding.top + chartHeight
+  ).toFixed(1)} L ${pts[0].x.toFixed(1)} ${(padding.top + chartHeight).toFixed(1)} Z`;
+
+  // Month labels at the first occurrence of each month.
+  const monthLabels: Array<{ x: number; label: string }> = [];
+  let lastMonth = -1;
+  for (let i = 0; i < data.length; i++) {
+    const m = new Date(data[i].date).getMonth();
+    if (m !== lastMonth) {
+      monthLabels.push({
+        x: pts[i].x,
+        label: MONTHS[m],
+      });
+      lastMonth = m;
+    }
   }
-
-  const cellSize = 11;
-  const gap = 2;
-  const totalWidth = weeks.length * (cellSize + gap);
-  const totalHeight = 7 * (cellSize + gap);
 
   return (
     <section>
@@ -104,47 +98,64 @@ export async function LearningActivity() {
         学习天数：<span className="font-bold text-ink">{totalDays}</span>
         <span className="mx-2 text-gray-300">·</span>
         总学习时间：<span className="font-bold text-ink">{hours}h</span>
+        <span className="mx-2 text-gray-300">·</span>
+        最高：<span className="font-bold text-ink">{peakMinutes} 分</span>
       </p>
 
       <div className="overflow-x-auto pb-2">
         <svg
-          width={totalWidth}
-          height={totalHeight}
-          viewBox={`0 0 ${totalWidth} ${totalHeight}`}
-          className="block"
+          width={width}
+          height={height}
+          viewBox={`0 0 ${width} ${height}`}
+          className="block w-full max-w-full"
+          preserveAspectRatio="none"
           aria-label={`过去一年学习足迹，共 ${totalDays} 天学习`}
         >
-          {weeks.map((week, wi) =>
-            week.map((day, di) => (
-              <rect
-                key={`${wi}-${di}`}
-                x={wi * (cellSize + gap)}
-                y={di * (cellSize + gap)}
-                width={cellSize}
-                height={cellSize}
-                rx={2}
-                className={LEVEL_FILL[day.level]}
-              >
-                <title>
-                  {day.date}: {day.minutes} 分钟
-                </title>
-              </rect>
-            ))
-          )}
-        </svg>
-      </div>
-
-      <div className="flex items-center justify-end gap-2 mt-2 text-xs text-gray-500">
-        <span>少</span>
-        {LEVEL_BG.map((cls, i) => (
-          <span
-            key={i}
-            className={`w-3 h-3 rounded-sm ${cls}`}
-            aria-hidden="true"
+          <path d={areaPath} className="fill-accent/10" />
+          <path
+            d={path}
+            className="stroke-ink fill-none"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+            strokeLinecap="round"
           />
-        ))}
-        <span>多</span>
+          {monthLabels.map((m, i) => (
+            <text
+              key={i}
+              x={m.x}
+              y={height - 6}
+              fontSize="10"
+              className="fill-gray-400"
+              textAnchor="middle"
+            >
+              {m.label}
+            </text>
+          ))}
+        </svg>
       </div>
     </section>
   );
+}
+
+// Catmull-Rom smoothing → cubic Bezier path. Avoids sharp spikes that
+// straight `L` line would produce on daily-rollup data.
+function pointsToSmoothPath(
+  pts: Array<{ x: number; y: number }>
+): string {
+  if (pts.length === 0) return "";
+  if (pts.length === 1) return `M ${pts[0].x} ${pts[0].y}`;
+  const tension = 0.5;
+  let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] ?? p2;
+    const cp1x = p1.x + ((p2.x - p0.x) * tension) / 6;
+    const cp1y = p1.y + ((p2.y - p0.y) * tension) / 6;
+    const cp2x = p2.x - ((p3.x - p1.x) * tension) / 6;
+    const cp2y = p2.y - ((p3.y - p1.y) * tension) / 6;
+    d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)} ${cp2x.toFixed(1)} ${cp2y.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+  }
+  return d;
 }
