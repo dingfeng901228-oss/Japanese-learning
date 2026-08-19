@@ -4,6 +4,12 @@
 // Used by the manual-add form (app/vocabulary/new/page.tsx) and the
 // delete button on the detail page (app/vocabulary/[id]/page.tsx).
 
+// Per Frank #6367: batch-generate endpoint can run up to ~2s × N vocab
+// items (gpt-4o-mini latency). Vercel's default Server Action timeout is
+// 10s on Hobby — too short for Frank's 22 vocab. Bump to 300s (max on
+// Pro). On Hobby this caps at 60s, which still handles ~30 items.
+export const maxDuration = 300;
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -223,4 +229,100 @@ export async function updateExampleAction(formData: FormData) {
 
   revalidatePath(`/vocabulary/${vocabularyId}`);
   redirect(`/vocabulary/${vocabularyId}`);
+}
+
+// Per Frank #6367: bulk-generate examples for every vocab that doesn't
+// have a primary example yet. Frank has 22 vocab and most lack examples
+// (he never clicked "重新生成" individually) — batch generation saves
+// him from N clicks.
+//
+// Status passed back via redirect query: `batch=10-5-7` means
+// `generated=10 skipped=5 errors=7`. The /vocabulary page reads this
+// and shows a summary banner.
+export async function batchGenerateExamplesAction() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  // 1) Fetch user's vocab items.
+  const { data: vocabItems, error: vErr } = await supabase
+    .from("vocabulary_items")
+    .select("id, word, meaning, reading, type")
+    .eq("user_id", user.id);
+
+  if (vErr || !vocabItems) {
+    console.error("batchGenerateExamplesAction: vocab fetch failed", vErr);
+    redirect("/vocabulary?batch=0-0-error");
+  }
+
+  if (vocabItems.length === 0) {
+    redirect("/vocabulary?batch=0-0-empty");
+  }
+
+  // 2) Single query for all vocab ids that already have a primary
+  //    example — avoids N+1 round-trips.
+  const vocabIds = vocabItems.map((v) => v.id);
+  const { data: existingPrimaries } = await supabase
+    .from("vocabulary_examples")
+    .select("vocabulary_id")
+    .eq("is_primary", true)
+    .in("vocabulary_id", vocabIds);
+  const primarySet = new Set(
+    (existingPrimaries ?? []).map((e) => e.vocabulary_id)
+  );
+
+  let generated = 0;
+  let skipped = 0;
+  let errors = 0;
+
+  // 3) For each vocab without primary, generate + insert.
+  for (const item of vocabItems) {
+    if (primarySet.has(item.id)) {
+      skipped++;
+      continue;
+    }
+
+    try {
+      const ex = await generateExample({
+        word: item.word,
+        meaning: item.meaning,
+        reading: item.reading,
+        type: item.type,
+      });
+
+      if (!ex.sentence) {
+        errors++;
+        continue;
+      }
+
+      const { error: insErr } = await supabase
+        .from("vocabulary_examples")
+        .insert({
+          vocabulary_id: item.id,
+          sentence: ex.sentence,
+          translation: ex.translation,
+          reading: ex.reading,
+          is_primary: true,
+          generated_by_ai: true,
+        });
+
+      if (insErr) {
+        console.error("batchGenerateExamplesAction: insert failed", insErr);
+        errors++;
+      } else {
+        generated++;
+      }
+    } catch (err) {
+      console.error(
+        "batchGenerateExamplesAction: generate failed for",
+        item.word,
+        err
+      );
+      errors++;
+    }
+  }
+
+  revalidatePath("/vocabulary");
+  revalidatePath("/review");
+  redirect(`/vocabulary?batch=${generated}-${skipped}-${errors}`);
 }
