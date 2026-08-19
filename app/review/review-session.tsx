@@ -131,12 +131,12 @@ export function ReviewSession({
           </div>
         </div>
 
-        {/* Hint: meaning + reading are always shown (they're the same
-            across modes — only the example sentence is hidden in
-            dictation mode until after answer). */}
+        {/* Per Frank #6365: hint shows only the Chinese meaning.
+            Kana reading was redundant — it doubled up with the
+            Japanese word for kanji-vocab and added noise rather than
+            information for learners who already read kana. */}
         <div className="text-xs text-gray-500 mb-1">提示</div>
         <div className="text-base text-gray-700 mb-4">
-          {current.reading && `${current.reading} · `}
           {current.meaning}
         </div>
 
