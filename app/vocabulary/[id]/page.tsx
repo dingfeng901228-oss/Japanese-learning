@@ -12,7 +12,10 @@
 //   editor (headword / reading / meaning / level / part of speech),
 //   controlled by ?edit_word=1 — separate from the example editor
 //   (?edit=1) so the two can be edited independently.
-// Phase 7+: SRS, today queue, listening mode. Placeholder section below.
+// Phase 7+ (#6334): prev / next word preview (see <section> below).
+// Phase 7 review placeholder was removed per Frank #6346 — the section
+// and the "复习功能将在 Phase 7 启用..." copy are gone. Re-add when
+// actual SRS review lands in Phase 7.
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -361,13 +364,6 @@ export default async function VocabularyDetailPage({
             还没有例句，点"生成例句"让 AI 生成一个。
           </p>
         )}
-      </section>
-
-      <section className="bg-white border border-gray-200 rounded-2xl p-8 mb-6">
-        <h2 className="text-lg font-semibold mb-3">🔁 复习</h2>
-        <p className="text-sm text-gray-500">
-          复习功能将在 Phase 7 启用。届时会基于 SRS 间隔复习算法自动安排。
-        </p>
       </section>
 
       {/* Phase 7+ (#6334): prev / next word preview. Click either card to
