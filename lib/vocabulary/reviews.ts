@@ -83,9 +83,19 @@ export async function getDueReviews(limit = 20): Promise<ReviewItem[]> {
 
   const nowIso = new Date().toISOString();
 
-  // Pull review rows whose next_review_at is null or in the past, joined
-  // with the vocab word + the primary example (we want a sentence to
-  // blank for fill-in mode).
+  // Per Frank #6361 (debug strip showed items=0, vocab=22,
+  // hasExample=true → silent data inconsistency): vocabulary_examples
+  // had no direct FK from vocabulary_reviews, so the previous sibling
+  // embedding silently failed to resolve (PostgREST only auto-detects
+  // 1-hop FK relationships — sibling embedding from a grandparent
+  // table is a no-op). Fix: nest vocabulary_examples INSIDE
+  // vocabulary_items!inner (vocabulary_items has the FK to itself;
+  // from there one hop to vocabulary_examples resolves correctly).
+  //
+  // Without this fix, every review row's `r.vocabulary_examples`
+  // came back as undefined/[], so the `if (!primary) continue` filter
+  // skipped them all, returning items.length === 0 even when the user
+  // had vocab + examples + review rows in the database.
   const { data, error } = await supabase
     .from("vocabulary_reviews")
     .select(
@@ -96,8 +106,18 @@ export async function getDueReviews(limit = 20): Promise<ReviewItem[]> {
       interval_days,
       ease_factor,
       mastery,
-      vocabulary_items!inner ( word, reading, meaning, type ),
-      vocabulary_examples ( sentence, reading, translation, is_primary )
+      vocabulary_items!inner (
+        word,
+        reading,
+        meaning,
+        type,
+        vocabulary_examples (
+          sentence,
+          reading,
+          translation,
+          is_primary
+        )
+      )
     `
     )
     .eq("user_id", user.id)
@@ -111,7 +131,10 @@ export async function getDueReviews(limit = 20): Promise<ReviewItem[]> {
   }
 
   // Flatten + keep only items that have a primary example (otherwise
-  // fill-in has nothing to show).
+  // fill-in has nothing to show). Examples now come from
+  // r.vocabulary_items.vocabulary_examples (nested per the JOIN fix
+  // above) instead of r.vocabulary_examples (sibling, which silently
+  // returned undefined).
   const out: ReviewItem[] = [];
   for (const r of data ?? []) {
     const v = r.vocabulary_items as unknown as {
@@ -119,13 +142,14 @@ export async function getDueReviews(limit = 20): Promise<ReviewItem[]> {
       reading: string | null;
       meaning: string;
       type: VocabularyType;
+      vocabulary_examples?: Array<{
+        sentence: string;
+        reading: string | null;
+        translation: string | null;
+        is_primary: boolean;
+      }>;
     };
-    const examples = (r.vocabulary_examples ?? []) as Array<{
-      sentence: string;
-      reading: string | null;
-      translation: string | null;
-      is_primary: boolean;
-    }>;
+    const examples = v.vocabulary_examples ?? [];
     const primary = examples.find((e) => e.is_primary) ?? examples[0];
     if (!primary) continue;
 
