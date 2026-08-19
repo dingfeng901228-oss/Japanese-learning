@@ -262,7 +262,9 @@ function ListeningPageContent() {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const volumeFrameRef = useRef<number | null>(null);
   const cancelledRef = useRef(false);
-  const [volumeLevel, setVolumeLevel] = useState(0);
+  // Phase 7 (#6269): raw waveform path element. Direct DOM mutation on
+  // each animation frame — avoids 60fps React re-renders.
+  const waveformPathRef = useRef<SVGPathElement | null>(null);
 
   // Shadow chunked mode (Phase 4): play sentence in chunks with 1.5s delay between.
   const [chunkedMode, setChunkedMode] = useState(false);
@@ -690,14 +692,29 @@ function ListeningPageContent() {
       audioContextRef.current = audioContext;
       analyserRef.current = analyser;
 
-      const data = new Uint8Array(analyser.frequencyBinCount);
+      const data = new Uint8Array(analyser.fftSize);
       const tick = () => {
         if (!analyserRef.current) return;
-        analyserRef.current.getByteFrequencyData(data);
-        let sum = 0;
-        for (let i = 0; i < data.length; i++) sum += data[i];
-        const avg = sum / data.length;
-        setVolumeLevel(avg / 255);
+        // Phase 7 (#6269): raw waveform — getByteTimeDomainData returns
+        // PCM samples (0-255, centered at 128 = silence). Build an SVG
+        // path string of all 256 samples and mutate the path element
+        // directly via ref so we don't re-render React at 60fps.
+        analyserRef.current.getByteTimeDomainData(data);
+        const w = 280;
+        const h = 32;
+        const mid = h / 2;
+        const sliceWidth = w / data.length;
+        let path = "";
+        for (let i = 0; i < data.length; i++) {
+          const v = data[i] / 128.0; // 0-2, 1.0 = silence
+          const y = mid - (v - 1) * mid; // 0-2 → -mid to +mid (inverted)
+          const x = i * sliceWidth;
+          if (i === 0) path += `M ${x.toFixed(2)} ${y.toFixed(2)}`;
+          else path += ` L ${x.toFixed(2)} ${y.toFixed(2)}`;
+        }
+        if (waveformPathRef.current) {
+          waveformPathRef.current.setAttribute("d", path);
+        }
         volumeFrameRef.current = requestAnimationFrame(tick);
       };
       tick();
@@ -716,7 +733,9 @@ function ListeningPageContent() {
       audioContextRef.current = null;
     }
     analyserRef.current = null;
-    setVolumeLevel(0);
+    if (waveformPathRef.current) {
+      waveformPathRef.current.setAttribute("d", "");
+    }
   }
 
   async function runShadowPipeline(blob: Blob) {
@@ -1093,24 +1112,27 @@ function ListeningPageContent() {
                       {recordingTime}s
                     </div>
                   </div>
-                  {/* Phase 7 (#6257): real-time volume waveform.
-                     7 staggered bars whose heights = baseHeights × (0.3 + volume × 0.7),
-                     so they pulse with the actual mic level on requestAnimationFrame. */}
-                  <div
-                    className="flex items-end gap-1 h-8"
+                  {/* Phase 7 (#6269): raw waveform.
+                     SVG path of 256 PCM samples (0-255, centered at 128 = silence).
+                     The path's `d` attribute is mutated directly via ref on
+                     requestAnimationFrame — no React re-render at 60fps. */}
+                  <svg
+                    width={280}
+                    height={32}
+                    viewBox="0 0 280 32"
+                    className="block"
                     aria-hidden="true"
                   >
-                    {[30, 55, 40, 75, 50, 65, 35].map((h, i) => (
-                      <div
-                        key={i}
-                        className="w-1.5 bg-red-500 rounded-full animate-pulse"
-                        style={{
-                          height: `${h * (0.3 + volumeLevel * 0.7)}%`,
-                          animationDelay: `${i * 0.12}s`,
-                        }}
-                      />
-                    ))}
-                  </div>
+                    <path
+                      ref={waveformPathRef}
+                      d=""
+                      stroke="rgb(239, 68, 68)"
+                      strokeWidth="1.5"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                   <button
                     type="button"
                     onClick={stopShadowRecording}
