@@ -315,3 +315,29 @@ export async function getUserVocabCount(): Promise<number> {
   if (error) return 0;
   return count ?? 0;
 }
+
+// Per Frank #6353: tell the page whether the user has ANY vocab item
+// with at least one example attached. Used to pick the right empty-state
+// branch directly from server-side state instead of relying on the
+// backfill action's ?notice URL query param (which can be stripped by
+// Next.js redirect/middleware/cache layers and leaves the page showing
+// the stale "还没有复习队列" copy).
+//
+// Implemented as one query with !inner INNER JOIN so PostgREST returns
+// only vocab rows that have ≥1 example. count>0 → user has at least
+// one reviewable item.
+export async function userHasVocabWithExamples(): Promise<boolean> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { count, error } = await supabase
+    .from("vocabulary_items")
+    .select(
+      "id, vocabulary_examples!inner(id)",
+      { count: "exact", head: true }
+    )
+    .eq("user_id", user.id);
+  if (error) return false;
+  return (count ?? 0) > 0;
+}

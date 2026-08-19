@@ -13,6 +13,7 @@ import Link from "next/link";
 import {
   getDueReviews,
   getUserVocabCount,
+  userHasVocabWithExamples,
 } from "@/lib/vocabulary/reviews";
 import { backfillUserReviewsAction } from "./actions";
 import { ReviewSession, type ReviewMode } from "./review-session";
@@ -22,19 +23,27 @@ export const dynamic = "force-dynamic";
 export default async function ReviewPage({
   searchParams,
 }: {
-  searchParams: Promise<{ mode?: string; notice?: string }>;
+  searchParams: Promise<{ mode?: string }>;
 }) {
   const sp = await searchParams;
   const mode: ReviewMode = sp.mode === "dictation" ? "dictation" : "fill-in";
-  // Per Frank #6351: notice flag set by backfillUserReviewsAction when
-  // the user has vocab but no item has an example attached yet
-  // (silent no-op without this branch). Drives the 3rd empty-state UI.
-  const notice = sp.notice;
   const items = await getDueReviews(20);
-  // Per Frank #6348: distinguish "no vocab at all" from "vocab exists
-  // but none queued for review (needs backfill)" so we can show the
-  // right empty-state CTA. Cheap count query — no row data shipped.
-  const vocabCount = items.length === 0 ? await getUserVocabCount() : 0;
+  // Per Frank #6348 + #6353: drive the empty-state UI from server-side
+  // data, not URL search params (the previous ?notice=no_examples flag
+  // was getting stripped somewhere in the redirect chain and the page
+  // kept showing the stale "还没有复习队列" copy). Three states:
+  //   - items.length > 0                       → ReviewSession
+  //   - vocabCount === 0                        → no-vocab CTA
+  //   - vocabCount > 0 && !userHasAnyExample   → no-examples guidance
+  //   - vocabCount > 0 &&  userHasAnyExample   → backfill CTA (edge case)
+  let vocabCount = 0;
+  let userHasAnyExample = false;
+  if (items.length === 0) {
+    vocabCount = await getUserVocabCount();
+    if (vocabCount > 0) {
+      userHasAnyExample = await userHasVocabWithExamples();
+    }
+  }
 
   return (
     <main className="min-h-screen px-6 py-12 max-w-2xl mx-auto">
@@ -76,14 +85,27 @@ export default async function ReviewPage({
       </header>
 
       {items.length === 0 ? (
-        notice === "no_examples" && vocabCount > 0 ? (
-          // Per Frank #6351: user has vocab but no item has an
-          // example attached yet, so backfill can't queue anything
-          // (getDueReviews filters out items lacking examples).
-          // Fill-in mode needs the example sentence to blank, so
-          // direct the user to /vocabulary to regenerate examples
-          // one click per word. A batch-generate button would be
-          // nicer — Phase 7+ polish.
+        vocabCount === 0 ? (
+          // Truly empty — user has no vocab items at all.
+          <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
+            <div className="text-4xl mb-4">🎉</div>
+            <p className="text-lg font-medium">今日复习完成</p>
+            <p className="text-sm text-gray-500 mt-2">
+              没有需要复习的单词。收藏新词或等 SRS 把之前的词排到今天。
+            </p>
+            <Link
+              href="/vocabulary"
+              className="inline-block mt-6 px-5 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800"
+            >
+              去收藏新词
+            </Link>
+          </div>
+        ) : !userHasAnyExample ? (
+          // Per Frank #6353: user has vocab but no item has an example
+          // attached, so backfill can't queue anything (getDueReviews
+          // filters out items lacking examples). Direct them to
+          // /vocabulary to regenerate examples (one click per word —
+          // no batch-generate yet, that's Phase 7+ polish).
           <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
             <div className="text-4xl mb-4">📝</div>
             <p className="text-lg font-medium">单词还没例句</p>
@@ -106,10 +128,11 @@ export default async function ReviewPage({
               </button>
             </form>
           </div>
-        ) : vocabCount > 0 ? (
-          // User has vocab but queue is empty (predates the
-          // ensureReviewRecord hook, or all queued items have been
-          // reviewed out). One-click backfill (per Frank #6348).
+        ) : (
+          // Vocab exists with examples but the SRS queue is empty.
+          // Shouldn't normally happen (ensureReviewRecord + backfill
+          // cover the insert path), but the button is the right
+          // fallback if some manual delete ever leaves us here.
           <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
             <div className="text-4xl mb-4">🔄</div>
             <p className="text-lg font-medium">还没有复习队列</p>
@@ -130,20 +153,6 @@ export default async function ReviewPage({
               className="inline-block mt-3 text-sm text-gray-500 hover:text-gray-900 underline-offset-2 hover:underline"
             >
               或先去收藏列表 →
-            </Link>
-          </div>
-        ) : (
-          <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
-            <div className="text-4xl mb-4">🎉</div>
-            <p className="text-lg font-medium">今日复习完成</p>
-            <p className="text-sm text-gray-500 mt-2">
-              没有需要复习的单词。收藏新词或等 SRS 把之前的词排到今天。
-            </p>
-            <Link
-              href="/vocabulary"
-              className="inline-block mt-6 px-5 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800"
-            >
-              去收藏新词
             </Link>
           </div>
         )
