@@ -19,10 +19,10 @@ export default function Home() {
         <div className="col-span-12 lg:col-span-4">
           <StreakStats />
         </div>
-        <div className="col-span-12 lg:col-span-7">
+        <div className="col-span-12">
           <RecentLearning />
         </div>
-        <div className="col-span-12 lg:col-span-5">
+        <div className="col-span-12">
           <LearningActivity />
         </div>
         <div className="col-span-12">
