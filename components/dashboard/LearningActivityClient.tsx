@@ -31,7 +31,6 @@ const MONTHS = [
 
 export interface LearningActivityClientProps {
   data: Array<{ date: string; minutes: number }>;
-  usingReal: boolean;
   totalDays: number;
   totalHours: number;
   peakMinutes: number;
@@ -39,7 +38,6 @@ export interface LearningActivityClientProps {
 
 export function LearningActivityClient({
   data,
-  usingReal,
   totalDays,
   totalHours,
   peakMinutes,
@@ -116,10 +114,7 @@ export function LearningActivityClient({
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
           学习足迹
         </h2>
-        <span className="text-xs text-gray-400">
-          {usingReal ? "" : "演示数据 · "}
-          过去一年
-        </span>
+        <span className="text-xs text-gray-400">过去一年</span>
       </div>
 
       <p className="text-sm text-gray-700 mb-4">

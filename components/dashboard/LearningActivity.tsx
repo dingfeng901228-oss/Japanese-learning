@@ -1,37 +1,42 @@
 // Learning Activity — server wrapper that fetches daily_rollups +
 // hands off rendering to the interactive client component.
 //
-// Per Frank #6236: heatmap → line chart. Hover + range selector need
-// client-side state, so the SVG + interactivity live in
-// LearningActivityClient.tsx.
+// Per Frank #6246: real data ONLY. No mock fallback. If the table is
+// empty (user hasn't trained yet), fill the past 365 days with 0s so
+// the chart shows the accurate empty state (not fake demo data).
 
 import { getDailyRollups } from "@/lib/daily-rollups";
-import { buildHeatmapData } from "@/lib/dashboard-mock";
 import { LearningActivityClient } from "./LearningActivityClient";
 
 export async function LearningActivity() {
-  let realData: Array<{ date: string; minutes: number }> = [];
+  let rollups: Array<{ date: string; minutes: number }> = [];
   try {
-    const rollups = await getDailyRollups(365);
-    realData = rollups.map((r) => ({
+    const data = await getDailyRollups(365);
+    rollups = data.map((r) => ({
       date: typeof r.date === "string" ? r.date : String(r.date),
       minutes: Number(r.minutes) || 0,
     }));
   } catch {
-    // Supabase not ready / table missing / etc. — fall back to mock.
+    // Supabase not ready / table missing / etc. — fall through to 0s.
   }
 
+  // Always use real data shape. If table returned nothing, fill 365
+  // days of 0 so the chart honestly shows "no training yet".
   let data: Array<{ date: string; minutes: number }>;
-  let usingReal = false;
-
-  if (realData.length > 0) {
-    data = realData;
-    usingReal = true;
+  if (rollups.length > 0) {
+    data = rollups;
   } else {
-    data = buildHeatmapData().map((d) => ({
-      date: d.date,
-      minutes: d.minutes,
-    }));
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    data = [];
+    for (let i = 364; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      data.push({
+        date: d.toISOString().slice(0, 10),
+        minutes: 0,
+      });
+    }
   }
 
   const totalDays = data.filter((d) => d.minutes > 0).length;
@@ -42,7 +47,6 @@ export async function LearningActivity() {
   return (
     <LearningActivityClient
       data={data}
-      usingReal={usingReal}
       totalDays={totalDays}
       totalHours={hours}
       peakMinutes={peakMinutes}
