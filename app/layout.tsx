@@ -121,9 +121,9 @@ export default async function RootLayout({
       lang="zh-CN"
       className={`${inter.variable} ${notoJP.variable} ${notoSC.variable}`}
     >
-      <body className="font-sans antialiased min-h-screen bg-white text-ink">
+      <body className="font-sans antialiased min-h-screen bg-soft text-ink">
         {userInfo && (
-          <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-line">
+          <header className="sticky top-0 z-30 bg-white/70 backdrop-blur-xl border-b border-line shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
             <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
               <Link href="/" className="font-bold text-base text-ink">
                 FastStudy
