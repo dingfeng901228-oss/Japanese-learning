@@ -254,9 +254,6 @@ function computeStreak(history: { timestamp: number }[]): number {
 export default function TodayPage() {
   const [history, setHistory] = useState<MistakeEntry[]>([]);
   const [shadowHistory, setShadowHistory] = useState<ShadowHistoryEntry[]>([]);
-  const [missionCompletions, setMissionCompletions] = useState<
-    Record<string, number>
-  >({});
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -610,70 +607,27 @@ export default function TodayPage() {
         </section>
       )}
 
-      {/* Phase 9 enhancement: Real-World Missions */}
+      {/* Phase 9 enhancement (moved #6330): Real-World Missions is now
+         a topic picker on /speaking (lib/speaking-topics.ts). Drop the
+         local checklist + the section here; just leave a one-liner
+         pointing users to the new place. */}
       <section className="border border-gray-200 rounded-2xl p-5 mb-6 bg-white">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold">🌍 Real-World Missions</h2>
-          <span className="text-xs text-gray-500">
-            {Object.keys(missionCompletions).length}/
-            {REAL_WORLD_MISSIONS.length} 完成
-          </span>
-        </div>
-        <div className="space-y-2">
-          {REAL_WORLD_MISSIONS.map((m) => {
-            const isDone = !!missionCompletions[m.id];
-            return (
-              <div
-                key={m.id}
-                className={`flex items-start gap-3 rounded-xl p-3 ${
-                  isDone
-                    ? "bg-green-50 border border-green-200"
-                    : "bg-gray-50"
-                }`}
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    const next = { ...missionCompletions };
-                    if (next[m.id]) delete next[m.id];
-                    else next[m.id] = Date.now();
-                    setMissionCompletions(next);
-                    if (typeof window !== "undefined") {
-                      window.localStorage.setItem(
-                        "japaneseLearning.missionCompletions",
-                        JSON.stringify(next)
-                      );
-                    }
-                  }}
-                  className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center mt-0.5 ${
-                    isDone
-                      ? "bg-green-500 border-green-500 text-white"
-                      : "border-gray-300 hover:border-gray-400"
-                  }`}
-                  title={isDone ? "标记为未完成" : "标记为完成"}
-                >
-                  {isDone && "✓"}
-                </button>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xl">{m.emoji}</span>
-                    <span className="text-sm font-medium text-gray-900">
-                      {m.title}
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-500">{m.description}</div>
-                  {isDone && missionCompletions[m.id] && (
-                    <div className="text-xs text-green-600 mt-1">
-                      ✓ 完成于{" "}
-                      {new Date(missionCompletions[m.id]).toLocaleString(
-                        "zh-CN"
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">💬</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900">
+              想练口语？去 /speaking 选个话题开练
+            </p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              10 个场景（自我介绍 / 点餐 / 问路 / 报时间 / 打招呼……）选一个，AI 立刻进入角色
+            </p>
+          </div>
+          <Link
+            href="/speaking"
+            className="flex-shrink-0 px-4 py-2 rounded-lg bg-gray-900 text-white text-sm hover:bg-gray-800 transition-colors"
+          >
+            去 /speaking →
+          </Link>
         </div>
       </section>
 

@@ -4,6 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { saveMistakeToVocabAction } from "./actions";
 import { useSessionTimer, formatDuration } from "@/lib/today-stats";
+import {
+  SPEAKING_TOPICS,
+  DEFAULT_AI_PROMPT,
+  type SpeakingTopic,
+} from "@/lib/speaking-topics";
 
 // Phase 7+ (#6280): persist the conversation across reloads so the
 // user doesn't lose their context every time they come back. Single
@@ -98,6 +103,11 @@ export default function SpeakingPage() {
   // Default to Chinese. Per Frank's request (#5945), the feedback language
   // toggle is removed — always render feedback in Chinese.
   const [feedbackLanguage] = useState<FeedbackLanguage>("zh");
+
+  // Phase 7+ (#6330): currently-selected speaking topic (null = 自由对话).
+  // When set, the conversation's first AI message is the topic's
+  // aiPrompt instead of the generic greeting. "换个话题" clears this.
+  const [selectedTopic, setSelectedTopic] = useState<SpeakingTopic | null>(null);
 
   // Phase 1.5+ real-time session timer (per Frank #6175). Hook re-runs
   // when the user navigates between Speaking and other pages, so each
@@ -310,6 +320,27 @@ export default function SpeakingPage() {
     if (typeof window !== "undefined") {
       window.localStorage.removeItem(turnsStorageKey);
     }
+  }
+
+  // Phase 7+ (#6330): start a conversation on a specific topic. Resets
+  // the conversation history and frames the AI's first message with
+  // the topic's scenario (restaurant, directions, etc.).
+  function startTopic(topic: SpeakingTopic) {
+    setSelectedTopic(topic);
+    setTurns([{ role: "assistant", content: topic.aiPrompt }]);
+    setInput("");
+    setError(null);
+    setFeedback(null);
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(turnsStorageKey);
+    }
+  }
+
+  // Phase 7+ (#6330): clear the current topic and revert to the default
+  // "自由对话" greeting.
+  function clearTopic() {
+    setSelectedTopic(null);
+    startNewConversation();
   }
 
   async function startRecognition() {
@@ -530,10 +561,80 @@ export default function SpeakingPage() {
         </div>
       </header>
 
-      <h1 className="text-2xl font-bold mb-2">自由对话</h1>
+      <h1 className="text-2xl font-bold mb-2">
+        {selectedTopic ? selectedTopic.title : "自由对话"}
+      </h1>
       <p className="text-sm text-gray-500 mb-6">
         {conversationActive ? labels.descActive : labels.descDone}
       </p>
+
+      {/* Phase 7+ (#6330): topic picker. When no topic is selected, show
+         a grid of 10 cards the user can pick to start a themed
+         conversation. When a topic is selected, collapse to a small pill
+         + "换个话题" toggle. */}
+      <div className="mb-6">
+        {selectedTopic ? (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-soft border border-line">
+            <span className="text-lg flex-shrink-0">
+              {selectedTopic.emoji}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-ink truncate">
+                {selectedTopic.title}
+              </p>
+              <p className="text-xs text-gray-500 truncate">
+                {selectedTopic.description}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={clearTopic}
+              className="flex-shrink-0 text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              换个话题
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div className="text-xs text-gray-500 mb-2">
+              💡 选个话题开始，或直接自由对话
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedTopic(null);
+                  startNewConversation();
+                }}
+                className="text-left px-3 py-2.5 rounded-lg border-2 border-gray-900 bg-gray-900 text-white hover:bg-gray-800 transition-colors"
+              >
+                <div className="text-lg mb-0.5">💬</div>
+                <div className="text-sm font-medium">自由对话</div>
+                <div className="text-xs opacity-80 mt-0.5">
+                  不选话题，直接聊
+                </div>
+              </button>
+              {SPEAKING_TOPICS.map((topic) => (
+                <button
+                  key={topic.id}
+                  type="button"
+                  onClick={() => startTopic(topic)}
+                  title={topic.description}
+                  className="text-left px-3 py-2.5 rounded-lg border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors"
+                >
+                  <div className="text-lg mb-0.5">{topic.emoji}</div>
+                  <div className="text-sm font-medium text-ink truncate">
+                    {topic.title}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                    {topic.description}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="flex-1 space-y-4 mb-4 overflow-y-auto">
         {turns.map((t, i) => (
