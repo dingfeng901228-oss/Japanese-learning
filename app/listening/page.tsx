@@ -255,6 +255,15 @@ function ListeningPageContent() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const speakCancelRef = useRef(false);
 
+  // Phase 7 (#6257): real-time volume waveform during recording.
+  // AudioContext + AnalyserNode read the mic stream's frequency data on
+  // requestAnimationFrame; volumeLevel drives the 7 staggered bars in JSX.
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const volumeFrameRef = useRef<number | null>(null);
+  const cancelledRef = useRef(false);
+  const [volumeLevel, setVolumeLevel] = useState(0);
+
   // Shadow chunked mode (Phase 4): play sentence in chunks with 1.5s delay between.
   const [chunkedMode, setChunkedMode] = useState(false);
   const [currentChunkIdx, setCurrentChunkIdx] = useState(-1);
@@ -592,6 +601,7 @@ function ListeningPageContent() {
 
       mediaRecorderRef.current = recorder;
       chunksRef.current = [];
+      startVolumeMeter(stream);
 
       recorder.ondataavailable = (e) => {
         if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
@@ -601,6 +611,15 @@ function ListeningPageContent() {
         if (timerRef.current) {
           clearInterval(timerRef.current);
           timerRef.current = null;
+        }
+        stopVolumeMeter();
+        // Cancel discards the recording before onstop fires; bail out of
+        // the pipeline so we don't waste a transcribe call.
+        if (cancelledRef.current) {
+          cancelledRef.current = false;
+          setShadowPhase("idle");
+          setRecordingTime(0);
+          return;
         }
         const blob = new Blob(chunksRef.current, {
           type: recorder.mimeType || "audio/webm",
@@ -631,12 +650,73 @@ function ListeningPageContent() {
   }
 
   function stopShadowRecording() {
+    cancelledRef.current = false;
     if (
       mediaRecorderRef.current &&
       mediaRecorderRef.current.state === "recording"
     ) {
       mediaRecorderRef.current.stop();
     }
+  }
+
+  // Phase 7 (#6257): cancel — drop the current recording without
+  // transcoding/grading. Sets a flag so recorder.onstop knows to skip
+  // the pipeline and clean up. Also kills the volume meter.
+  function cancelShadowRecording() {
+    cancelledRef.current = true;
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
+      mediaRecorderRef.current.stop();
+    }
+  }
+
+  // Phase 7 (#6257): real-time volume waveform.
+  // AudioContext reads frequency data from the mic stream on
+  // requestAnimationFrame; the average level (0-1) drives the 7
+  // staggered bars in the JSX.
+  function startVolumeMeter(stream: MediaStream) {
+    try {
+      const Ctor =
+        (window as any).AudioContext ||
+        (window as any).webkitAudioContext;
+      if (!Ctor) return;
+      const audioContext: AudioContext = new Ctor();
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      const tick = () => {
+        if (!analyserRef.current) return;
+        analyserRef.current.getByteFrequencyData(data);
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) sum += data[i];
+        const avg = sum / data.length;
+        setVolumeLevel(avg / 255);
+        volumeFrameRef.current = requestAnimationFrame(tick);
+      };
+      tick();
+    } catch (e) {
+      console.error("volume meter failed:", e);
+    }
+  }
+
+  function stopVolumeMeter() {
+    if (volumeFrameRef.current) {
+      cancelAnimationFrame(volumeFrameRef.current);
+      volumeFrameRef.current = null;
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close().catch(() => {});
+      audioContextRef.current = null;
+    }
+    analyserRef.current = null;
+    setVolumeLevel(0);
   }
 
   async function runShadowPipeline(blob: Blob) {
@@ -1013,8 +1093,9 @@ function ListeningPageContent() {
                       {recordingTime}s
                     </div>
                   </div>
-                  {/* Visual waveform indicator (7 staggered bars). 
-                     Not real audio level — just visual feedback that recording is alive. */}
+                  {/* Phase 7 (#6257): real-time volume waveform.
+                     7 staggered bars whose heights = baseHeights × (0.3 + volume × 0.7),
+                     so they pulse with the actual mic level on requestAnimationFrame. */}
                   <div
                     className="flex items-end gap-1 h-8"
                     aria-hidden="true"
@@ -1024,7 +1105,7 @@ function ListeningPageContent() {
                         key={i}
                         className="w-1.5 bg-red-500 rounded-full animate-pulse"
                         style={{
-                          height: `${h}%`,
+                          height: `${h * (0.3 + volumeLevel * 0.7)}%`,
                           animationDelay: `${i * 0.12}s`,
                         }}
                       />
@@ -1036,6 +1117,13 @@ function ListeningPageContent() {
                     className="px-6 py-3 rounded-lg text-base font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
                   >
                     ⏹ 停止录音
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cancelShadowRecording}
+                    className="text-xs text-gray-500 hover:text-red-600 transition-colors"
+                  >
+                    取消
                   </button>
                 </div>
               )}
