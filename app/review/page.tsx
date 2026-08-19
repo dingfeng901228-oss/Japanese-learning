@@ -159,6 +159,14 @@ export default async function ReviewPage({
       ) : (
         <ReviewSession initialItems={items} mode={mode} />
       )}
+
+      {/* TEMP DEBUG per Frank #6358 — confirm the data-driven branch
+          selection actually fires in the browser. Will remove once
+          Frank confirms the right UI shows. */}
+      <div className="mt-4 text-[10px] text-gray-400 text-center font-mono opacity-60 select-all">
+        debug · items={items.length} · vocab={vocabCount} ·
+        hasExample={String(userHasAnyExample)}
+      </div>
     </main>
   );
 }

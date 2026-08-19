@@ -316,28 +316,41 @@ export async function getUserVocabCount(): Promise<number> {
   return count ?? 0;
 }
 
-// Per Frank #6353: tell the page whether the user has ANY vocab item
-// with at least one example attached. Used to pick the right empty-state
-// branch directly from server-side state instead of relying on the
-// backfill action's ?notice URL query param (which can be stripped by
-// Next.js redirect/middleware/cache layers and leaves the page showing
-// the stale "还没有复习队列" copy).
+// Per Frank #6353 + #6358: tell the page whether the user has ANY vocab
+// item with at least one example attached. Used to pick the right
+// empty-state branch directly from server-side state instead of
+// relying on the backfill action's ?notice URL query param (which
+// can be stripped by Next.js redirect/middleware/cache layers and
+// leaves the page showing the stale "还没有复习队列" copy).
 //
-// Implemented as one query with !inner INNER JOIN so PostgREST returns
-// only vocab rows that have ≥1 example. count>0 → user has at least
-// one reviewable item.
+// Two-query approach (per Frank #6358): the previous single-query
+// version used PostgREST `vocabulary_examples!inner(id)` to embed an
+// INNER JOIN + count, but vocabulary_examples has no direct user_id
+// column — RLS goes through the parent vocabulary_items via
+// `exists(...)`. That made the INNER JOIN count ambiguous and likely
+// returned the count of example rows (one per (vocab, example) pair)
+// rather than "is there at least one". Two straightforward queries
+// through properly-RLS-scoped tables is bulletproof.
 export async function userHasVocabWithExamples(): Promise<boolean> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return false;
 
-  const { count, error } = await supabase
+  // 1) Fetch the user's vocab ids.
+  const { data: vocabRows, error: vErr } = await supabase
     .from("vocabulary_items")
-    .select(
-      "id, vocabulary_examples!inner(id)",
-      { count: "exact", head: true }
-    )
+    .select("id")
     .eq("user_id", user.id);
+  if (vErr || !vocabRows || vocabRows.length === 0) return false;
+
+  // 2) Count examples whose vocabulary_id is in the user's vocab set.
+  //    vocabulary_examples RLS uses the parent-vocab ownership check,
+  //    so this .in() filter is correctly scoped to Frank's data.
+  const vocabIds = vocabRows.map((v) => v.id);
+  const { count, error } = await supabase
+    .from("vocabulary_examples")
+    .select("id", { count: "exact", head: true })
+    .in("vocabulary_id", vocabIds);
   if (error) return false;
   return (count ?? 0) > 0;
 }
