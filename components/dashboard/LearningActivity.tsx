@@ -42,7 +42,12 @@ export async function LearningActivity() {
   const totalDays = data.filter((d) => d.minutes > 0).length;
   const totalMinutes = data.reduce((s, d) => s + d.minutes, 0);
   const hours = Math.floor(totalMinutes / 60);
-  const peakMinutes = Math.max(...data.map((d) => d.minutes), 0);
+  // Per Frank #6335: keep "最高" as integer — minutes are decimal in
+  // daily_rollups (e.g. 12.5 min for partial session); round once here
+  // so the prop is always an integer and the UI doesn't show "12.5 分".
+  const peakMinutes = Math.round(
+    Math.max(...data.map((d) => d.minutes), 0)
+  );
 
   return (
     <LearningActivityClient
