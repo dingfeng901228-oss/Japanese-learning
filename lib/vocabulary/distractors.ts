@@ -10,6 +10,7 @@
 // Cost: ~$0.005 per call (gpt-4o-mini, ~400 input tokens for 20 items +
 // ~300 output tokens for 60 distractors). Latency: 2-4s typical.
 
+import { unstable_cache } from "next/cache";
 import OpenAI from "openai";
 
 // Lazy OpenAI client — same pattern as examples.ts.
@@ -62,65 +63,81 @@ Other rules:
 // Generate distractors for an entire batch in one LLM call.
 // Falls back to a deterministic placeholder per item if the model
 // returns malformed output (so the page never crashes).
+//
+// Per Frank #6513: wrapped with Next.js unstable_cache to fix
+// /review slow load (was 2-4s gpt-4o-mini call per page load).
+// Same (vocab_id, word, meaning, reading, type) tuple → same distractors
+// (LLM temperature is deterministic enough for our quiz context).
+// 24h TTL: distractors don't change frequently; if vocab gets updated
+// examples, the cache may become slightly stale (acceptable trade-off
+// for not paying $0.005 per page load).
+const _cachedGenerateDistractors = unstable_cache(
+  async (items: DistractorItem[]): Promise<DistractorSet[]> => {
+    if (items.length === 0) return [];
+
+    const userContent = JSON.stringify({
+      items: items.map((it) => ({
+        id: it.id,
+        word: it.word,
+        meaning: it.meaning,
+        reading: it.reading,
+        type: it.type,
+      })),
+    });
+
+    let parsed: { items?: Array<{ id: string; distractors: unknown }> } = {};
+    try {
+      const response = await getOpenAI().chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: userContent },
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.7,
+      });
+      const content = response.choices[0]?.message?.content ?? "{}";
+      parsed = JSON.parse(content);
+    } catch (err) {
+      console.error("generateDistractors: OpenAI call failed", err);
+      parsed = {};
+    }
+
+    const result: DistractorSet[] = [];
+    for (const item of items) {
+      const set = parsed.items?.find(
+        (s) => s && typeof s === "object" && s.id === item.id
+      );
+      const raw = Array.isArray(set?.distractors)
+        ? (set!.distractors as unknown[])
+        : [];
+
+      // Filter: keep only non-empty strings different from the correct word.
+      const clean: string[] = [];
+      const seen = new Set<string>();
+      for (const d of raw) {
+        if (typeof d !== "string") continue;
+        const trimmed = d.trim();
+        if (!trimmed || trimmed === item.word) continue;
+        if (seen.has(trimmed)) continue;
+        seen.add(trimmed);
+        clean.push(trimmed);
+        if (clean.length === 3) break;
+      }
+      // Pad with safe placeholder if LLM returned fewer than 3 valid.
+      while (clean.length < 3) {
+        clean.push(`(${item.word}的干扰项)`);
+      }
+      result.push({ id: item.id, distractors: clean });
+    }
+    return result;
+  },
+  ["distractors-v1"],
+  { revalidate: 3600 * 24 }
+);
+
 export async function generateDistractors(
   items: DistractorItem[]
 ): Promise<DistractorSet[]> {
-  if (items.length === 0) return [];
-
-  const userContent = JSON.stringify({
-    items: items.map((it) => ({
-      id: it.id,
-      word: it.word,
-      meaning: it.meaning,
-      reading: it.reading,
-      type: it.type,
-    })),
-  });
-
-  let parsed: { items?: Array<{ id: string; distractors: unknown }> } = {};
-  try {
-    const response = await getOpenAI().chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: userContent },
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.7,
-    });
-    const content = response.choices[0]?.message?.content ?? "{}";
-    parsed = JSON.parse(content);
-  } catch (err) {
-    console.error("generateDistractors: OpenAI call failed", err);
-    parsed = {};
-  }
-
-  const result: DistractorSet[] = [];
-  for (const item of items) {
-    const set = parsed.items?.find(
-      (s) => s && typeof s === "object" && s.id === item.id
-    );
-    const raw = Array.isArray(set?.distractors)
-      ? (set!.distractors as unknown[])
-      : [];
-
-    // Filter: keep only non-empty strings different from the correct word.
-    const clean: string[] = [];
-    const seen = new Set<string>();
-    for (const d of raw) {
-      if (typeof d !== "string") continue;
-      const trimmed = d.trim();
-      if (!trimmed || trimmed === item.word) continue;
-      if (seen.has(trimmed)) continue;
-      seen.add(trimmed);
-      clean.push(trimmed);
-      if (clean.length === 3) break;
-    }
-    // Pad with safe placeholder if LLM returned fewer than 3 valid.
-    while (clean.length < 3) {
-      clean.push(`(${item.word}的干扰项)`);
-    }
-    result.push({ id: item.id, distractors: clean });
-  }
-  return result;
+  return _cachedGenerateDistractors(items);
 }
