@@ -68,6 +68,7 @@ const NAV_ITEMS = [
   { label: "学习", href: "/today" },
   { label: "听力", href: "/listening" },
   { label: "口语", href: "/speaking" },
+  { label: "跟读", href: "/shadowing" },
   { label: "收藏", href: "/vocabulary" },
   { label: "复习", href: "/review" },
   { label: "进度", href: "/progress" },
