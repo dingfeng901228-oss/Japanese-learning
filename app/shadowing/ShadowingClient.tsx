@@ -6,7 +6,16 @@ import type { MottoSentence } from "@/lib/motto-sentences-types";
 
 const PROGRESS_KEY = "japanese:shadowing-motto-progress";
 const SHADOW_HISTORY_KEY = "japanese:shadowing-motto-history";
+const PLAYBACK_PREFS_KEY = "japanese:shadowing-motto-playback-prefs";
 const PAGE_SIZE = 10;
+
+type PlaybackPrefs = {
+  loopCurrent: boolean;
+  autoNext: boolean;
+  playbackRate: number;
+};
+
+const VALID_RATES: readonly number[] = [1.0, 1.1, 1.2];
 
 type ShadowGrade = {
   accuracy: number;
@@ -54,6 +63,32 @@ function saveShadowHistory(h: ShadowHistoryEntry[]) {
     SHADOW_HISTORY_KEY,
     JSON.stringify(h.slice(0, 50))
   );
+}
+function loadPlaybackPrefs(): PlaybackPrefs {
+  if (typeof window === "undefined") {
+    return { loopCurrent: false, autoNext: false, playbackRate: 1.0 };
+  }
+  try {
+    const raw = window.localStorage.getItem(PLAYBACK_PREFS_KEY);
+    if (!raw) return { loopCurrent: false, autoNext: false, playbackRate: 1.0 };
+    const parsed = JSON.parse(raw);
+    const rate =
+      typeof parsed.playbackRate === "number" &&
+      VALID_RATES.includes(parsed.playbackRate)
+        ? parsed.playbackRate
+        : 1.0;
+    return {
+      loopCurrent: !!parsed.loopCurrent,
+      autoNext: !!parsed.autoNext,
+      playbackRate: rate,
+    };
+  } catch {
+    return { loopCurrent: false, autoNext: false, playbackRate: 1.0 };
+  }
+}
+function savePlaybackPrefs(p: PlaybackPrefs) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(PLAYBACK_PREFS_KEY, JSON.stringify(p));
 }
 function formatTime(ts: number): string {
   const d = new Date(ts);
@@ -132,6 +167,10 @@ export default function ShadowingClient({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [jumpInput, setJumpInput] = useState("");
+  const [loopCurrent, setLoopCurrent] = useState(false);
+  const [autoNext, setAutoNext] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1.0);
+  const pendingAutoPlayRef = useRef(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -163,7 +202,23 @@ export default function ShadowingClient({
   useEffect(() => {
     setProgress(loadProgress());
     setHistory(loadShadowHistory());
+    const prefs = loadPlaybackPrefs();
+    setLoopCurrent(prefs.loopCurrent);
+    setAutoNext(prefs.autoNext);
+    setPlaybackRate(prefs.playbackRate);
   }, []);
+
+  // Persist playback prefs whenever they change
+  useEffect(() => {
+    savePlaybackPrefs({ loopCurrent, autoNext, playbackRate });
+  }, [loopCurrent, autoNext, playbackRate]);
+
+  // Apply playback rate to current audio element
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.playbackRate = playbackRate;
+    }
+  }, [playbackRate]);
 
   // Cleanup
   useEffect(() => {
@@ -205,6 +260,14 @@ export default function ShadowingClient({
       setNowPlaying(false);
       setCurrentTime(0);
       setDuration(0);
+      if (pendingAutoPlayRef.current) {
+        pendingAutoPlayRef.current = false;
+        audioRef.current.playbackRate = playbackRate;
+        audioRef.current.play().then(
+          () => setNowPlaying(true),
+          () => setNowPlaying(false)
+        );
+      }
     }
     setPhase("idle");
     setTranscript(null);
@@ -272,7 +335,12 @@ export default function ShadowingClient({
     next.add(cur.id);
     setProgress(next);
     saveProgress(next);
-  }, [progress, cur]);
+    // Auto-play next track if enabled (and not looping current)
+    if (autoNext && !loopCurrent) {
+      pendingAutoPlayRef.current = true;
+      setIdx((i) => (i + 1) % total);
+    }
+  }, [progress, cur, autoNext, loopCurrent, total]);
 
   const seekTo = useCallback(
     (seconds: number) => {
@@ -493,9 +561,11 @@ export default function ShadowingClient({
           ref={audioRef}
           src={cur.audioUrl}
           preload="metadata"
-          onLoadedMetadata={(e) =>
-            setDuration(e.currentTarget.duration || 0)
-          }
+          loop={loopCurrent}
+          onLoadedMetadata={(e) => {
+            setDuration(e.currentTarget.duration || 0);
+            if (e.currentTarget) e.currentTarget.playbackRate = playbackRate;
+          }}
           onTimeUpdate={(e) =>
             setCurrentTime(e.currentTarget.currentTime || 0)
           }
@@ -506,7 +576,7 @@ export default function ShadowingClient({
           <track kind="captions" srcLang="ja" label="Japanese" />
         </audio>
 
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex items-center gap-2 mb-2 flex-wrap">
           <button
             type="button"
             onClick={goPrev}
@@ -538,6 +608,34 @@ export default function ShadowingClient({
           >
             ›
           </button>
+          <button
+            type="button"
+            onClick={() => setLoopCurrent((v) => !v)}
+            aria-pressed={loopCurrent}
+            title={loopCurrent ? "单篇循环 · 开" : "单篇循环 · 关"}
+            aria-label="单篇循环"
+            className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm flex-shrink-0 transition-colors ${
+              loopCurrent
+                ? "border-blue-400 bg-blue-50 text-blue-600"
+                : "border-gray-300 text-gray-500 hover:bg-gray-50"
+            }`}
+          >
+            ↻
+          </button>
+          <button
+            type="button"
+            onClick={() => setAutoNext((v) => !v)}
+            aria-pressed={autoNext}
+            title={autoNext ? "自动播放下一篇 · 开" : "自动播放下一篇 · 关"}
+            aria-label="自动播放下一篇"
+            className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm flex-shrink-0 transition-colors ${
+              autoNext
+                ? "border-blue-400 bg-blue-50 text-blue-600"
+                : "border-gray-300 text-gray-500 hover:bg-gray-50"
+            }`}
+          >
+            ⏭
+          </button>
 
           <div className="flex-1 min-w-0">
             <div className="text-xs text-gray-400 truncate">
@@ -548,6 +646,17 @@ export default function ShadowingClient({
               第 {idx + 1} 段 / 共 {total} 段
             </div>
           </div>
+
+          <select
+            value={playbackRate}
+            onChange={(e) => setPlaybackRate(parseFloat(e.target.value))}
+            className="text-xs px-2 py-1 border border-gray-300 rounded bg-white focus:border-gray-500 focus:outline-none flex-shrink-0"
+            aria-label="语速"
+          >
+            <option value="1.0">1.0x</option>
+            <option value="1.1">1.1x</option>
+            <option value="1.2">1.2x</option>
+          </select>
 
           <div className="text-xs font-mono text-gray-500 flex-shrink-0 tabular-nums">
             {formatAudioTime(currentTime)} / {formatAudioTime(duration)}
