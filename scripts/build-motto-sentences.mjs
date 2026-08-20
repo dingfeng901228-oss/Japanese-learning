@@ -32,9 +32,16 @@ async function main() {
     process.exit(1);
   }
   const data = JSON.parse(raw);
-  // Serialize as JS literal — drop undefined/error fields and quote strings.
-  const rows = JSON.stringify(data, null, 2)
-    .replace(/"error": "[^"]*",?\n?/g, "")
+  // Drop transient fields (error from gpt-mini-batch failures) and rename
+  // the STT script's `url` to `audioUrl` to match lib/motto-sentences-types.ts.
+  // TypeScript's structural typing rejects object literals with extra keys
+  // (`Object literal may only specify known properties`) — so we strip
+  // everything that's not part of MottoSentence here.
+  const mapped = data.map((entry) => {
+    const { error: _e, url, ...rest } = entry;
+    return { ...rest, audioUrl: url };
+  });
+  const rows = JSON.stringify(mapped, null, 2)
     .replace(/,(\s*[}\]])/g, "$1");
   const out = TEMPLATE(rows);
   await writeFile(OUTPUT, out, "utf-8");
