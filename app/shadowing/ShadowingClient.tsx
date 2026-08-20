@@ -7,6 +7,7 @@ import type { MottoSentence } from "@/lib/motto-sentences-types";
 const PROGRESS_KEY = "japanese:shadowing-motto-progress";
 const SHADOW_HISTORY_KEY = "japanese:shadowing-motto-history";
 const PLAYBACK_PREFS_KEY = "japanese:shadowing-motto-playback-prefs";
+const LAST_IDX_KEY = "japanese:shadowing-motto-last-idx";
 const PAGE_SIZE = 10;
 
 type PlaybackPrefs = {
@@ -89,6 +90,22 @@ function loadPlaybackPrefs(): PlaybackPrefs {
 function savePlaybackPrefs(p: PlaybackPrefs) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(PLAYBACK_PREFS_KEY, JSON.stringify(p));
+}
+function loadLastIdx(): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    const raw = window.localStorage.getItem(LAST_IDX_KEY);
+    if (!raw) return 0;
+    const n = parseInt(raw, 10);
+    if (!Number.isFinite(n) || n < 0) return 0;
+    return n;
+  } catch {
+    return 0;
+  }
+}
+function saveLastIdx(idx: number) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(LAST_IDX_KEY, String(idx));
 }
 function formatTime(ts: number): string {
   const d = new Date(ts);
@@ -258,6 +275,11 @@ export default function ShadowingClient({
     setLoopCurrent(prefs.loopCurrent);
     setAutoNext(prefs.autoNext);
     setPlaybackRate(prefs.playbackRate);
+    // Restore last played sentence (skip 0 — that's the default already)
+    const saved = loadLastIdx();
+    if (saved > 0 && saved < sentences.length) {
+      setIdx(saved);
+    }
   }, []);
 
   // Persist playback prefs whenever they change
@@ -271,6 +293,11 @@ export default function ShadowingClient({
       audioRef.current.playbackRate = playbackRate;
     }
   }, [playbackRate]);
+
+  // Persist current sentence idx so refresh keeps the same sentence
+  useEffect(() => {
+    saveLastIdx(idx);
+  }, [idx]);
 
   // Auto-scroll the article so the current sentence stays in view as audio plays
   useEffect(() => {
