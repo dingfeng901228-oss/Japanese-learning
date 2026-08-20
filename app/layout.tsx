@@ -64,7 +64,6 @@ export const metadata: Metadata = {
 };
 
 const NAV_ITEMS = [
-  { label: "今日", href: "/" },
   { label: "学习", href: "/today" },
   { label: "听力", href: "/listening" },
   { label: "口语", href: "/speaking" },
