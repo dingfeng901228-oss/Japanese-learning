@@ -1,0 +1,699 @@
+"use client";
+
+import { useEffect, useRef, useState, useCallback } from "react";
+import Link from "next/link";
+import type { MottoSentence } from "@/lib/motto-sentences-types";
+
+const PROGRESS_KEY = "japanese:shadowing-motto-progress";
+const SHADOW_HISTORY_KEY = "japanese:shadowing-motto-history";
+
+type ShadowGrade = {
+  accuracy: number;
+  fluency: number;
+  feedback: string;
+  suggestions: string[];
+  encouragement: string;
+};
+
+type ShadowHistoryEntry = {
+  id: string;
+  mottoId: string;
+  timestamp: number;
+  transcript: string;
+  grade: ShadowGrade;
+};
+
+type Phase = "idle" | "recording" | "transcribing" | "grading" | "result";
+
+function loadProgress(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = window.localStorage.getItem(PROGRESS_KEY);
+    return raw ? new Set(JSON.parse(raw) as string[]) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+function saveProgress(s: Set<string>) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(PROGRESS_KEY, JSON.stringify(Array.from(s)));
+}
+function loadShadowHistory(): ShadowHistoryEntry[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(SHADOW_HISTORY_KEY);
+    return raw ? (JSON.parse(raw) as ShadowHistoryEntry[]) : [];
+  } catch {
+    return [];
+  }
+}
+function saveShadowHistory(h: ShadowHistoryEntry[]) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(
+    SHADOW_HISTORY_KEY,
+    JSON.stringify(h.slice(0, 50))
+  );
+}
+function formatTime(ts: number): string {
+  const d = new Date(ts);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+export default function ShadowingClient({
+  sentences,
+}: {
+  sentences: MottoSentence[];
+}) {
+  const [idx, setIdx] = useState(0);
+  const [progress, setProgress] = useState<Set<string>>(new Set());
+  const [history, setHistory] = useState<ShadowHistoryEntry[]>([]);
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [transcript, setTranscript] = useState<string | null>(null);
+  const [grade, setGrade] = useState<ShadowGrade | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [editableTranscript, setEditableTranscript] = useState("");
+  const [isRegrading, setIsRegrading] = useState(false);
+  const [isTranscriptEdited, setIsTranscriptEdited] = useState(false);
+  const [nowPlaying, setNowPlaying] = useState(false);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const recordingStartRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const cancelledRef = useRef(false);
+
+  const total = sentences.length;
+  const cur = sentences[idx];
+  const hasJaHtml = cur && cur.jaHtml && cur.jaHtml.length > 0;
+  const hasZh = cur && cur.zh && cur.zh.length > 0;
+
+  // Boot
+  useEffect(() => {
+    setProgress(loadProgress());
+    setHistory(loadShadowHistory());
+  }, []);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state === "recording"
+      ) {
+        try {
+          mediaRecorderRef.current.stop();
+        } catch {
+          /* noop */
+        }
+      }
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
+
+  // Reset when changing sentence
+  useEffect(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
+      try {
+        mediaRecorderRef.current.stop();
+      } catch {
+        /* noop */
+      }
+    }
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setNowPlaying(false);
+    }
+    setPhase("idle");
+    setTranscript(null);
+    setGrade(null);
+    setError(null);
+    setRecordingTime(0);
+    setShowTranslation(false);
+    setEditableTranscript("");
+    setIsTranscriptEdited(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idx]);
+
+  const goNext = useCallback(() => {
+    setIdx((i) => (i + 1) % total);
+  }, [total]);
+
+  const goPrev = useCallback(() => {
+    setIdx((i) => (i - 1 + total) % total);
+  }, [total]);
+
+  const playAudio = useCallback(() => {
+    if (!audioRef.current) return;
+    if (nowPlaying) {
+      audioRef.current.pause();
+      setNowPlaying(false);
+      return;
+    }
+    audioRef.current.currentTime = 0;
+    audioRef.current.play().then(
+      () => setNowPlaying(true),
+      (e) => setError(`播放失败：${e.message}`)
+    );
+  }, [nowPlaying]);
+
+  // Mark as heard after first play completes
+  const markHeard = useCallback(() => {
+    setNowPlaying(false);
+    const next = new Set(progress);
+    next.add(cur.id);
+    setProgress(next);
+    saveProgress(next);
+  }, [progress, cur]);
+
+  const runShadowPipeline = useCallback(
+    async (blob: Blob) => {
+      setPhase("transcribing");
+      try {
+        const form = new FormData();
+        form.append("audio", blob, "recording.webm");
+        const tRes = await fetch("/api/transcribe", {
+          method: "POST",
+          body: form,
+        });
+        if (!tRes.ok) {
+          const j = (await tRes.json().catch(() => ({}))) as { error?: string };
+          throw new Error(j.error || `Transcribe HTTP ${tRes.status}`);
+        }
+        const tData = (await tRes.json()) as { text: string };
+        setTranscript(tData.text);
+        setEditableTranscript(tData.text);
+        setIsTranscriptEdited(false);
+        setPhase("grading");
+
+        const gRes = await fetch("/api/grade", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            transcript: tData.text,
+            target: cur.ja,
+            sentenceId: cur.id,
+            categoryLabel: "Motto Shadowing",
+          }),
+        });
+        if (!gRes.ok) {
+          const j = (await gRes.json().catch(() => ({}))) as { error?: string };
+          throw new Error(j.error || `Grade HTTP ${gRes.status}`);
+        }
+        const gData = (await gRes.json()) as { grade: ShadowGrade };
+        setGrade(gData.grade);
+        setPhase("result");
+
+        const entry: ShadowHistoryEntry = {
+          id: Date.now().toString(),
+          mottoId: cur.id,
+          timestamp: Date.now(),
+          transcript: tData.text,
+          grade: gData.grade,
+        };
+        const newHistory = [entry, ...history].slice(0, 50);
+        setHistory(newHistory);
+        saveShadowHistory(newHistory);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : String(e));
+        setPhase("idle");
+      }
+    },
+    [cur, history]
+  );
+
+  const startRecording = useCallback(async () => {
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      setError("当前浏览器不支持录音。请用 Chrome / Safari / Edge。");
+      return;
+    }
+    setError(null);
+    setTranscript(null);
+    setGrade(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const supportedTypes = [
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/mp4",
+        "audio/mpeg",
+      ];
+      let chosenType = "";
+      for (const t of supportedTypes) {
+        if (typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(t)) {
+          chosenType = t;
+          break;
+        }
+      }
+      const recorder = chosenType
+        ? new MediaRecorder(stream, { mimeType: chosenType })
+        : new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+      chunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
+      };
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        if (cancelledRef.current) {
+          cancelledRef.current = false;
+          setPhase("idle");
+          setRecordingTime(0);
+          return;
+        }
+        const blob = new Blob(chunksRef.current, {
+          type: recorder.mimeType || "audio/webm",
+        });
+        await runShadowPipeline(blob);
+      };
+
+      recordingStartRef.current = Date.now();
+      setRecordingTime(0);
+      timerRef.current = setInterval(() => {
+        if (recordingStartRef.current) {
+          setRecordingTime(
+            Math.floor((Date.now() - recordingStartRef.current) / 1000)
+          );
+        }
+      }, 250);
+      recorder.start();
+      setPhase("recording");
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? `麦克风权限被拒：${e.message}。请在浏览器地址栏旁的麦克风图标里允许。`
+          : "麦克风权限被拒。请在浏览器设置里允许。"
+      );
+      setPhase("idle");
+    }
+  }, []);
+
+  const stopRecording = useCallback(() => {
+    cancelledRef.current = false;
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
+      mediaRecorderRef.current.stop();
+    }
+  }, []);
+
+  const cancelRecording = useCallback(() => {
+    cancelledRef.current = true;
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
+      mediaRecorderRef.current.stop();
+    }
+  }, []);
+
+  const reGrade = useCallback(async () => {
+    if (!editableTranscript.trim() || !cur) return;
+    setIsRegrading(true);
+    setError(null);
+    try {
+      const gRes = await fetch("/api/grade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transcript: editableTranscript,
+          target: cur.ja,
+          sentenceId: cur.id,
+          categoryLabel: "Motto Shadowing",
+        }),
+      });
+      if (!gRes.ok) {
+        const j = (await gRes.json().catch(() => ({}))) as { error?: string };
+        throw new Error(j.error || `Grade HTTP ${gRes.status}`);
+      }
+      const gData = (await gRes.json()) as { grade: ShadowGrade };
+      setGrade(gData.grade);
+      setHistory((prev) => {
+        const idx2 = prev.findIndex(
+          (e) => e.mottoId === cur.id && e.transcript === transcript
+        );
+        if (idx2 === -1) return prev;
+        const next = [...prev];
+        next[idx2] = {
+          ...next[idx2],
+          transcript: editableTranscript,
+          grade: gData.grade,
+        };
+        return next;
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setIsRegrading(false);
+    }
+  }, [cur, editableTranscript, transcript]);
+
+  const resetShadow = useCallback(() => {
+    setTranscript(null);
+    setGrade(null);
+    setError(null);
+    setPhase("idle");
+    setEditableTranscript("");
+    setIsTranscriptEdited(false);
+  }, []);
+
+  const shadowHistoryForCur = history.filter((e) => e.mottoId === cur.id);
+  const heard = progress.has(cur.id);
+
+  return (
+    <main className="min-h-screen flex flex-col px-6 py-8 max-w-3xl mx-auto">
+      <header className="mb-6 flex items-center justify-between gap-3">
+        <Link href="/today" className="text-sm text-gray-500 hover:text-gray-900">
+          ← 今日训练
+        </Link>
+        <Link
+          href="/listening"
+          className="text-sm text-gray-500 hover:text-gray-900"
+        >
+          听力训练 →
+        </Link>
+      </header>
+
+      <h1 className="text-2xl font-bold mb-2">Shadowing 真人发音</h1>
+      <p className="text-sm text-gray-500 mb-6">
+        134 段真人日语对话（云端音频）· 听 → 跟读 → AI 评分（gpt-4o-transcribe + gpt-4o-mini）。
+        真人发音比 TTS 自然 — 多角色语气、停顿、连读都更真实。
+      </p>
+
+      <div className="mb-4 text-xs text-gray-400">
+        {idx + 1} / {total} · 已听 {progress.size} / {total}
+      </div>
+
+      <section className="border border-gray-200 rounded-2xl p-6 mb-6 bg-white">
+        <div className="text-xs text-gray-500 mb-3 flex items-center justify-between">
+          <span>{cur.id} · {cur.prefix}</span>
+          {heard && <span className="text-green-600">✓ 听过了</span>}
+        </div>
+
+        {/* Big Japanese display (with furigana if available) */}
+        <div className="text-2xl font-bold mb-4 leading-loose text-center py-4 break-words" lang="ja">
+          {hasJaHtml ? (
+            <span dangerouslySetInnerHTML={{ __html: cur.jaHtml }} />
+          ) : (
+            <span className="text-gray-400 italic">(文字加载中…)</span>
+          )}
+        </div>
+
+        {/* Translation toggle */}
+        <div className="flex flex-col items-center justify-center mb-6 min-h-[2.5rem]">
+          {showTranslation && hasZh && (
+            <div className="text-base text-gray-600 text-center mb-2">{cur.zh}</div>
+          )}
+          {hasZh && (
+            <button
+              type="button"
+              onClick={() => setShowTranslation((v) => !v)}
+              aria-pressed={showTranslation}
+              className="text-xs px-3 py-1 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              {showTranslation ? "🌐 隐藏翻译" : "🌐 显示翻译"}
+            </button>
+          )}
+        </div>
+
+        {/* Audio player */}
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <button
+            type="button"
+            onClick={playAudio}
+            className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
+              nowPlaying
+                ? "bg-red-500 text-white hover:bg-red-600"
+                : "bg-gray-900 text-white hover:bg-gray-800"
+            }`}
+          >
+            {nowPlaying ? "⏸ 暂停" : "▶ 听"}
+          </button>
+          <audio
+            ref={audioRef}
+            src={cur.audioUrl}
+            preload="metadata"
+            onEnded={markHeard}
+            onPause={() => setNowPlaying(false)}
+            onPlay={() => setNowPlaying(true)}
+          >
+            <track kind="captions" srcLang="ja" label="Japanese" />
+          </audio>
+          <span className="text-xs text-gray-400">audio.frank2025.com</span>
+        </div>
+
+        {/* Shadow controls */}
+        <div className="border-t border-gray-200 pt-4">
+          <div className="flex items-center justify-center gap-3">
+            {phase !== "recording" ? (
+              <button
+                type="button"
+                onClick={startRecording}
+                className="px-6 py-3 rounded-lg text-base font-medium bg-gray-900 text-white hover:bg-gray-800 transition-colors"
+              >
+                🎤 跟读
+              </button>
+            ) : (
+              <div className="w-full flex flex-col items-center gap-3 bg-red-50 border border-red-200 rounded-2xl p-4">
+                <div className="flex items-center gap-3">
+                  <div className="text-sm font-medium text-red-700">🎙️ 正在录音</div>
+                  <div className="text-base font-bold text-red-700 font-mono">
+                    {recordingTime}s
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={stopRecording}
+                  className="px-6 py-3 rounded-lg text-base font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
+                >
+                  ⏹ 停止录音
+                </button>
+                <button
+                  type="button"
+                  onClick={cancelRecording}
+                  className="text-xs text-gray-500 hover:text-red-600 transition-colors"
+                >
+                  取消
+                </button>
+              </div>
+            )}
+          </div>
+
+          {phase === "transcribing" && (
+            <div className="text-center text-sm text-gray-500 py-3 mt-3">🎙️ AI 转写中…</div>
+          )}
+          {phase === "grading" && (
+            <div className="text-center text-sm text-gray-500 py-3 mt-3">🎯 AI 评分中…</div>
+          )}
+
+          {error && (
+            <div className="mt-3 text-sm text-red-600 text-center bg-red-50 border border-red-200 rounded-lg p-3">
+              ⚠️ {error}
+            </div>
+          )}
+        </div>
+
+        {/* Result card */}
+        {phase === "result" && grade && (
+          <div className="mt-6 border-t border-gray-200 pt-6 space-y-4">
+            <div>
+              <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">你的转写</div>
+              <div className="text-sm bg-gray-50 rounded-xl p-3 border border-gray-100 min-h-[3rem]" lang="ja">
+                {transcript && transcript.trim() ? (
+                  transcript
+                ) : (
+                  <span className="italic text-gray-400">(空白 — 没听清，请再试一次)</span>
+                )}
+              </div>
+            </div>
+
+            {/* Editable + re-grade */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xs text-gray-500 uppercase tracking-wide">
+                  你的转写
+                  {isTranscriptEdited && (
+                    <span className="ml-2 text-orange-600 normal-case font-normal">
+                      · 已修正
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={reGrade}
+                  disabled={
+                    isRegrading ||
+                    !editableTranscript.trim() ||
+                    !isTranscriptEdited
+                  }
+                  className="text-xs px-3 py-1 rounded-md bg-gray-900 text-white hover:bg-gray-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  {isRegrading ? "评分中…" : "✏️ 重新评分"}
+                </button>
+              </div>
+              <textarea
+                value={editableTranscript}
+                onChange={(e) => {
+                  setEditableTranscript(e.target.value);
+                  setIsTranscriptEdited(e.target.value !== (transcript ?? ""));
+                }}
+                rows={3}
+                className="w-full text-sm bg-gray-50 rounded-xl p-3 border border-gray-200 focus:border-gray-400 focus:outline-none resize-y"
+                lang="ja"
+                placeholder="STT 偶尔翻字，修改后点「重新评分」"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+                <div className="text-3xl font-bold text-blue-700">{grade.accuracy}</div>
+                <div className="text-xs text-blue-600 mt-1">准确度</div>
+              </div>
+              <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 text-center">
+                <div className="text-3xl font-bold text-purple-700">{grade.fluency}</div>
+                <div className="text-xs text-purple-600 mt-1">流畅度</div>
+              </div>
+            </div>
+
+            {grade.feedback && (
+              <div className="text-sm text-gray-800 bg-gray-50 rounded-xl p-4 leading-relaxed">
+                {grade.feedback}
+              </div>
+            )}
+
+            {grade.suggestions.length > 0 && (
+              <div>
+                <div className="text-sm font-medium text-gray-700 mb-2">💡 改进建议</div>
+                <ul className="text-sm space-y-1 list-disc pl-5 text-gray-700">
+                  {grade.suggestions.map((s, i) => (
+                    <li key={i}>{s}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {grade.encouragement && (
+              <div className="text-sm italic text-gray-600 text-center bg-yellow-50 border border-yellow-200 rounded-xl p-3">
+                {grade.encouragement}
+              </div>
+            )}
+
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={resetShadow}
+                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-sm"
+              >
+                🔁 再来一次
+              </button>
+              <button
+                type="button"
+                onClick={goNext}
+                className="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors text-sm"
+              >
+                下一段 →
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* Navigation */}
+      <div className="flex items-center justify-between gap-3 mb-6">
+        <button
+          type="button"
+          onClick={goPrev}
+          className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-sm"
+        >
+          ← 上一段
+        </button>
+        <div className="flex-1 text-sm text-gray-500 text-center">
+          已听 {progress.size} / {total} · Shadow 记录 {history.length} 条
+        </div>
+        <button
+          type="button"
+          onClick={goNext}
+          className="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors text-sm"
+        >
+          下一段 →
+        </button>
+      </div>
+
+      {/* History for current sentence */}
+      {shadowHistoryForCur.length > 0 && (
+        <section className="border border-gray-200 rounded-2xl p-5 mb-6 bg-white">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-700">
+              本段 Shadow 记录 · {shadowHistoryForCur.length} 次
+            </h3>
+            <button
+              type="button"
+              onClick={() => {
+                if (
+                  typeof window !== "undefined" &&
+                  window.confirm(`清空本段 ${shadowHistoryForCur.length} 条 Shadow 记录？`)
+                ) {
+                  const newHistory = history.filter((e) => e.mottoId !== cur.id);
+                  setHistory(newHistory);
+                  saveShadowHistory(newHistory);
+                }
+              }}
+              className="text-xs text-gray-400 hover:text-red-600 transition-colors"
+            >
+              清空
+            </button>
+          </div>
+          <div className="space-y-2">
+            {shadowHistoryForCur.slice(0, 5).map((entry) => (
+              <div
+                key={entry.id}
+                className="flex items-center justify-between text-sm bg-gray-50 rounded-xl p-3 gap-3"
+              >
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  <div className="text-xs text-gray-500 font-mono">
+                    {formatTime(entry.timestamp)}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-blue-700 font-bold">{entry.grade.accuracy}</span>
+                    <span className="text-gray-300">/</span>
+                    <span className="text-purple-700 font-bold">{entry.grade.fluency}</span>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500 truncate min-w-0" lang="ja">
+                  {entry.transcript ? (
+                    entry.transcript
+                  ) : (
+                    <span className="italic text-gray-400">(空白)</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div className="mt-6 text-xs text-gray-400 text-center space-y-1">
+        <div>🔊 真人发音 · Cloudflare R2 jp-audio bucket</div>
+        <div>🎤 Shadow: gpt-4o-transcribe + gpt-4o-mini（中文反馈 · 历史进 localStorage）</div>
+      </div>
+    </main>
+  );
+}

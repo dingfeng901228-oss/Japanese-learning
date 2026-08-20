@@ -1,0 +1,11 @@
+=== TEST 1: string literal with Unicode escapes ===
+Path: F:\日语学习资料\shadowin-motto_all (2)
+Path length: 32
+Path bytes (hex): 463a5ce697a5e8afade5ada6e4b9a0e8b584e696995c736861646f77696e2d6d6f74746f5f616c6c20283229
+RESULT: 1 entries
+First 5: shadowin-motto_all
+
+=== TEST 2: parent dir scan ===
+Parent F:\: 22 entries
+Has 日语学习资料: true
+First 5: $RECYCLE.BIN, 5.27版本简历, BaiduNetdisk, BaiduNetdiskDownload, Books

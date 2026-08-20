@@ -1,0 +1,4 @@
+PATH: F:\\\u65e5\u8bed\u5b66\u4e60\u8d44\u6599\\shadowin-motto_all (2)
+BYTES: 463a5c5c5c75363565355c75386265645c75356236365c75346536305c75386434345c75363539395c5c736861646f77696e2d6d6f74746f5f616c6c20283229
+ERR: code=ENOENT syscall=scandir msg=ENOENT: no such file or directory, scandir 'F:\u65e5\u8bed\u5b66\u4e60\u8d44\u6599\shadowin-motto_all (2)'
+ERR: path=F:\\\u65e5\u8bed\u5b66\u4e60\u8d44\u6599\\shadowin-motto_all (2)
