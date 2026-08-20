@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import type { MottoSentence } from "@/lib/motto-sentences-types";
 
 const PROGRESS_KEY = "japanese:shadowing-motto-progress";
 const SHADOW_HISTORY_KEY = "japanese:shadowing-motto-history";
+const PAGE_SIZE = 10;
 
 type ShadowGrade = {
   accuracy: number;
@@ -60,6 +61,56 @@ function formatTime(ts: number): string {
   return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+function formatAudioTime(seconds: number): string {
+  if (!isFinite(seconds) || seconds < 0) return "0:00";
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+/**
+ * Split Japanese HTML into per-sentence strings, preserving <ruby> furigana.
+ * Strategy: normalize <br> and \n to 。, then split on 。, filter empty,
+ * and re-add 。 to non-final segments that don't already end in sentence-final
+ * punctuation. Last segment is kept verbatim (may end with ? / ! / nothing).
+ */
+function splitHtmlSentences(html: string): string[] {
+  const normalized = html.replace(/<br\s*\/?>/gi, "。").replace(/\n/g, "。");
+  const parts = normalized.split("。");
+  const result: string[] = [];
+  for (let i = 0; i < parts.length; i++) {
+    const seg = parts[i].trim();
+    if (!seg) continue;
+    const stripped = seg.replace(/<[^>]*>/g, "").trim();
+    const endsWithPunct = /[。？！!?]$/.test(stripped);
+    const isLast = i === parts.length - 1;
+    if (isLast || endsWithPunct) {
+      result.push(seg);
+    } else {
+      result.push(seg + "。");
+    }
+  }
+  return result;
+}
+
+function splitZhSentences(zh: string): string[] {
+  const normalized = zh.replace(/<br\s*\/?>/gi, "。").replace(/\n/g, "。");
+  const parts = normalized.split("。");
+  const result: string[] = [];
+  for (let i = 0; i < parts.length; i++) {
+    const seg = parts[i].trim();
+    if (!seg) continue;
+    const endsWithPunct = /[。？！!?]$/.test(seg);
+    const isLast = i === parts.length - 1;
+    if (isLast || endsWithPunct) {
+      result.push(seg);
+    } else {
+      result.push(seg + "。");
+    }
+  }
+  return result;
+}
+
 export default function ShadowingClient({
   sentences,
 }: {
@@ -78,6 +129,9 @@ export default function ShadowingClient({
   const [isRegrading, setIsRegrading] = useState(false);
   const [isTranscriptEdited, setIsTranscriptEdited] = useState(false);
   const [nowPlaying, setNowPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [jumpInput, setJumpInput] = useState("");
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -90,6 +144,20 @@ export default function ShadowingClient({
   const cur = sentences[idx];
   const hasJaHtml = cur && cur.jaHtml && cur.jaHtml.length > 0;
   const hasZh = cur && cur.zh && cur.zh.length > 0;
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const currentPage = Math.floor(idx / PAGE_SIZE);
+  const pageStart = currentPage * PAGE_SIZE + 1;
+  const pageEnd = Math.min((currentPage + 1) * PAGE_SIZE, total);
+
+  const jaSentences = useMemo(
+    () => (hasJaHtml ? splitHtmlSentences(cur.jaHtml) : []),
+    [cur, hasJaHtml]
+  );
+  const zhSentences = useMemo(
+    () => (hasZh ? splitZhSentences(cur.zh) : []),
+    [cur, hasZh]
+  );
 
   // Boot
   useEffect(() => {
@@ -135,6 +203,8 @@ export default function ShadowingClient({
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
       setNowPlaying(false);
+      setCurrentTime(0);
+      setDuration(0);
     }
     setPhase("idle");
     setTranscript(null);
@@ -144,6 +214,7 @@ export default function ShadowingClient({
     setShowTranslation(false);
     setEditableTranscript("");
     setIsTranscriptEdited(false);
+    setJumpInput("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx]);
 
@@ -154,6 +225,31 @@ export default function ShadowingClient({
   const goPrev = useCallback(() => {
     setIdx((i) => (i - 1 + total) % total);
   }, [total]);
+
+  const goToPage = useCallback(
+    (page: number) => {
+      const p = Math.max(0, Math.min(totalPages - 1, page));
+      setIdx(p * PAGE_SIZE);
+    },
+    [totalPages]
+  );
+
+  const jumpToIdx = useCallback(
+    (n: number) => {
+      if (!Number.isFinite(n)) return;
+      const clamped = Math.max(1, Math.min(total, Math.floor(n)));
+      setIdx(clamped - 1);
+    },
+    [total]
+  );
+
+  const handleJump = useCallback(() => {
+    const n = parseInt(jumpInput.trim(), 10);
+    if (Number.isFinite(n) && n >= 1 && n <= total) {
+      jumpToIdx(n);
+      setJumpInput("");
+    }
+  }, [jumpInput, total, jumpToIdx]);
 
   const playAudio = useCallback(() => {
     if (!audioRef.current) return;
@@ -177,6 +273,17 @@ export default function ShadowingClient({
     setProgress(next);
     saveProgress(next);
   }, [progress, cur]);
+
+  const seekTo = useCallback(
+    (seconds: number) => {
+      if (!audioRef.current) return;
+      const max = duration || seconds || 0;
+      const t = Math.max(0, Math.min(max, seconds));
+      audioRef.current.currentTime = t;
+      setCurrentTime(t);
+    },
+    [duration]
+  );
 
   const runShadowPipeline = useCallback(
     async (blob: Blob) => {
@@ -303,7 +410,7 @@ export default function ShadowingClient({
       );
       setPhase("idle");
     }
-  }, []);
+  }, [runShadowPipeline]);
 
   const stopRecording = useCallback(() => {
     cancelledRef.current = false;
@@ -380,6 +487,85 @@ export default function ShadowingClient({
 
   return (
     <main className="min-h-screen flex flex-col px-6 py-8 max-w-3xl mx-auto">
+      {/* Sticky top audio player */}
+      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200 -mx-6 px-6 py-3 mb-6">
+        <audio
+          ref={audioRef}
+          src={cur.audioUrl}
+          preload="metadata"
+          onLoadedMetadata={(e) =>
+            setDuration(e.currentTarget.duration || 0)
+          }
+          onTimeUpdate={(e) =>
+            setCurrentTime(e.currentTarget.currentTime || 0)
+          }
+          onEnded={markHeard}
+          onPause={() => setNowPlaying(false)}
+          onPlay={() => setNowPlaying(true)}
+        >
+          <track kind="captions" srcLang="ja" label="Japanese" />
+        </audio>
+
+        <div className="flex items-center gap-3 mb-2">
+          <button
+            type="button"
+            onClick={goPrev}
+            className="w-9 h-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg flex-shrink-0"
+            title="上一段"
+            aria-label="上一段"
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            onClick={playAudio}
+            className={`w-11 h-11 rounded-full text-white transition-colors flex items-center justify-center flex-shrink-0 text-base ${
+              nowPlaying
+                ? "bg-red-500 hover:bg-red-600"
+                : "bg-gray-900 hover:bg-gray-800"
+            }`}
+            title={nowPlaying ? "暂停" : "播放"}
+            aria-label={nowPlaying ? "暂停" : "播放"}
+          >
+            {nowPlaying ? "⏸" : "▶"}
+          </button>
+          <button
+            type="button"
+            onClick={goNext}
+            className="w-9 h-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg flex-shrink-0"
+            title="下一段"
+            aria-label="下一段"
+          >
+            ›
+          </button>
+
+          <div className="flex-1 min-w-0">
+            <div className="text-xs text-gray-400 truncate">
+              {cur.id} · {cur.prefix}
+              {cur.filename}
+            </div>
+            <div className="text-sm font-medium text-gray-900">
+              第 {idx + 1} 段 / 共 {total} 段
+            </div>
+          </div>
+
+          <div className="text-xs font-mono text-gray-500 flex-shrink-0 tabular-nums">
+            {formatAudioTime(currentTime)} / {formatAudioTime(duration)}
+          </div>
+        </div>
+
+        <input
+          type="range"
+          min={0}
+          max={duration || 1}
+          step={0.1}
+          value={currentTime}
+          onChange={(e) => seekTo(parseFloat(e.target.value))}
+          className="w-full h-1 accent-gray-900 cursor-pointer"
+          aria-label="音频进度"
+        />
+      </div>
+
       <header className="mb-6 flex items-center justify-between gap-3">
         <Link href="/today" className="text-sm text-gray-500 hover:text-gray-900">
           ← 今日训练
@@ -398,29 +584,123 @@ export default function ShadowingClient({
         真人发音比 TTS 自然 — 多角色语气、停顿、连读都更真实。
       </p>
 
-      <div className="mb-4 text-xs text-gray-400">
-        {idx + 1} / {total} · 已听 {progress.size} / {total}
+      {/* Progress + pagination */}
+      <div className="mb-3 text-xs text-gray-400">
+        已听 {progress.size} / {total} · 当前第 {pageStart}-{pageEnd} 段
+      </div>
+
+      <div className="mb-6 space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 0}
+            className="px-3 py-1.5 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-sm flex-shrink-0"
+            aria-label="上一页"
+          >
+            ‹ 上一页
+          </button>
+
+          <div
+            className="flex items-center gap-1 flex-wrap justify-center"
+            role="navigation"
+            aria-label="分页"
+          >
+            {Array.from({ length: totalPages }).map((_, p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => goToPage(p)}
+                aria-current={currentPage === p ? "page" : undefined}
+                aria-label={`第 ${p + 1} 页`}
+                className={`w-8 h-8 rounded text-sm transition-colors ${
+                  currentPage === p
+                    ? "bg-gray-900 text-white font-bold"
+                    : "text-gray-500 hover:bg-gray-100"
+                }`}
+              >
+                {p + 1}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage >= totalPages - 1}
+            className="px-3 py-1.5 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-sm flex-shrink-0"
+            aria-label="下一页"
+          >
+            下一页 ›
+          </button>
+        </div>
+
+        <div className="flex items-center justify-center gap-2 text-sm flex-wrap">
+          <span className="text-gray-500">跳转到第</span>
+          <input
+            type="number"
+            min={1}
+            max={total}
+            value={jumpInput}
+            onChange={(e) => setJumpInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleJump();
+            }}
+            placeholder={`${idx + 1}`}
+            className="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm focus:border-gray-500 focus:outline-none"
+            aria-label="跳转到段号"
+          />
+          <span className="text-gray-500">段</span>
+          <button
+            type="button"
+            onClick={handleJump}
+            disabled={!jumpInput.trim()}
+            className="px-3 py-1 bg-gray-900 text-white rounded text-sm hover:bg-gray-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            跳转
+          </button>
+        </div>
       </div>
 
       <section className="border border-gray-200 rounded-2xl p-6 mb-6 bg-white">
-        <div className="text-xs text-gray-500 mb-3 flex items-center justify-between">
-          <span>{cur.id} · {cur.prefix}</span>
+        <div className="text-xs text-gray-500 mb-4 flex items-center justify-between">
+          <span>
+            {cur.id} · {cur.prefix}
+            {cur.filename}
+          </span>
           {heard && <span className="text-green-600">✓ 听过了</span>}
         </div>
 
-        {/* Big Japanese display (with furigana if available) */}
-        <div className="text-2xl font-bold mb-4 leading-loose text-center py-4 break-words" lang="ja">
+        {/* Japanese text — sentence by sentence, smaller font */}
+        <div className="mb-5" lang="ja">
           {hasJaHtml ? (
-            <span dangerouslySetInnerHTML={{ __html: cur.jaHtml }} />
+            jaSentences.map((sentence, i) => (
+              <p
+                key={i}
+                className="text-base sm:text-lg font-medium leading-relaxed text-center py-1 break-words"
+                dangerouslySetInnerHTML={{ __html: sentence }}
+              />
+            ))
           ) : (
-            <span className="text-gray-400 italic">(文字加载中…)</span>
+            <p className="text-base text-gray-400 italic text-center">
+              (文字加载中…)
+            </p>
           )}
         </div>
 
-        {/* Translation toggle */}
+        {/* Translation — line by line */}
         <div className="flex flex-col items-center justify-center mb-6 min-h-[2.5rem]">
-          {showTranslation && hasZh && (
-            <div className="text-base text-gray-600 text-center mb-2">{cur.zh}</div>
+          {showTranslation && hasZh && zhSentences.length > 0 && (
+            <div className="w-full max-w-xl space-y-1 mb-3">
+              {zhSentences.map((sentence, i) => (
+                <p
+                  key={i}
+                  className="text-sm text-gray-600 text-center leading-relaxed"
+                >
+                  {sentence}
+                </p>
+              ))}
+            </div>
           )}
           {hasZh && (
             <button
@@ -432,32 +712,6 @@ export default function ShadowingClient({
               {showTranslation ? "🌐 隐藏翻译" : "🌐 显示翻译"}
             </button>
           )}
-        </div>
-
-        {/* Audio player */}
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <button
-            type="button"
-            onClick={playAudio}
-            className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
-              nowPlaying
-                ? "bg-red-500 text-white hover:bg-red-600"
-                : "bg-gray-900 text-white hover:bg-gray-800"
-            }`}
-          >
-            {nowPlaying ? "⏸ 暂停" : "▶ 听"}
-          </button>
-          <audio
-            ref={audioRef}
-            src={cur.audioUrl}
-            preload="metadata"
-            onEnded={markHeard}
-            onPause={() => setNowPlaying(false)}
-            onPlay={() => setNowPlaying(true)}
-          >
-            <track kind="captions" srcLang="ja" label="Japanese" />
-          </audio>
-          <span className="text-xs text-gray-400">audio.frank2025.com</span>
         </div>
 
         {/* Shadow controls */}
@@ -615,27 +869,6 @@ export default function ShadowingClient({
           </div>
         )}
       </section>
-
-      {/* Navigation */}
-      <div className="flex items-center justify-between gap-3 mb-6">
-        <button
-          type="button"
-          onClick={goPrev}
-          className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-sm"
-        >
-          ← 上一段
-        </button>
-        <div className="flex-1 text-sm text-gray-500 text-center">
-          已听 {progress.size} / {total} · Shadow 记录 {history.length} 条
-        </div>
-        <button
-          type="button"
-          onClick={goNext}
-          className="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors text-sm"
-        >
-          下一段 →
-        </button>
-      </div>
 
       {/* History for current sentence */}
       {shadowHistoryForCur.length > 0 && (
