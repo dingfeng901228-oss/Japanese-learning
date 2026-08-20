@@ -1010,7 +1010,7 @@ function ListeningPageContent() {
         </div>
 
         <div
-          className="text-3xl font-bold mb-4 leading-loose text-center py-4 break-words"
+          className="text-3xl font-bold mb-4 leading-loose text-left py-4 break-words"
           lang="ja"
         >
           {chunkedMode && mode === "shadow" && chunks.length > 0 ? (
@@ -1042,7 +1042,7 @@ function ListeningPageContent() {
            user always knows the affordance is there. */}
         <div className="flex flex-col items-center justify-center mb-6 min-h-[2.5rem]">
           {showTranslation && (
-            <div className="text-base text-gray-600 text-center mb-2">
+            <div className="text-base text-gray-600 text-left mb-2">
               {sentence.zh}
             </div>
           )}
