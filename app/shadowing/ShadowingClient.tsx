@@ -643,7 +643,7 @@ export default function ShadowingClient({
   return (
     <main className="min-h-screen flex flex-col px-6 py-8 max-w-3xl mx-auto">
       {/* Sticky top audio player */}
-      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200 -mx-6 px-6 py-3 mb-6">
+      <div className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-md -mx-6 px-6 py-3 mb-6">
         <audio
           ref={audioRef}
           src={cur.audioUrl}
