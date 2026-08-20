@@ -148,6 +148,10 @@ export function ReviewSession({
         ? isCorrectPick
         : null
       : checked;
+  // Per Frank #6394: index of the correct answer in the shuffled
+  // options array. Used to badge the correct option letter (A/B/C/D)
+  // in the post-answer feedback. -1 if not found (defensive).
+  const correctOptionIdx = options.indexOf(current.word);
 
   function handleCheck() {
     if (!answer.trim() || !current) return;
@@ -287,11 +291,13 @@ export function ReviewSession({
           <div className="text-lg font-bold mb-2">
             {checkedCorrect ? "✓ 正确" : "✗ 不对"}
           </div>
-          {!checkedCorrect && (
-            <p className="text-sm text-gray-600 mb-2">
-              正确答案是：<strong>{current.word}</strong>
-            </p>
-          )}
+          {/* Per Frank #6394: always surface the correct answer after
+              the user picks — even on a correct pick, so the word is
+              reinforced visually on the answer line in addition to the
+              ✓ badge on the option button. */}
+          <p className="text-sm text-gray-600 mb-2">
+            正确答案是：<strong>{current.word}</strong>
+          </p>
           {/* In dictation mode, reveal the original sentence after the
               answer so the user can compare what they heard vs. what
               they wrote. */}
@@ -345,24 +351,76 @@ export function ReviewSession({
             // Per Frank #6372: fill-in mode now renders 4 multiple-choice
             // options instead of a text input. Dictation mode stays text
             // input (TTS-first; options would give it away).
+            //
+            // Per Frank #6394:
+            //   (a) After any pick: lock every option (disabled) so a
+            //       stray touch / Enter on a sibling button can't trigger
+            //       a second click — addresses the "选择完之后不点任何地方
+            //       就自动 advance" symptom.
+            //   (b) Mark the correct option with a green ✓ badge
+            //       ("✓ 正确答案") and the user's wrong pick with a red
+            //       ✗ badge ("✗ 你的选择") — addresses the "正确或错误的
+            //       下面增加正确答案及标注" feature request.
             <>
               <div className="text-sm font-medium text-gray-700 mb-3">
                 选择正确答案
               </div>
               <div className="grid grid-cols-1 gap-2">
-                {options.map((opt, i) => (
-                  <button
-                    key={`${current.id}-${i}`}
-                    type="button"
-                    onClick={() => handleOptionPick(i)}
-                    className="w-full px-4 py-3 text-left border border-gray-300 rounded-lg hover:border-gray-900 hover:bg-gray-50 transition-colors text-base"
-                  >
-                    <span className="inline-block w-6 text-gray-400 tabular-nums">
-                      {String.fromCharCode(65 + i)}.
-                    </span>
-                    {opt}
-                  </button>
-                ))}
+                {options.map((opt, i) => {
+                  const locked = selectedIdx !== null;
+                  const isPicked = selectedIdx === i;
+                  const isCorrectOption = i === correctOptionIdx;
+                  let cls =
+                    "w-full px-4 py-3 text-left border rounded-lg transition-colors text-base flex items-center gap-2 ";
+                  if (!locked) {
+                    cls +=
+                      "border-gray-300 hover:border-gray-900 hover:bg-gray-50";
+                  } else if (isCorrectOption) {
+                    cls += "border-green-500 bg-green-50 text-green-900";
+                  } else if (isPicked) {
+                    cls += "border-red-500 bg-red-50 text-red-900";
+                  } else {
+                    cls += "border-gray-200 bg-gray-50 text-gray-400";
+                  }
+                  return (
+                    <button
+                      key={`${current.id}-${i}`}
+                      type="button"
+                      onClick={() => handleOptionPick(i)}
+                      disabled={locked}
+                      aria-pressed={locked ? isPicked : undefined}
+                      className={cls}
+                    >
+                      <span
+                        className={
+                          "inline-block w-6 tabular-nums " +
+                          (locked && !isCorrectOption && !isPicked
+                            ? "text-gray-300"
+                            : "text-gray-400")
+                        }
+                      >
+                        {String.fromCharCode(65 + i)}.
+                      </span>
+                      <span className="flex-1">{opt}</span>
+                      {locked && isCorrectOption && (
+                        <span
+                          aria-label="正确答案"
+                          className="text-green-700 text-sm font-medium whitespace-nowrap"
+                        >
+                          ✓ 正确答案
+                        </span>
+                      )}
+                      {locked && isPicked && !isCorrectOption && (
+                        <span
+                          aria-label="你的选择"
+                          className="text-red-700 text-sm font-medium whitespace-nowrap"
+                        >
+                          ✗ 你的选择
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </>
           ) : (
