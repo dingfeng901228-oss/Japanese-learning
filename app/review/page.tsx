@@ -22,6 +22,13 @@ import { ReviewSession, type ReviewMode } from "./review-session";
 
 export const dynamic = "force-dynamic";
 
+// Per Frank #6390: cf9d167 (multiple-choice) never reached production
+// because page.tsx render takes >10s on Vercel Hobby default
+// (generateDistractors batched gpt-4o-mini call ≈ 3-4s for 22 items,
+// can spike higher under load). Bump to 60s (Hobby ceiling) so the
+// next push actually deploys.
+export const maxDuration = 60;
+
 export default async function ReviewPage({
   searchParams,
 }: {

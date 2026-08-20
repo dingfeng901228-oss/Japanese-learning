@@ -182,14 +182,41 @@ export function ReviewSession({
     setIndex(index + 1);
   }
 
+  // Per Frank #6390: prev/next question navigation. Doesn't record
+  // SM-2 answer (user is just skipping around), just changes the index.
+  function goPrev() {
+    if (index > 0) setIndex(index - 1);
+  }
+  function goNext() {
+    if (index < initialItems.length - 1) setIndex(index + 1);
+  }
+
   return (
     <div className="space-y-6">
       <div className="bg-white border border-gray-200 rounded-2xl p-8">
         <div className="flex items-center justify-between mb-4">
-          <div className="text-xs text-gray-500">
-            {mode === "dictation"
-              ? "🎧 听写"
-              : `第 ${index + 1} / ${initialItems.length} 题`}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={goPrev}
+              disabled={index === 0}
+              className="text-xs px-2 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              ← 上一题
+            </button>
+            <div className="text-xs text-gray-500">
+              {mode === "dictation"
+                ? "🎧 听写"
+                : `第 ${index + 1} / ${initialItems.length} 题`}
+            </div>
+            <button
+              type="button"
+              onClick={goNext}
+              disabled={index >= initialItems.length - 1}
+              className="text-xs px-2 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              下一题 →
+            </button>
           </div>
           <div className="text-xs text-gray-400">
             间隔 {current.interval_days} 天 · 难度 {current.ease_factor.toFixed(2)}
