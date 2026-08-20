@@ -642,126 +642,6 @@ export default function ShadowingClient({
 
   return (
     <main className="min-h-screen flex flex-col px-6 py-8 max-w-3xl mx-auto">
-      {/* Sticky top audio player */}
-      <div className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-md -mx-6 px-6 py-3 mb-6">
-        <audio
-          ref={audioRef}
-          src={cur.audioUrl}
-          preload="metadata"
-          loop={loopCurrent}
-          onLoadedMetadata={(e) => {
-            setDuration(e.currentTarget.duration || 0);
-            if (e.currentTarget) e.currentTarget.playbackRate = playbackRate;
-          }}
-          onTimeUpdate={(e) =>
-            setCurrentTime(e.currentTarget.currentTime || 0)
-          }
-          onEnded={markHeard}
-          onPause={() => setNowPlaying(false)}
-          onPlay={() => setNowPlaying(true)}
-        >
-          <track kind="captions" srcLang="ja" label="Japanese" />
-        </audio>
-
-        <div className="flex items-center gap-2 mb-2 flex-wrap">
-          <button
-            type="button"
-            onClick={goPrev}
-            className="w-9 h-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg flex-shrink-0"
-            title="上一段"
-            aria-label="上一段"
-          >
-            ‹
-          </button>
-          <button
-            type="button"
-            onClick={playAudio}
-            className={`w-11 h-11 rounded-full text-white transition-colors flex items-center justify-center flex-shrink-0 text-base ${
-              nowPlaying
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-gray-900 hover:bg-gray-800"
-            }`}
-            title={nowPlaying ? "暂停" : "播放"}
-            aria-label={nowPlaying ? "暂停" : "播放"}
-          >
-            {nowPlaying ? "⏸" : "▶"}
-          </button>
-          <button
-            type="button"
-            onClick={goNext}
-            className="w-9 h-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg flex-shrink-0"
-            title="下一段"
-            aria-label="下一段"
-          >
-            ›
-          </button>
-          <button
-            type="button"
-            onClick={() => setLoopCurrent((v) => !v)}
-            aria-pressed={loopCurrent}
-            title={loopCurrent ? "单篇循环 · 开" : "单篇循环 · 关"}
-            aria-label="单篇循环"
-            className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm flex-shrink-0 transition-colors ${
-              loopCurrent
-                ? "border-blue-400 bg-blue-50 text-blue-600"
-                : "border-gray-300 text-gray-500 hover:bg-gray-50"
-            }`}
-          >
-            ↻
-          </button>
-          <button
-            type="button"
-            onClick={() => setAutoNext((v) => !v)}
-            aria-pressed={autoNext}
-            title={autoNext ? "自动播放下一篇 · 开" : "自动播放下一篇 · 关"}
-            aria-label="自动播放下一篇"
-            className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm flex-shrink-0 transition-colors ${
-              autoNext
-                ? "border-blue-400 bg-blue-50 text-blue-600"
-                : "border-gray-300 text-gray-500 hover:bg-gray-50"
-            }`}
-          >
-            ⏭
-          </button>
-
-          <div className="flex-1 min-w-0">
-            <div className="text-xs text-gray-400 truncate">
-              {cur.id} · {cur.prefix}
-              {cur.filename}
-            </div>
-            <div className="text-sm font-medium text-gray-900">
-              第 {idx + 1} 段 / 共 {total} 段
-            </div>
-          </div>
-
-          <select
-            value={playbackRate}
-            onChange={(e) => setPlaybackRate(parseFloat(e.target.value))}
-            className="text-xs px-2 py-1 border border-gray-300 rounded bg-white focus:border-gray-500 focus:outline-none flex-shrink-0"
-            aria-label="语速"
-          >
-            <option value="1.0">1.0x</option>
-            <option value="1.1">1.1x</option>
-            <option value="1.2">1.2x</option>
-          </select>
-
-          <div className="text-xs font-mono text-gray-500 flex-shrink-0 tabular-nums">
-            {formatAudioTime(currentTime)} / {formatAudioTime(duration)}
-          </div>
-        </div>
-
-        <input
-          type="range"
-          min={0}
-          max={duration || 1}
-          step={0.1}
-          value={currentTime}
-          onChange={(e) => seekTo(parseFloat(e.target.value))}
-          className="w-full h-1 accent-gray-900 cursor-pointer"
-          aria-label="音频进度"
-        />
-      </div>
-
       <header className="mb-6 flex items-center justify-between gap-3">
         <Link href="/today" className="text-sm text-gray-500 hover:text-gray-900">
           ← 今日训练
@@ -1127,6 +1007,126 @@ export default function ShadowingClient({
       <div className="mt-6 text-xs text-gray-400 text-center space-y-1">
         <div>🔊 真人发音 · Cloudflare R2 jp-audio bucket</div>
         <div>🎤 Shadow: gpt-4o-transcribe + gpt-4o-mini（中文反馈 · 历史进 localStorage）</div>
+      </div>
+
+      {/* Sticky bottom audio player */}
+      <div className="sticky bottom-0 z-50 bg-white border-t border-gray-200 shadow-md -mx-6 px-6 py-3 mt-6">
+        <audio
+          ref={audioRef}
+          src={cur.audioUrl}
+          preload="metadata"
+          loop={loopCurrent}
+          onLoadedMetadata={(e) => {
+            setDuration(e.currentTarget.duration || 0);
+            if (e.currentTarget) e.currentTarget.playbackRate = playbackRate;
+          }}
+          onTimeUpdate={(e) =>
+            setCurrentTime(e.currentTarget.currentTime || 0)
+          }
+          onEnded={markHeard}
+          onPause={() => setNowPlaying(false)}
+          onPlay={() => setNowPlaying(true)}
+        >
+          <track kind="captions" srcLang="ja" label="Japanese" />
+        </audio>
+
+        <div className="flex items-center gap-2 mb-2 flex-wrap">
+          <button
+            type="button"
+            onClick={goPrev}
+            className="w-9 h-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg flex-shrink-0"
+            title="上一段"
+            aria-label="上一段"
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            onClick={playAudio}
+            className={`w-11 h-11 rounded-full text-white transition-colors flex items-center justify-center flex-shrink-0 text-base ${
+              nowPlaying
+                ? "bg-red-500 hover:bg-red-600"
+                : "bg-gray-900 hover:bg-gray-800"
+            }`}
+            title={nowPlaying ? "暂停" : "播放"}
+            aria-label={nowPlaying ? "暂停" : "播放"}
+          >
+            {nowPlaying ? "⏸" : "▶"}
+          </button>
+          <button
+            type="button"
+            onClick={goNext}
+            className="w-9 h-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg flex-shrink-0"
+            title="下一段"
+            aria-label="下一段"
+          >
+            ›
+          </button>
+          <button
+            type="button"
+            onClick={() => setLoopCurrent((v) => !v)}
+            aria-pressed={loopCurrent}
+            title={loopCurrent ? "单篇循环 · 开" : "单篇循环 · 关"}
+            aria-label="单篇循环"
+            className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm flex-shrink-0 transition-colors ${
+              loopCurrent
+                ? "border-blue-400 bg-blue-50 text-blue-600"
+                : "border-gray-300 text-gray-500 hover:bg-gray-50"
+            }`}
+          >
+            ↻
+          </button>
+          <button
+            type="button"
+            onClick={() => setAutoNext((v) => !v)}
+            aria-pressed={autoNext}
+            title={autoNext ? "自动播放下一篇 · 开" : "自动播放下一篇 · 关"}
+            aria-label="自动播放下一篇"
+            className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm flex-shrink-0 transition-colors ${
+              autoNext
+                ? "border-blue-400 bg-blue-50 text-blue-600"
+                : "border-gray-300 text-gray-500 hover:bg-gray-50"
+            }`}
+          >
+            ⏭
+          </button>
+
+          <div className="flex-1 min-w-0">
+            <div className="text-xs text-gray-400 truncate">
+              {cur.id} · {cur.prefix}
+              {cur.filename}
+            </div>
+            <div className="text-sm font-medium text-gray-900">
+              第 {idx + 1} 段 / 共 {total} 段
+            </div>
+          </div>
+
+          <select
+            value={playbackRate}
+            onChange={(e) => setPlaybackRate(parseFloat(e.target.value))}
+            className="text-xs px-2 py-1 border border-gray-300 rounded bg-white focus:border-gray-500 focus:outline-none flex-shrink-0"
+            aria-label="语速"
+          >
+            <option value="1.0">1.0x</option>
+            <option value="1.1">1.1x</option>
+            <option value="1.2">1.2x</option>
+          </select>
+
+          <div className="text-xs font-mono text-gray-500 flex-shrink-0 tabular-nums">
+            {formatAudioTime(currentTime)} / {formatAudioTime(duration)}
+          </div>
+        </div>
+
+        <input
+          type="range"
+          min={0}
+          max={duration || 1}
+          step={0.1}
+          value={currentTime}
+          onChange={(e) => seekTo(parseFloat(e.target.value))}
+          className="w-full h-1 accent-gray-900 cursor-pointer"
+          aria-label="音频进度"
+        />
       </div>
     </main>
   );
