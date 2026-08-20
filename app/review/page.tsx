@@ -14,7 +14,9 @@ import {
   getDueReviews,
   getUserVocabCount,
   userHasVocabWithExamples,
+  type ReviewItem,
 } from "@/lib/vocabulary/reviews";
+import { generateDistractors } from "@/lib/vocabulary/distractors";
 import { backfillUserReviewsAction } from "./actions";
 import { ReviewSession, type ReviewMode } from "./review-session";
 
@@ -28,6 +30,24 @@ export default async function ReviewPage({
   const sp = await searchParams;
   const mode: ReviewMode = sp.mode === "dictation" ? "dictation" : "fill-in";
   const items = await getDueReviews(20);
+  // Per Frank #6372: fetch AI-generated distractors alongside items in
+  // one batched LLM call (~3s for 22 items — single pause when /review
+  // first loads). Multiple-choice mode in ReviewSession consumes them.
+  const distractors: Record<string, string[]> = {};
+  if (items.length > 0) {
+    const sets = await generateDistractors(
+      items.map((it) => ({
+        id: it.vocabulary_id,
+        word: it.word,
+        meaning: it.meaning,
+        reading: it.reading,
+        type: it.type,
+      }))
+    );
+    for (const s of sets) {
+      distractors[s.id] = s.distractors;
+    }
+  }
   // Per Frank #6348 + #6353: drive the empty-state UI from server-side
   // data, not URL search params (the previous ?notice=no_examples flag
   // was getting stripped somewhere in the redirect chain and the page
@@ -157,7 +177,11 @@ export default async function ReviewPage({
           </div>
         )
       ) : (
-        <ReviewSession initialItems={items} mode={mode} />
+        <ReviewSession
+          initialItems={items}
+          mode={mode}
+          distractors={distractors}
+        />
       )}
     </main>
   );

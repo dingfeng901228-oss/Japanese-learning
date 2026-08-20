@@ -13,7 +13,7 @@
 //   - TTS auto-plays the example sentence on each new item.
 //   - "🔁 再听一次" replays it manually.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { ReviewItem } from "@/lib/vocabulary/reviews";
 import { recordReviewAction } from "./actions";
@@ -21,6 +21,11 @@ import { SpeakButton } from "@/components/SpeakButton";
 import { useSessionTimer, formatDuration } from "@/lib/today-stats";
 
 export type ReviewMode = "fill-in" | "dictation";
+
+// Per Frank #6372: fill-in mode is now multiple-choice (4 options:
+// 1 correct + 3 AI-generated distractors). Dictation mode stays text
+// input (TTS-first, no point in showing options before user has listened).
+export type DistractorsMap = Record<string, string[]>; // vocab_id → 3 distractors
 
 function speakJa(text: string) {
   if (typeof window === "undefined") return;
@@ -35,15 +40,20 @@ function speakJa(text: string) {
 export function ReviewSession({
   initialItems,
   mode = "fill-in",
+  distractors = {},
 }: {
   initialItems: ReviewItem[];
   mode?: ReviewMode;
+  distractors?: DistractorsMap;
 }) {
   // --- All hooks at the top, in a stable order across renders ---
   // (rules-of-hooks: never put a hook after a conditional return.)
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState("");
   const [checked, setChecked] = useState<null | { correct: boolean }>(null);
+  // Per Frank #6372: which option the user picked (index into options
+  // array). null = not picked yet. Resets on item change.
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Phase 1.5+ real-time session timer (per Frank #6175). Each
@@ -57,6 +67,34 @@ export function ReviewSession({
   // satisfy jsx-a11y/no-autofocus).
   useEffect(() => {
     inputRef.current?.focus();
+  }, [index]);
+
+  // Per Frank #6372: build the 4 options array for the current item.
+  // Shuffled via Fisher-Yates once per item (useMemo on `index`).
+  const options = useMemo(() => {
+    if (!current) return [] as string[];
+    const correct = current.word;
+    const distractorList = distractors[current.vocabulary_id] ?? [];
+    const pool = [correct, ...distractorList.slice(0, 3)];
+    const seen = new Set<string>();
+    const safe: string[] = [];
+    for (const d of pool) {
+      if (!d || seen.has(d)) continue;
+      seen.add(d);
+      safe.push(d);
+      if (safe.length === 4) break;
+    }
+    while (safe.length < 4) safe.push(`(${correct} 干扰项)`);
+    for (let i = safe.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [safe[i], safe[j]] = [safe[j], safe[i]];
+    }
+    return safe;
+  }, [current?.vocabulary_id, index, distractors]);
+
+  // Reset selection when item advances.
+  useEffect(() => {
+    setSelectedIdx(null);
   }, [index]);
 
   // Dictation mode: auto-play TTS on each new item.
@@ -91,9 +129,25 @@ export function ReviewSession({
   // only blanks the literal word string. If the example inflects the
   // word ("本編を" when word is "本編"), it won't match — Phase 7+ would
   // need a token-aware blanker.
+  // Per Frank #6372: fill-in mode no longer uses the blanked sentence
+  // (it shows 4 options). Dictation mode still uses blanked for
+  // post-answer reveal.
   const blanked = current.example_sentence
     ? current.example_sentence.split(current.word).join("_____")
     : "(例句缺失)";
+
+  // Per Frank #6372: for fill-in mode, derive check correctness from
+  // the picked option; for dictation, from typed answer.
+  const isCorrectPick =
+    selectedIdx !== null &&
+    options[selectedIdx] !== undefined &&
+    options[selectedIdx] === current.word;
+  const checkedCorrect =
+    mode === "fill-in"
+      ? selectedIdx !== null
+        ? isCorrectPick
+        : null
+      : checked;
 
   function handleCheck() {
     if (!answer.trim() || !current) return;
@@ -102,18 +156,29 @@ export function ReviewSession({
     setChecked({ correct });
   }
 
+  // Per Frank #6372: fill-in mode picks an option instead of typing.
+  function handleOptionPick(idx: number) {
+    if (selectedIdx !== null) return; // ignore re-pick after checked
+    setSelectedIdx(idx);
+  }
+
   async function handleNext(difficulty: "easy" | "medium" | "hard") {
     if (!current) return;
-    if (checked) {
+    if (checkedCorrect !== null) {
+      const userAnswer =
+        mode === "fill-in" && selectedIdx !== null
+          ? options[selectedIdx] ?? ""
+          : answer;
       const fd = new FormData();
       fd.set("review_id", current.id);
-      fd.set("answer", answer);
-      fd.set("correct", checked.correct ? "1" : "0");
+      fd.set("answer", userAnswer);
+      fd.set("correct", checkedCorrect ? "1" : "0");
       fd.set("difficulty", difficulty);
       await recordReviewAction(fd);
     }
     setAnswer("");
     setChecked(null);
+    setSelectedIdx(null);
     setIndex(index + 1);
   }
 
@@ -186,16 +251,16 @@ export function ReviewSession({
         )}
       </div>
 
-      {checked ? (
+      {checkedCorrect !== null ? (
         <div
           className={`bg-white border-2 rounded-2xl p-6 ${
-            checked.correct ? "border-green-500" : "border-red-500"
+            checkedCorrect ? "border-green-500" : "border-red-500"
           }`}
         >
           <div className="text-lg font-bold mb-2">
-            {checked.correct ? "✓ 正确" : "✗ 不对"}
+            {checkedCorrect ? "✓ 正确" : "✗ 不对"}
           </div>
-          {!checked.correct && (
+          {!checkedCorrect && (
             <p className="text-sm text-gray-600 mb-2">
               正确答案是：<strong>{current.word}</strong>
             </p>
@@ -249,34 +314,62 @@ export function ReviewSession({
         </div>
       ) : (
         <div className="bg-white border border-gray-200 rounded-2xl p-6">
-          <label
-            htmlFor="answer"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            输入单词
-          </label>
-          <input
-            ref={inputRef}
-            id="answer"
-            type="text"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleCheck();
-              }
-            }}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
-            placeholder="..."
-          />
-          <button
-            type="button"
-            onClick={handleCheck}
-            className="mt-4 px-5 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800"
-          >
-            检查
-          </button>
+          {mode === "fill-in" ? (
+            // Per Frank #6372: fill-in mode now renders 4 multiple-choice
+            // options instead of a text input. Dictation mode stays text
+            // input (TTS-first; options would give it away).
+            <>
+              <div className="text-sm font-medium text-gray-700 mb-3">
+                选择正确答案
+              </div>
+              <div className="grid grid-cols-1 gap-2">
+                {options.map((opt, i) => (
+                  <button
+                    key={`${current.id}-${i}`}
+                    type="button"
+                    onClick={() => handleOptionPick(i)}
+                    className="w-full px-4 py-3 text-left border border-gray-300 rounded-lg hover:border-gray-900 hover:bg-gray-50 transition-colors text-base"
+                  >
+                    <span className="inline-block w-6 text-gray-400 tabular-nums">
+                      {String.fromCharCode(65 + i)}.
+                    </span>
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <label
+                htmlFor="answer"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                输入单词
+              </label>
+              <input
+                ref={inputRef}
+                id="answer"
+                type="text"
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleCheck();
+                  }
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
+                placeholder="..."
+              />
+              <button
+                type="button"
+                onClick={handleCheck}
+                className="mt-4 px-5 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800"
+              >
+                检查
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>
