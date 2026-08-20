@@ -146,6 +146,40 @@ function splitZhSentences(zh: string): string[] {
   return result;
 }
 
+/**
+ * Approximate per-sentence start/end times within an audio clip.
+ * Weights by stripped character count (HTML + whitespace removed) so longer
+ * sentences get proportionally more time than short replies like 「はい。」.
+ * Approximation (real data has pauses/accents that uniform rate misses); the
+ * real alternative is re-running gpt-4o-transcribe with verbose_json to pull
+ * segments + map them back to original jaHtml sentences.
+ */
+function computeSentenceTimings(
+  audioDuration: number,
+  sentences: string[]
+): { start: number; end: number }[] {
+  if (
+    !isFinite(audioDuration) ||
+    audioDuration <= 0 ||
+    sentences.length === 0
+  ) {
+    return sentences.map(() => ({ start: 0, end: 0 }));
+  }
+  const weights = sentences.map((s) => {
+    const stripped = s.replace(/<[^>]*>/g, "").replace(/\s+/g, "");
+    return Math.max(stripped.length, 1);
+  });
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  const timings: { start: number; end: number }[] = [];
+  let cursor = 0;
+  for (let i = 0; i < sentences.length; i++) {
+    const d = (weights[i] / totalWeight) * audioDuration;
+    timings.push({ start: cursor, end: cursor + d });
+    cursor += d;
+  }
+  return timings;
+}
+
 export default function ShadowingClient({
   sentences,
 }: {
@@ -171,6 +205,7 @@ export default function ShadowingClient({
   const [autoNext, setAutoNext] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const pendingAutoPlayRef = useRef(false);
+  const sentenceRefs = useRef<(HTMLElement | null)[]>([]);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -198,6 +233,23 @@ export default function ShadowingClient({
     [cur, hasZh]
   );
 
+  const sentenceTimings = useMemo(
+    () => computeSentenceTimings(duration, jaSentences),
+    [duration, jaSentences]
+  );
+  const currentSentenceIdx = useMemo(() => {
+    if (sentenceTimings.length === 0 || currentTime <= 0) return -1;
+    let idx = -1;
+    for (let i = 0; i < sentenceTimings.length; i++) {
+      if (sentenceTimings[i].start <= currentTime + 0.01) {
+        idx = i;
+      } else {
+        break;
+      }
+    }
+    return idx;
+  }, [sentenceTimings, currentTime]);
+
   // Boot
   useEffect(() => {
     setProgress(loadProgress());
@@ -219,6 +271,14 @@ export default function ShadowingClient({
       audioRef.current.playbackRate = playbackRate;
     }
   }, [playbackRate]);
+
+  // Auto-scroll the article so the current sentence stays in view as audio plays
+  useEffect(() => {
+    if (currentSentenceIdx < 0) return;
+    const el = sentenceRefs.current[currentSentenceIdx];
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [currentSentenceIdx]);
 
   // Cleanup
   useEffect(() => {
@@ -786,7 +846,12 @@ export default function ShadowingClient({
             jaSentences.map((sentence, i) => (
               <p
                 key={i}
-                className="text-base sm:text-lg font-medium leading-relaxed text-center py-1 break-words"
+                ref={(el) => {
+                  sentenceRefs.current[i] = el;
+                }}
+                className={`text-base sm:text-lg font-medium leading-relaxed text-center py-1 px-2 break-words rounded transition-colors scroll-mt-32 ${
+                  i === currentSentenceIdx ? "bg-yellow-100 text-gray-900" : ""
+                }`}
                 dangerouslySetInnerHTML={{ __html: sentence }}
               />
             ))
