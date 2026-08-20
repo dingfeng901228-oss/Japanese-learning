@@ -54,6 +54,14 @@ export function ReviewSession({
   // Per Frank #6372: which option the user picked (index into options
   // array). null = not picked yet. Resets on item change.
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  // Per Frank #6408: track SM-2 recording separately from advance.
+  // Difficulty buttons record SM-2 (first pick wins, idempotent), the
+  // "下一题" button is the only path that calls setIndex. This brakes
+  // the mobile layout-shift auto-advance path (residual touch landing
+  // on a difficulty button used to fire handleNext).
+  const [recordedDifficulty, setRecordedDifficulty] = useState<
+    "easy" | "medium" | "hard" | null
+  >(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Phase 1.5+ real-time session timer (per Frank #6175). Each
@@ -95,6 +103,7 @@ export function ReviewSession({
   // Reset selection when item advances.
   useEffect(() => {
     setSelectedIdx(null);
+    setRecordedDifficulty(null);
   }, [index]);
 
   // Dictation mode: auto-play TTS on each new item.
@@ -166,9 +175,14 @@ export function ReviewSession({
     setSelectedIdx(idx);
   }
 
-  async function handleNext(difficulty: "easy" | "medium" | "hard") {
+  // Per Frank #6408: difficulty buttons no longer trigger advance.
+  // They only record SM-2 (idempotent — first pick wins). User must
+  // explicitly click "下一题" to advance. The residual-touch auto-
+  // advance symptom is gone because setIndex is no longer reachable
+  // from any difficulty button.
+  async function handleRecordDifficulty(difficulty: "easy" | "medium" | "hard") {
     if (!current) return;
-    if (checkedCorrect !== null) {
+    if (checkedCorrect !== null && recordedDifficulty === null) {
       const userAnswer =
         mode === "fill-in" && selectedIdx !== null
           ? options[selectedIdx] ?? ""
@@ -179,10 +193,31 @@ export function ReviewSession({
       fd.set("correct", checkedCorrect ? "1" : "0");
       fd.set("difficulty", difficulty);
       await recordReviewAction(fd);
+      setRecordedDifficulty(difficulty);
+    }
+  }
+
+  // Per Frank #6408: the only path that advances the index. Wired
+  // only to the "下一题" button. If user skipped difficulty, default
+  // to medium so SM-2 is always recorded.
+  async function handleAdvance() {
+    if (!current) return;
+    if (checkedCorrect !== null && recordedDifficulty === null) {
+      const userAnswer =
+        mode === "fill-in" && selectedIdx !== null
+          ? options[selectedIdx] ?? ""
+          : answer;
+      const fd = new FormData();
+      fd.set("review_id", current.id);
+      fd.set("answer", userAnswer);
+      fd.set("correct", checkedCorrect ? "1" : "0");
+      fd.set("difficulty", "medium");
+      await recordReviewAction(fd);
     }
     setAnswer("");
     setChecked(null);
     setSelectedIdx(null);
+    setRecordedDifficulty(null);
     setIndex(index + 1);
   }
 
@@ -334,28 +369,55 @@ export function ReviewSession({
               {current.example_translation}
             </p>
           )}
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => handleNext("hard")}
-              className="px-3 py-2 text-sm bg-red-50 text-red-700 rounded-lg hover:bg-red-100"
-            >
-              很难，再看一遍
-            </button>
-            <button
-              type="button"
-              onClick={() => handleNext("medium")}
-              className="px-3 py-2 text-sm bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100"
-            >
-              普通
-            </button>
-            <button
-              type="button"
-              onClick={() => handleNext("easy")}
-              className="px-3 py-2 text-sm bg-green-50 text-green-700 rounded-lg hover:bg-green-100"
-            >
-              简单
-            </button>
+          {/* Per Frank #6408: difficulty buttons only record SM-2 (ring
+              highlights which one was picked). The "下一题" button is
+              the only advance trigger and lives below the difficulty
+              row. */}
+          <div className="space-y-3">
+            <div className="flex gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => handleRecordDifficulty("hard")}
+                className={`px-3 py-2 text-sm rounded-lg ${
+                  recordedDifficulty === "hard"
+                    ? "bg-red-200 text-red-900 ring-2 ring-red-500"
+                    : "bg-red-50 text-red-700 hover:bg-red-100"
+                }`}
+              >
+                很难，再看一遍
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRecordDifficulty("medium")}
+                className={`px-3 py-2 text-sm rounded-lg ${
+                  recordedDifficulty === "medium"
+                    ? "bg-yellow-200 text-yellow-900 ring-2 ring-yellow-500"
+                    : "bg-yellow-50 text-yellow-700 hover:bg-yellow-100"
+                }`}
+              >
+                普通
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRecordDifficulty("easy")}
+                className={`px-3 py-2 text-sm rounded-lg ${
+                  recordedDifficulty === "easy"
+                    ? "bg-green-200 text-green-900 ring-2 ring-green-500"
+                    : "bg-green-50 text-green-700 hover:bg-green-100"
+                }`}
+              >
+                简单
+              </button>
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleAdvance}
+                className="px-4 py-2 text-sm bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-medium"
+              >
+                下一题 →
+              </button>
+            </div>
           </div>
         </div>
       ) : (
