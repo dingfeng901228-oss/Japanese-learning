@@ -97,21 +97,18 @@ export default async function VocabularyListPage({
   return (
     <main className="min-h-screen px-6 py-12 max-w-3xl mx-auto">
       <header className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
-          <Link
-            href="/today"
-            className="text-sm text-gray-500 hover:text-gray-900"
-          >
-            ← 返回
-          </Link>
-          <Link
-            href="/vocabulary/new"
-            className="text-sm text-gray-700 hover:text-gray-900 ml-auto px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
-          >
-            + 手动添加
-          </Link>
-        </div>
-        <h1 className="text-3xl font-bold mt-2">我的收藏</h1>
+        {/* Per Frank #6409: "+ 手动添加" moved out of the header into
+            the content toolbar below (next to "一键生成所有缺失例句").
+            The header now only has the back link + title, so the user
+            doesn't see a "+ 手动添加" floating up top away from the
+            action toolbar. */}
+        <Link
+          href="/today"
+          className="inline-block text-sm text-gray-500 hover:text-gray-900 mb-4"
+        >
+          ← 返回
+        </Link>
+        <h1 className="text-3xl font-bold">我的收藏</h1>
         <p className="text-gray-600 mt-2">
           {items.length === 0
             ? q || type
@@ -155,18 +152,26 @@ export default async function VocabularyListPage({
           route at /api/vocabulary/batch-generate-examples (maxDuration
           60s; route handler returns redirect to /vocabulary?batch=… with
           generated/skipped/errors counts). */}
-      <form
-        action="/api/vocabulary/batch-generate-examples"
-        method="post"
-        className="mb-4"
-      >
-        <button
-          type="submit"
-          className="w-full sm:w-auto px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg hover:bg-amber-100 transition-colors text-sm font-medium"
+      {/* Per Frank #6409: content-area action toolbar. "+ 手动添加"
+          (primary CTA, gray-900) is the most common user action; "一键
+          生成所有缺失例句" stays amber-50 (secondary, less frequent).
+          flex-wrap so the buttons wrap on narrow screens. */}
+      <div className="mb-4 flex gap-2 flex-wrap items-center">
+        <Link
+          href="/vocabulary/new"
+          className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
         >
-          🪄 一键生成所有缺失例句
-        </button>
-      </form>
+          + 手动添加
+        </Link>
+        <form action="/api/vocabulary/batch-generate-examples" method="post">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg hover:bg-amber-100 transition-colors text-sm font-medium"
+          >
+            🪄 一键生成所有缺失例句
+          </button>
+        </form>
+      </div>
 
       <form method="get" className="mb-8 flex gap-2 flex-wrap">
         <input
