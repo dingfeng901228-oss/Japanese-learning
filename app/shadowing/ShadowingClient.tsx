@@ -876,7 +876,7 @@ export default function ShadowingClient({
                 ref={(el) => {
                   sentenceRefs.current[i] = el;
                 }}
-                className={`text-base sm:text-lg font-medium leading-relaxed text-center py-1 px-2 break-words rounded transition-colors scroll-mt-32 ${
+                className={`text-base sm:text-lg font-medium leading-relaxed text-left py-1 px-2 break-words rounded transition-colors scroll-mt-32 ${
                   i === currentSentenceIdx ? "bg-yellow-100 text-gray-900" : ""
                 }`}
                 dangerouslySetInnerHTML={{ __html: sentence }}
@@ -896,7 +896,7 @@ export default function ShadowingClient({
               {zhSentences.map((sentence, i) => (
                 <p
                   key={i}
-                  className="text-sm text-gray-600 text-center leading-relaxed"
+                  className="text-sm text-gray-600 text-left leading-relaxed"
                 >
                   {sentence}
                 </p>
