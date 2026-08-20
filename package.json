@@ -4,14 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/check-missing-punctuation.mjs",
     "build": "next build",
     "start": "next start",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:watch": "vitest watch",
-    "test:coverage": "vitest run --coverage"
+    "lint:motto": "node scripts/check-missing-punctuation.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
@@ -22,23 +20,21 @@
     "react-dom": "19.0.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.1114.0",
     "@next/eslint-plugin-next": "^15.5.23",
     "@types/node": "22.10.5",
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3",
-    "@vitest/coverage-v8": "^3.2.7",
     "autoprefixer": "10.4.20",
     "eslint": "^9.39.5",
     "eslint-config-next": "^15.5.23",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "happy-dom": "^15.11.7",
     "postcss": "8.5.1",
     "tailwindcss": "3.4.17",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.67.0",
-    "vitest": "^3.2.7"
+    "typescript-eslint": "^8.67.0"
   },
   "overrides": {
     "eslint": "^9.39.5",
@@ -49,8 +45,6 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "@eslint-community/eslint-utils": "^4.4.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.67.0",
-    "tailwindcss": "3.4.17",
-    "@types/node": "22.10.5"
+    "typescript-eslint": "^8.67.0"
   }
 }
