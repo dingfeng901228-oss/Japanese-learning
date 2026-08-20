@@ -294,9 +294,22 @@ export function ReviewSession({
           {/* Per Frank #6394: always surface the correct answer after
               the user picks — even on a correct pick, so the word is
               reinforced visually on the answer line in addition to the
-              ✓ badge on the option button. */}
+              ✓ badge on the option button.
+              Per Frank #6406: append the kana reading under the kanji
+              via <ruby><rt></rt></ruby> so the user can confirm both
+              the word AND its pronunciation in one glance. */}
           <p className="text-sm text-gray-600 mb-2">
-            正确答案是：<strong>{current.word}</strong>
+            正确答案是：{" "}
+            <strong className="font-bold">
+              <ruby>
+                {current.word}
+                {current.reading && (
+                  <rt className="text-xs text-gray-500 ml-0.5">
+                    {current.reading}
+                  </rt>
+                )}
+              </ruby>
+            </strong>
           </p>
           {/* In dictation mode, reveal the original sentence after the
               answer so the user can compare what they heard vs. what
@@ -401,7 +414,24 @@ export function ReviewSession({
                       >
                         {String.fromCharCode(65 + i)}.
                       </span>
-                      <span className="flex-1">{opt}</span>
+                      {/* Per Frank #6406: append the kana reading under
+                          the kanji on the option button once it's
+                          revealed as the correct answer. Conditional on
+                          locked + isCorrectOption + current.reading so
+                          we don't spoil the answer before the user
+                          picks, and we don't annotate distractors. */}
+                      <span className="flex-1">
+                        <ruby>
+                          {opt}
+                          {locked &&
+                            isCorrectOption &&
+                            current.reading && (
+                              <rt className="text-xs text-green-700 ml-0.5">
+                                {current.reading}
+                              </rt>
+                            )}
+                        </ruby>
+                      </span>
                       {locked && isCorrectOption && (
                         <span
                           aria-label="正确答案"
