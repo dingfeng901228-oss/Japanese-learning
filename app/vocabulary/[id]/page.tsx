@@ -85,12 +85,27 @@ export default async function VocabularyDetailPage({
   return (
     <main className="min-h-screen px-6 py-12 max-w-2xl mx-auto">
       <header className="mb-8">
-        <Link
-          href="/vocabulary"
-          className="text-sm text-gray-500 hover:text-gray-900"
-        >
-          ← 返回收藏列表
-        </Link>
+        {/* Per Frank #6576: put "+手动添加" on the same row as
+            "← 返回收藏列表", at the far right. Using flex justify-between
+            so the back link sits on the left and the styled button sits
+            on the right of the header row. Same styled button treatment
+            as the list page's "+手动添加" (commit 4123f74 + fddb30a) and
+            the previous detail-page commit 29a3a28 — consistent
+            affordance across pages. */}
+        <div className="flex items-center justify-between">
+          <Link
+            href="/vocabulary"
+            className="text-sm text-gray-500 hover:text-gray-900"
+          >
+            ← 返回收藏列表
+          </Link>
+          <Link
+            href="/vocabulary/new"
+            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+          >
+            + 手动添加
+          </Link>
+        </div>
         <div className="flex items-center gap-2 mt-4 flex-wrap">
           <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">
             {TYPE_LABEL[item.type]}
@@ -108,24 +123,11 @@ export default async function VocabularyDetailPage({
         </div>
       </header>
 
-      {/* Per Frank #6572: move "+手动添加" out of the header into a
-          content-area toolbar (below the back-link header). The previous
-          fddb30a commit put it inline next to "← 返回收藏列表" with the
-          same gray text-link styling — Frank reported it was (a) not
-          prominent enough visually and (b) too easy to misclick. This
-          styled button matches the list page's "+手动添加" (line 178-180
-          of /vocabulary/page.tsx): bg-gray-900 text-white rounded-lg
-          so it reads as a primary action, not a secondary text link.
-          Anchored on the left of the toolbar so the user sees it as
-          "you can act on this word" without scrolling. */}
-      <div className="mb-4">
-        <Link
-          href="/vocabulary/new"
-          className="inline-block px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
-        >
-          + 手动添加
-        </Link>
-      </div>
+      {/* Per Frank #6576: removed the standalone toolbar div (29a3a28)
+          that put "+手动添加" between the header and the article card.
+          The button now lives in the header (see top of this <header>)
+          on the same row as "← 返回收藏列表", so no standalone
+          toolbar block is needed here. */}
 
       {/* Top card: word / reading / meaning. Edit toggle (Phase 1.7)
          rewrites the same card as a form when ?edit_word=1 is set. */}
