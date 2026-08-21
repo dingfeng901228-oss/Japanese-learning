@@ -130,12 +130,21 @@ export default async function VocabularyDetailPage({
           on the same row as "← 返回收藏列表", so no standalone
           toolbar block is needed here. */}
 
-      {/* Top card: word / reading / meaning. Edit toggle (Phase 1.7)
-         rewrites the same card as a form when ?edit_word=1 is set. */}
+      {/* Per Frank #6610 + #6620: WordCardSwipeable now wraps BOTH the
+         word card (<article>) AND the example section (<section>) so a
+         swipe gesture anywhere in the upper content area triggers
+         prev/next navigation with the page-turn animation. The bottom
+         "切换单词" preview grid + the "取消收藏" form stay outside the
+         wrapper so vertical scrolling and clicks on those stay normal.
+
+         `disabled` ORs both editing flags — if either form is open
+         (word editing via ?edit_word=1, example editing via ?edit=1),
+         swipe is suppressed so the user can't be yanked out of a form
+         they're filling in. */}
       <WordCardSwipeable
         prevId={prevItem?.id ?? null}
         nextId={nextItem?.id ?? null}
-        disabled={editingWord}
+        disabled={editingWord || editing}
       >
         <article className="bg-white border border-gray-200 rounded-2xl p-8 mb-6">
         {editingWord ? (
@@ -317,7 +326,6 @@ export default async function VocabularyDetailPage({
           </>
         )}
       </article>
-      </WordCardSwipeable>
 
       <section className="bg-white border border-gray-200 rounded-2xl p-8 mb-6">
         <div className="flex items-center justify-between mb-3 gap-4 flex-wrap">
@@ -437,6 +445,7 @@ export default async function VocabularyDetailPage({
           </p>
         )}
       </section>
+      </WordCardSwipeable>
 
       {/* Phase 7+ (#6334): prev / next word preview. Click either card to
          jump to that word's detail page — no need to go back to the
