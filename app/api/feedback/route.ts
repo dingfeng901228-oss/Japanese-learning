@@ -48,6 +48,86 @@ type Feedback = {
   encouragement: string;
 };
 
+/**
+ * Best-effort JSON extraction from LLM response. Handles the common
+ * failure modes that broke the "Failed to parse feedback JSON" 500
+ * errors Frank reported in #6601:
+ *   - empty / whitespace-only content (content filter, truncation)
+ *   - markdown code fences ```json ... ``` or ``` ... ```
+ *   - preamble text before the JSON object
+ *   - missing required fields (json_schema should prevent this but
+ *     safety filters / token limits / model quirks can still slip through)
+ *
+ * Returns null on any parse or validation failure. Caller decides
+ * whether to fall back to a default Feedback object or surface 500.
+ */
+function tryParseFeedback(raw: string): Feedback | null {
+  if (!raw) return null;
+  let s = raw.trim();
+  if (!s) return null;
+
+  // Strip ```json ... ``` or ``` ... ``` fences
+  const fenceMatch = s.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/);
+  if (fenceMatch && fenceMatch[1]) {
+    s = fenceMatch[1].trim();
+    if (!s) return null;
+  }
+
+  // Extract the first JSON object if there's preamble text
+  if (!s.startsWith("{")) {
+    const first = s.indexOf("{");
+    const last = s.lastIndexOf("}");
+    if (first === -1 || last <= first) return null;
+    s = s.slice(first, last + 1);
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(s);
+  } catch {
+    return null;
+  }
+  if (!parsed || typeof parsed !== "object") return null;
+
+  // Validate required fields — json_schema should guarantee this but
+  // safety filters / token limits / model quirks can still break it.
+  const f = parsed as Record<string, unknown>;
+  if (
+    typeof f.overall !== "string" ||
+    typeof f.naturalness !== "string" ||
+    typeof f.encouragement !== "string" ||
+    !Array.isArray(f.grammar) ||
+    !Array.isArray(f.vocabulary) ||
+    !Array.isArray(f.strengths) ||
+    !Array.isArray(f.improvements)
+  ) {
+    return null;
+  }
+
+  return f as unknown as Feedback;
+}
+
+/**
+ * Last-resort Feedback object when the LLM response can't be parsed
+ * or validated. We still return 200 (not 500) so the speaking page
+ * UI stays usable — it renders the fallback message in `overall`
+ * instead of breaking on a raw error string.
+ */
+function fallbackFeedback(language: FeedbackLanguage): Feedback {
+  const isZh = language === "zh";
+  return {
+    overall: isZh
+      ? "反馈生成失败，请稍后再试。"
+      : "Feedback generation failed. Please try again later.",
+    grammar: [],
+    vocabulary: [],
+    naturalness: isZh ? "反馈生成失败。" : "Feedback generation failed.",
+    strengths: [],
+    improvements: [],
+    encouragement: isZh ? "请稍后再试一次。" : "Please try again later.",
+  };
+}
+
 export async function POST(req: Request) {
   try {
     if (!process.env.OPENAI_API_KEY) {
@@ -152,15 +232,23 @@ export async function POST(req: Request) {
       max_tokens: 1500,
     });
 
-    const raw = completion.choices[0]?.message?.content ?? "{}";
-    let feedback: Feedback;
-    try {
-      feedback = JSON.parse(raw) as Feedback;
-    } catch {
-      return NextResponse.json(
-        { error: "Failed to parse feedback JSON", raw },
-        { status: 500 }
-      );
+    const raw = completion.choices[0]?.message?.content ?? "";
+    const feedback = tryParseFeedback(raw);
+    if (!feedback) {
+      // Log for debugging — what did the LLM actually return vs what
+      // we expected? finish_reason is especially useful (length = hit
+      // max_tokens truncation, content_filter = safety filter).
+      console.error("[api/feedback] failed to parse LLM response", {
+        raw: raw.slice(0, 500),
+        rawLength: raw.length,
+        finishReason: completion.choices[0]?.finish_reason,
+      });
+      // Return 200 with fallback — UI stays usable instead of breaking
+      // on a raw error string (per Frank #6603).
+      return NextResponse.json({
+        feedback: fallbackFeedback(language),
+        language,
+      });
     }
 
     return NextResponse.json({ feedback, language });
