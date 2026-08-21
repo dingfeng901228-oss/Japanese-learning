@@ -655,12 +655,20 @@ export default function ShadowingClient({
         <Link href="/today" className="text-sm text-gray-500 hover:text-gray-900">
           ← 今日训练
         </Link>
-        <Link
-          href="/listening"
-          className="text-sm text-gray-500 hover:text-gray-900"
-        >
-          听力训练 →
-        </Link>
+        <div className="flex items-center gap-3">
+          <span
+            aria-label="本次学习时长"
+            className="text-sm text-gray-500 tabular-nums"
+          >
+            🕐 {formatDuration(shadowElapsed)}
+          </span>
+          <Link
+            href="/listening"
+            className="text-sm text-gray-500 hover:text-gray-900"
+          >
+            听力训练 →
+          </Link>
+        </div>
       </header>
 
       <h1 className="text-2xl font-bold mb-2">Shadowing 真人发音</h1>
@@ -672,15 +680,6 @@ export default function ShadowingClient({
       {/* Progress + pagination */}
       <div className="mb-3 text-xs text-gray-400">
         已听 {progress.size} / {total} · 当前第 {pageStart}-{pageEnd} 段
-      </div>
-
-      {/* Per Frank #6561: surface the study-time timer in the UI. Per
-          Frank #6522, the timer only accumulates while nowPlaying is
-          true (audio is playing). When paused, shadowElapsed freezes
-          at the last active value via the pause/resume logic in
-          useSessionTimer. */}
-      <div className="mb-3 text-sm text-gray-500 tabular-nums">
-        🕐 {formatDuration(shadowElapsed)}
       </div>
 
       <div className="mb-6 space-y-3">
