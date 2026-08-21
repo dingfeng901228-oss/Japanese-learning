@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import type { MottoSentence } from "@/lib/motto-sentences-types";
+import { useSessionTimer } from "@/lib/today-stats";
 
 const PROGRESS_KEY = "japanese:shadowing-motto-progress";
 const SHADOW_HISTORY_KEY = "japanese:shadowing-motto-history";
@@ -230,6 +231,14 @@ export default function ShadowingClient({
   const recordingStartRef = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const cancelledRef = useRef(false);
+
+  // Phase 1.5+ real-time session timer (per Frank #6175). Hook re-runs
+  // when the user navigates between Shadowing and other pages, so each
+  // session's time gets attributed to "shadowing" specifically.
+  // Per Frank #6555: pass `nowPlaying` (audio playback) so timer only
+  // counts when audio is playing — matches the page's core UX (audio
+  // playback + shadowing the spoken text).
+  const { elapsed: shadowElapsed } = useSessionTimer("shadowing", nowPlaying);
 
   const total = sentences.length;
   const cur = sentences[idx];
