@@ -1,32 +1,17 @@
-// Today Header — date + Japanese weekday + countdown to end-of-day
-// (per Frank #6615 #1 #2) + Japanese greeting + Chinese subtitle
-// (spec §9). Server component shell — the countdown is a separate
-// client component (TodayCountdown) that handles the 1-Hz tick.
+// Today Header — date row + Japanese greeting + Chinese subtitle.
 //
-// Japanese weekday via a manual lookup (Date.prototype.getDay()) so the
-// output is identical on Node.js (Vercel server-side render) and in
-// the browser — no risk of hydration mismatch from a divergent ICU
-// between runtimes.
+// The date part is now a client component (TodayDate) so it rolls
+// over at midnight without a page refresh — Frank #6631. The date
+// tick also calls router.refresh() so server-side data such as
+// LearningActivity's daily_rollups is re-fetched against the new
+// "today". The countdown is also client (per-second tick).
+// Everything else (greeting, subtitle) stays server-rendered since
+// it never changes after deploy.
 
 import { TodayCountdown } from "./TodayCountdown";
-
-const JA_WEEKDAYS = [
-  "日曜日", // 0 Sunday
-  "月曜日", // 1 Monday
-  "火曜日", // 2 Tuesday
-  "水曜日", // 3 Wednesday
-  "木曜日", // 4 Thursday
-  "金曜日", // 5 Friday
-  "土曜日", // 6 Saturday
-];
+import { TodayDate } from "./TodayDate";
 
 export function TodayHeader() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
-  const day = now.getDate();
-  const weekday = JA_WEEKDAYS[now.getDay()];
-
   return (
     <header>
       {/* Per Frank #6621: date + countdown share one row. Date on the
@@ -35,7 +20,7 @@ export function TodayHeader() {
           instead of overflowing. */}
       <div className="flex items-center justify-between gap-3 flex-wrap text-sm text-gray-500">
         <p className="tabular-nums">
-          {year}年{month}月{day}日 · {weekday}
+          <TodayDate />
         </p>
         <TodayCountdown />
       </div>
