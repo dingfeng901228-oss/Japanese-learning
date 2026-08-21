@@ -220,7 +220,7 @@ function ListeningPageContent() {
   // attributed to the previous mode before the new session starts.
   const sessionType =
     mode === "shadow" ? "shadowing" : "listening";
-  const { elapsed } = useSessionTimer(sessionType);
+  const { elapsed } = useSessionTimer(sessionType, speaking);
 
   // Difficulty level (N5/N4/N3/N2/N1) — index into LEVELS array.
   const [levelIdx, setLevelIdx] = useState<0 | 1 | 2 | 3 | 4>(0);

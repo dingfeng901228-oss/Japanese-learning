@@ -135,7 +135,7 @@ export default function SpeakingPage() {
   // Phase 1.5+ real-time session timer (per Frank #6175). Hook re-runs
   // when the user navigates between Speaking and other pages, so each
   // session's time gets attributed to "speaking" specifically.
-  const { elapsed: speakingElapsed } = useSessionTimer("speaking");
+  const { elapsed: speakingElapsed } = useSessionTimer("speaking", recognizing || busy);
 
   // Phase 4: save each generated feedback's mistakes to localStorage so
   // /today can show "最近弱点" as a live history instead of hardcoded text.

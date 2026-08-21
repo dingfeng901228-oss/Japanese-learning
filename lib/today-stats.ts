@@ -15,7 +15,7 @@
 // All state auto-resets at midnight via the date-keyed localStorage
 // keys (YYYY-MM-DD).
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { enqueueSync, flushSync } from "@/lib/training-queue";
 
 export type TrainingItemId = "listening" | "speaking" | "shadowing" | "review";
@@ -367,41 +367,81 @@ export function useStreak(): { current: number; longest: number } {
 // accumulates elapsed minutes into DayAccumulated under `type`.
 // Sub-second sessions are ignored to avoid noise from rapid back
 // clicks.
-export function useSessionTimer(type: TrainingItemId): {
+//
+// Per Frank #6522: pass `active` to only count when the user is
+// actually engaged. Default true for backward compat. When `active`
+// flips false → true, start a new segment; true → false, accumulate
+// the in-progress segment into `accumulatedMs` and stop ticking.
+// `elapsed` = accumulatedMs + (active ? now - segmentStart : 0).
+export function useSessionTimer(
+  type: TrainingItemId,
+  active: boolean = true
+): {
   elapsed: number;
   running: boolean;
 } {
   const [elapsed, setElapsed] = useState(0);
-  const [running, setRunning] = useState(false);
+  const accumulatedMsRef = useRef(0);
+  const segmentStartRef = useRef<number | null>(null);
+  const activeRef = useRef(active);
 
+  // Init on mount + cleanup on unmount (also handles type change).
   useEffect(() => {
-    const startedAt = Date.now();
-    setActiveSession({ type, startedAt });
-    setRunning(true);
-    setElapsed(0);
+    if (active) {
+      segmentStartRef.current = Date.now();
+      setActiveSession({ type, startedAt: Date.now() });
+    } else {
+      segmentStartRef.current = null;
+    }
 
-    const interval = window.setInterval(() => {
-      setElapsed(Date.now() - startedAt);
-    }, 1000);
-
-    const saveElapsed = () => {
-      window.clearInterval(interval);
-      const elapsedMs = Date.now() - startedAt;
+    return () => {
+      const finalMs =
+        accumulatedMsRef.current +
+        (segmentStartRef.current !== null
+          ? Date.now() - segmentStartRef.current
+          : 0);
       setActiveSession(null);
-      setRunning(false);
-      if (elapsedMs >= 1000) {
-        accumulateMinutes(type, elapsedMs / 60000);
+      if (finalMs >= 1000) {
+        accumulateMinutes(type, finalMs / 60000);
       }
     };
-
-    window.addEventListener("pagehide", saveElapsed);
-    return () => {
-      window.removeEventListener("pagehide", saveElapsed);
-      saveElapsed();
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
-  return { elapsed, running };
+  // Handle active state changes (pause / resume).
+  useEffect(() => {
+    const wasActive = activeRef.current;
+    if (wasActive === active) return;
+    activeRef.current = active;
+
+    if (active && !wasActive) {
+      // Resume: start a new segment from now.
+      segmentStartRef.current = Date.now();
+    } else if (!active && wasActive) {
+      // Pause: accumulate the in-progress segment into the buffer.
+      if (segmentStartRef.current !== null) {
+        accumulatedMsRef.current += Date.now() - segmentStartRef.current;
+        segmentStartRef.current = null;
+      }
+    }
+  }, [active]);
+
+  // Tick interval — only when active. When active flips false the
+  // interval is cleared by the cleanup below.
+  useEffect(() => {
+    if (!active) return;
+    const interval = window.setInterval(() => {
+      const total =
+        accumulatedMsRef.current +
+        (segmentStartRef.current !== null
+          ? Date.now() - segmentStartRef.current
+          : 0);
+      setElapsed(total);
+    }, 1000);
+    return () => window.clearInterval(interval);
+  }, [active]);
+
+  return { elapsed, running: active };
 }
 
 export function formatDuration(ms: number): string {
