@@ -93,7 +93,7 @@ export function MobileNav({ items, userInfo }: MobileNavProps) {
       </div>
 
       {open && (
-        <div className="absolute left-0 right-0 top-16 bg-gradient-to-b from-white/45 to-white/25 backdrop-blur-2xl border-b border-line/60 shadow-md z-40">
+        <div className="absolute left-0 right-0 top-16 bg-white border-b border-line shadow-md z-40">
           <nav className="px-6 py-4 flex flex-col gap-1">
             {items.map((item) => (
               <Link
