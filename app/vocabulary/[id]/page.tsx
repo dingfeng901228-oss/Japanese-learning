@@ -91,6 +91,17 @@ export default async function VocabularyDetailPage({
         >
           ← 返回收藏列表
         </Link>
+        {/* Per Frank #6568: surface "+手动添加" in the detail page too
+            so the user doesn't need to navigate back to /vocabulary to
+            add a new word. Uses the same createVocabularyItemAction as
+            the list page (the /vocabulary/new form already prefills type
+            from the query string if needed). */}
+        <Link
+          href="/vocabulary/new"
+          className="text-sm text-gray-500 hover:text-gray-900"
+        >
+          + 手动添加
+        </Link>
         <div className="flex items-center gap-2 mt-4 flex-wrap">
           <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">
             {TYPE_LABEL[item.type]}
