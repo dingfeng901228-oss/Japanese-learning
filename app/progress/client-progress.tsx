@@ -19,6 +19,7 @@ import {
   TOTAL_SENTENCES_PER_LEVEL,
   difficultyOf,
 } from "@/lib/sentences";
+import { WeaknessProfile } from "@/components/dashboard/WeaknessProfile";
 
 type ShadowGrade = {
   accuracy: number;
@@ -456,6 +457,11 @@ export function ClientProgress() {
             </section>
           );
         })()}
+
+      {/* 最近弱点 + 常见错误 Top 10 (moved here from /today per Frank #6615).
+         Sourced from localStorage mistake history; renders its own empty
+         state when there's no history yet, so safe to mount unconditionally. */}
+      <WeaknessProfile />
 
       {/* Empty state */}
       {isEmpty && (

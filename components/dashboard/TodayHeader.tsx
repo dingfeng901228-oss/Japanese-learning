@@ -1,18 +1,38 @@
-// Today Header — date + Japanese greeting + Chinese subtitle (spec §9).
-// Server component (no state, no interactivity).
+// Today Header — date + Japanese weekday + countdown to end-of-day
+// (per Frank #6615 #1 #2) + Japanese greeting + Chinese subtitle
+// (spec §9). Server component shell — the countdown is a separate
+// client component (TodayCountdown) that handles the 1-Hz tick.
+//
+// Japanese weekday via a manual lookup (Date.prototype.getDay()) so the
+// output is identical on Node.js (Vercel server-side render) and in
+// the browser — no risk of hydration mismatch from a divergent ICU
+// between runtimes.
+
+import { TodayCountdown } from "./TodayCountdown";
+
+const JA_WEEKDAYS = [
+  "日曜日", // 0 Sunday
+  "月曜日", // 1 Monday
+  "火曜日", // 2 Tuesday
+  "水曜日", // 3 Wednesday
+  "木曜日", // 4 Thursday
+  "金曜日", // 5 Friday
+  "土曜日", // 6 Saturday
+];
 
 export function TodayHeader() {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
   const day = now.getDate();
-  const weekday = now.toLocaleDateString("en-US", { weekday: "long" });
+  const weekday = JA_WEEKDAYS[now.getDay()];
 
   return (
     <header>
       <p className="text-sm text-gray-500 tabular-nums">
         {year}年{month}月{day}日 · {weekday}
       </p>
+      <TodayCountdown />
       <h1 className="font-jp text-[32px] md:text-[40px] font-bold mt-3 leading-tight text-ink">
         今日も、日本語を使おう。
       </h1>
