@@ -29,7 +29,7 @@ export function TodayCountdown() {
 
   return (
     <p
-      className="mt-2 text-sm text-gray-500 tabular-nums"
+      className="text-sm text-gray-500 tabular-nums"
       aria-live="polite"
     >
       距离今天结束还有{" "}

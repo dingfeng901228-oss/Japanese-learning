@@ -29,10 +29,16 @@ export function TodayHeader() {
 
   return (
     <header>
-      <p className="text-sm text-gray-500 tabular-nums">
-        {year}年{month}月{day}日 · {weekday}
-      </p>
-      <TodayCountdown />
+      {/* Per Frank #6621: date + countdown share one row. Date on the
+          left, countdown pushed to the rightmost via justify-between.
+          flex-wrap + gap-3 so on narrow screens they drop to two rows
+          instead of overflowing. */}
+      <div className="flex items-center justify-between gap-3 flex-wrap text-sm text-gray-500">
+        <p className="tabular-nums">
+          {year}年{month}月{day}日 · {weekday}
+        </p>
+        <TodayCountdown />
+      </div>
       <h1 className="font-jp text-[32px] md:text-[40px] font-bold mt-3 leading-tight text-ink">
         今日も、日本語を使おう。
       </h1>
