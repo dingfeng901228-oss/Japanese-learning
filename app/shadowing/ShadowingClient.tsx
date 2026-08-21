@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import type { MottoSentence } from "@/lib/motto-sentences-types";
-import { useSessionTimer } from "@/lib/today-stats";
+import { useSessionTimer, formatDuration } from "@/lib/today-stats";
 
 const PROGRESS_KEY = "japanese:shadowing-motto-progress";
 const SHADOW_HISTORY_KEY = "japanese:shadowing-motto-history";
@@ -672,6 +672,15 @@ export default function ShadowingClient({
       {/* Progress + pagination */}
       <div className="mb-3 text-xs text-gray-400">
         已听 {progress.size} / {total} · 当前第 {pageStart}-{pageEnd} 段
+      </div>
+
+      {/* Per Frank #6561: surface the study-time timer in the UI. Per
+          Frank #6522, the timer only accumulates while nowPlaying is
+          true (audio is playing). When paused, shadowElapsed freezes
+          at the last active value via the pause/resume logic in
+          useSessionTimer. */}
+      <div className="mb-3 text-sm text-gray-500 tabular-nums">
+        🕐 {formatDuration(shadowElapsed)}
       </div>
 
       <div className="mb-6 space-y-3">
