@@ -17,7 +17,6 @@ type SearchParams = {
   type?: string;
   level?: string;
   sort?: string;
-  batch?: string; // "10-5-7" = generated-skipped-errors, set by batchGenerateExamplesAction
 };
 
 const JLPT_LEVELS = ["N5", "N4", "N3", "N2", "N1"] as const;
@@ -56,26 +55,6 @@ function formatDate(iso: string): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
-// Per Frank #6367: parse the `batch=G-S-E` query param set by
-// batchGenerateExamplesAction into a summary banner.
-type BatchResult = {
-  generated: number;
-  skipped: number;
-  errors: number;
-};
-function parseBatchResult(s: string | undefined): BatchResult | null {
-  if (!s) return null;
-  const parts = s.split("-");
-  if (parts.length !== 3) return null;
-  const g = Number(parts[0]);
-  const sk = Number(parts[1]);
-  const e = Number(parts[2]);
-  if (!Number.isFinite(g) || !Number.isFinite(sk) || !Number.isFinite(e)) {
-    return null;
-  }
-  return { generated: g, skipped: sk, errors: e };
-}
-
 export default async function VocabularyListPage({
   searchParams,
 }: {
@@ -86,7 +65,6 @@ export default async function VocabularyListPage({
   const type = asType(sp.type);
   const level = asLevel(sp.level);
   const sort = asSort(sp.sort);
-  const batch = parseBatchResult(sp.batch);
 
   const items = await listVocabularyItems({
     search: q || undefined,
@@ -141,57 +119,12 @@ export default async function VocabularyListPage({
         )}
       </header>
 
-      {/* Per Frank #6367: batch-generate banner — shows the result of
-          the most recent batchGenerateExamplesAction call. Three
-          variants: success (generated>0), skipped-only (nothing to
-          do), error-fetch. */}
-      {batch && (
-        <div
-          className={`mb-6 px-4 py-3 rounded-xl border text-sm ${
-            batch.generated > 0
-              ? "bg-green-50 border-green-200 text-green-800"
-              : batch.errors > 0
-                ? "bg-red-50 border-red-200 text-red-800"
-                : "bg-gray-50 border-gray-200 text-gray-700"
-          }`}
-          role="status"
-          aria-live="polite"
-        >
-          <div className="font-medium mb-1">
-            {batch.errors > 0 && batch.generated === 0
-              ? "批量生成失败"
-              : batch.generated > 0
-                ? "批量生成完成"
-                : "没有需要生成例句的单词"}
-          </div>
-          <div className="text-xs opacity-80">
-            新生成 <strong>{batch.generated}</strong> 个 · 已存在{" "}
-            <strong>{batch.skipped}</strong> 个 · 失败 <strong>{batch.errors}</strong> 个
-          </div>
-        </div>
-      )}
-
-      {/* Per Frank #6367: batch-generate button. Submits to the API
-          route at /api/vocabulary/batch-generate-examples (maxDuration
-          60s; route handler returns redirect to /vocabulary?batch=… with
-          generated/skipped/errors counts). */}
-      {/* Per Frank #6409: content-area action toolbar. "+ 手动添加"
-          (primary CTA, gray-900) is the most common user action; "一键
-          生成所有缺失例句" stays amber-50 (secondary, less frequent).
-          flex-wrap so the buttons wrap on narrow screens. */}
-      {/* Per Frank #6578: "+手动添加" moved from this toolbar up into the
-          header (same row as the title + count). Keep the batch-generate
-          button here as a secondary action. */}
-      <div className="mb-4 flex gap-2 flex-wrap items-center">
-        <form action="/api/vocabulary/batch-generate-examples" method="post">
-          <button
-            type="submit"
-            className="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg hover:bg-amber-100 transition-colors text-sm font-medium"
-          >
-            🪄 一键生成所有缺失例句
-          </button>
-        </form>
-      </div>
+      {/* Per Frank #6628: removed the "一键生成所有缺失例句" button +
+          batch banner + the `/api/vocabulary/batch-generate-examples`
+          route. The toolbar above the search form is gone entirely —
+          users can generate missing examples per-word via the
+          "生成例句" button on each detail page (see
+          regenerateExampleAction in app/vocabulary/actions.ts). */}
 
       <form method="get" className="mb-8 flex gap-2 flex-wrap">
         <input

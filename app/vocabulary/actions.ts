@@ -2,12 +2,8 @@
 
 // Server Actions for the vocabulary feature.
 // Used by the manual-add form (app/vocabulary/new/page.tsx) and the
-// delete button on the detail page (app/vocabulary/[id]/page.tsx).
-//
-// NOTE: batch-generate endpoint moved to
-// app/api/vocabulary/batch-generate-examples/route.ts — Next.js
-// rejects non-function exports from "use server" files, so `maxDuration`
-// can only live in an API route (or page/route file).
+// delete / edit / regenerate-example buttons on the detail page
+// (app/vocabulary/[id]/page.tsx).
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
