@@ -8,6 +8,7 @@ import {
   type VocabularyType,
   type VocabularySort,
 } from "@/lib/vocabulary";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -94,6 +95,15 @@ export default async function VocabularyListPage({
     sort,
   });
 
+  // Chrome extension source stat (per docs/0821requirements.docx §28
+  // "我有多少词汇来自浏览器阅读？"). One cheap count query — no rows
+  // shipped (head: true).
+  const supabase = await createClient();
+  const { count: browserSourcedCount } = await supabase
+    .from("vocabulary_items")
+    .select("id", { count: "exact", head: true })
+    .eq("source", "chrome-extension");
+
   return (
     <main className="min-h-screen px-6 py-12 max-w-3xl mx-auto">
       <header className="mb-8">
@@ -116,6 +126,11 @@ export default async function VocabularyListPage({
               : "还没有收藏，先添加一个吧"
             : `共 ${items.length} 项`}
         </p>
+        {browserSourcedCount !== null && browserSourcedCount > 0 && (
+          <p className="text-sm text-gray-500 mt-2">
+            来自浏览器阅读：<strong>{browserSourcedCount}</strong> 个
+          </p>
+        )}
       </header>
 
       {/* Per Frank #6367: batch-generate banner — shows the result of
@@ -280,6 +295,11 @@ export default async function VocabularyListPage({
                         {item.mastery}%
                       </span>
                     </div>
+                    {item.source === "chrome-extension" && item.source_domain && (
+                      <div className="text-xs text-blue-600 mt-1.5 truncate">
+                        🌐 {item.source_domain}
+                      </div>
+                    )}
                   </div>
                   <div className="text-xs text-gray-400 whitespace-nowrap">
                     {formatDate(item.created_at)}

@@ -243,6 +243,50 @@ export default async function VocabularyDetailPage({
             <div className="text-xs text-gray-400 pt-4 border-t border-gray-100">
               收藏于 {formatDateTime(item.created_at)}
             </div>
+
+            {/* Source block (per docs/0821requirements.docx §22 + §28) —
+                only shown for items inserted via Chrome extension. */}
+            {item.source === "chrome-extension" && (
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="flex items-start gap-2 text-xs text-gray-600">
+                  <span className="font-medium text-gray-700 flex-shrink-0">
+                    来源
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-medium">
+                        Chrome 扩展
+                      </span>
+                      {item.source_title && (
+                        <span className="text-gray-700 truncate max-w-[200px]">
+                          · {item.source_title}
+                        </span>
+                      )}
+                      {item.source_domain && (
+                        <span className="text-gray-500">
+                          · {item.source_domain}
+                        </span>
+                      )}
+                    </div>
+                    {item.source_added_at && (
+                      <div className="text-gray-400 mt-1">
+                        {formatDateTime(item.source_added_at)}
+                      </div>
+                    )}
+                    {item.source_url && (
+                      <a
+                        href={item.source_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block mt-1.5 text-blue-600 hover:text-blue-800 underline underline-offset-2"
+                      >
+                        查看原文 ↗
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         )}
       </article>

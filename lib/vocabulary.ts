@@ -25,6 +25,14 @@ export type VocabularyItem = {
   mastery: number;
   created_at: string;
   updated_at: string;
+  // Chrome Extension source tracking (per 0005_chrome_extension.sql
+  // migration + docs/0821requirements.docx §10 + §22-§23).
+  source: string | null;
+  source_url: string | null;
+  source_title: string | null;
+  source_domain: string | null;
+  source_favicon: string | null;
+  source_added_at: string | null;
 };
 
 export type NewVocabularyItem = {
