@@ -26,6 +26,7 @@ import {
   type VocabularyType,
 } from "@/lib/vocabulary";
 import { SpeakButton } from "@/components/SpeakButton";
+import { WordCardSwipeable } from "./WordCardSwipeable";
 import {
   deleteVocabularyItemAction,
   regenerateExampleAction,
@@ -131,7 +132,12 @@ export default async function VocabularyDetailPage({
 
       {/* Top card: word / reading / meaning. Edit toggle (Phase 1.7)
          rewrites the same card as a form when ?edit_word=1 is set. */}
-      <article className="bg-white border border-gray-200 rounded-2xl p-8 mb-6">
+      <WordCardSwipeable
+        prevId={prevItem?.id ?? null}
+        nextId={nextItem?.id ?? null}
+        disabled={editingWord}
+      >
+        <article className="bg-white border border-gray-200 rounded-2xl p-8 mb-6">
         {editingWord ? (
           <form action={updateWordAction} className="space-y-4">
             <input type="hidden" name="id" value={id} />
@@ -311,6 +317,7 @@ export default async function VocabularyDetailPage({
           </>
         )}
       </article>
+      </WordCardSwipeable>
 
       <section className="bg-white border border-gray-200 rounded-2xl p-8 mb-6">
         <div className="flex items-center justify-between mb-3 gap-4 flex-wrap">
