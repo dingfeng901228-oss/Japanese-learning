@@ -276,53 +276,40 @@ export default async function VocabularyDetailPage({
             )}
             <p className="text-xl text-gray-800 mb-6">{item.meaning}</p>
 
-            <div className="text-xs text-gray-400 pt-4 border-t border-gray-100">
-              收藏于 {formatDateTime(item.created_at)}
-            </div>
+            <div className="flex items-center justify-between gap-3 flex-wrap text-xs text-gray-400 pt-4 border-t border-gray-100">
+              <span>
+                收藏于 {formatDateTime(item.created_at)}
+              </span>
 
-            {/* Source block (per docs/0821requirements.docx §22 + §28) —
-                only shown for items inserted via Chrome extension. */}
-            {item.source === "chrome-extension" && (
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <div className="flex items-start gap-2 text-xs text-gray-600">
-                  <span className="font-medium text-gray-700 flex-shrink-0">
+              {/* Source block (per docs/0821requirements.docx §22 + §28) —
+                  only shown for items inserted via Chrome extension.
+                  Per Frank #6625: keep only 来源 Chrome 扩展 · 查看原文
+                  (drop the date, site title, and domain), and place it
+                  on the same row as 收藏于, pushed to the right. */}
+              {item.source === "chrome-extension" && (
+                <span className="flex items-center gap-1.5 text-gray-600 flex-shrink-0">
+                  <span className="font-medium text-gray-700">
                     来源
                   </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-medium">
-                        Chrome 扩展
-                      </span>
-                      {item.source_title && (
-                        <span className="text-gray-700 truncate max-w-[200px]">
-                          · {item.source_title}
-                        </span>
-                      )}
-                      {item.source_domain && (
-                        <span className="text-gray-500">
-                          · {item.source_domain}
-                        </span>
-                      )}
-                    </div>
-                    {item.source_added_at && (
-                      <div className="text-gray-400 mt-1">
-                        {formatDateTime(item.source_added_at)}
-                      </div>
-                    )}
-                    {item.source_url && (
+                  <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-medium">
+                    Chrome 扩展
+                  </span>
+                  {item.source_url && (
+                    <>
+                      <span className="text-gray-400">·</span>
                       <a
                         href={item.source_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block mt-1.5 text-blue-600 hover:text-blue-800 underline underline-offset-2"
+                        className="text-blue-600 hover:text-blue-800 underline underline-offset-2"
                       >
                         查看原文 ↗
                       </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
+                    </>
+                  )}
+                </span>
+              )}
+            </div>
           </>
         )}
       </article>
