@@ -107,25 +107,33 @@ export default async function VocabularyListPage({
   return (
     <main className="min-h-screen px-6 py-12 max-w-3xl mx-auto">
       <header className="mb-8">
-        {/* Per Frank #6409: "+ 手动添加" moved out of the header into
-            the content toolbar below (next to "一键生成所有缺失例句").
-            The header now only has the back link + title, so the user
-            doesn't see a "+ 手动添加" floating up top away from the
-            action toolbar. */}
         <Link
           href="/today"
           className="inline-block text-sm text-gray-500 hover:text-gray-900 mb-4"
         >
           ← 返回
         </Link>
-        <h1 className="text-3xl font-bold">我的收藏</h1>
-        <p className="text-gray-600 mt-2">
-          {items.length === 0
-            ? q || type
-              ? "没有匹配的收藏"
-              : "还没有收藏，先添加一个吧"
-            : `共 ${items.length} 项`}
-        </p>
+        {/* Per Frank #6578: put "我的收藏", "共~项", and "+手动添加" on
+            the same row (header). Title on the left, count in the middle,
+            styled "+手动添加" button on the far right. Matches the visual
+            treatment used on the detail page (commit 29a3a28) and the
+            list page toolbar (commit fddb30a). */}
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <h1 className="text-3xl font-bold">我的收藏</h1>
+          <p className="text-gray-600">
+            {items.length === 0
+              ? q || type
+                ? "没有匹配的收藏"
+                : "还没有收藏，先添加一个吧"
+              : `共 ${items.length} 项`}
+          </p>
+          <Link
+            href="/vocabulary/new"
+            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+          >
+            + 手动添加
+          </Link>
+        </div>
         {browserSourcedCount !== null && browserSourcedCount > 0 && (
           <p className="text-sm text-gray-500 mt-2">
             来自浏览器阅读：<strong>{browserSourcedCount}</strong> 个
@@ -171,13 +179,10 @@ export default async function VocabularyListPage({
           (primary CTA, gray-900) is the most common user action; "一键
           生成所有缺失例句" stays amber-50 (secondary, less frequent).
           flex-wrap so the buttons wrap on narrow screens. */}
+      {/* Per Frank #6578: "+手动添加" moved from this toolbar up into the
+          header (same row as the title + count). Keep the batch-generate
+          button here as a secondary action. */}
       <div className="mb-4 flex gap-2 flex-wrap items-center">
-        <Link
-          href="/vocabulary/new"
-          className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
-        >
-          + 手动添加
-        </Link>
         <form action="/api/vocabulary/batch-generate-examples" method="post">
           <button
             type="submit"
