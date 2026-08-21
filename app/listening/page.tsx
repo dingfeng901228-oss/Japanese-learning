@@ -218,9 +218,7 @@ function ListeningPageContent() {
   // between Listen and Shadow, the hook re-runs (because `type` is in
   // its dependency list), the cleanup fires, and elapsed time gets
   // attributed to the previous mode before the new session starts.
-  const sessionType =
-    mode === "shadow" ? "shadowing" : "listening";
-  const { elapsed } = useSessionTimer(sessionType, speaking);
+
 
   // Difficulty level (N5/N4/N3/N2/N1) — index into LEVELS array.
   const [levelIdx, setLevelIdx] = useState<0 | 1 | 2 | 3 | 4>(0);
@@ -230,6 +228,15 @@ function ListeningPageContent() {
   const [sentenceIdx, setSentenceIdx] = useState(0);
   const [rate, setRate] = useState<number>(0.9);
   const [speaking, setSpeaking] = useState(false);
+
+  // Real-time session timer (per Frank #6175). Hook re-runs when mode
+  // toggles between Listen and Shadow (type is in the dep list), the
+  // cleanup fires, and elapsed time is attributed to the previous mode
+  // before the new session starts. Per Frank #6522: pass `speaking`
+  // (TTS playback) so timer only counts when audio is playing.
+  const sessionType =
+    mode === "shadow" ? "shadowing" : "listening";
+  const { elapsed } = useSessionTimer(sessionType, speaking);
   const [progress, setProgress] = useState<Record<string, Set<string>>>({});
   const [browserSupportsTts, setBrowserSupportsTts] = useState(true);
 

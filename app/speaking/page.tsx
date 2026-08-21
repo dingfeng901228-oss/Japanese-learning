@@ -132,10 +132,7 @@ export default function SpeakingPage() {
   // aiPrompt instead of the generic greeting. "换个话题" clears this.
   const [selectedTopic, setSelectedTopic] = useState<SpeakingTopic | null>(null);
 
-  // Phase 1.5+ real-time session timer (per Frank #6175). Hook re-runs
-  // when the user navigates between Speaking and other pages, so each
-  // session's time gets attributed to "speaking" specifically.
-  const { elapsed: speakingElapsed } = useSessionTimer("speaking", recognizing || busy);
+
 
   // Phase 4: save each generated feedback's mistakes to localStorage so
   // /today can show "最近弱点" as a live history instead of hardcoded text.
@@ -164,6 +161,13 @@ export default function SpeakingPage() {
 
   // Phase 2: voice input via Web Speech API
   const [recognizing, setRecognizing] = useState(false);
+
+  // Phase 1.5+ real-time session timer (per Frank #6175). Hook re-runs
+  // when the user navigates between Speaking and other pages, so each
+  // session's time gets attributed to "speaking" specifically.
+  // Per Frank #6522: pass `recognizing || busy` so timer only counts
+  // when user is actively recording OR waiting for AI response.
+  const { elapsed: speakingElapsed } = useSessionTimer("speaking", recognizing || busy);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   // Mirror of `recognizing` kept in a ref so the onend closure (which
   // captures stale state by default) can see the latest value when deciding
