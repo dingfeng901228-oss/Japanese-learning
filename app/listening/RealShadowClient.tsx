@@ -3,7 +3,13 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import type { MottoSentence } from "@/lib/motto-sentences-types";
-import { useSessionTimer, formatDuration } from "@/lib/today-stats";
+// Frank #6653 / #6660: useSessionTimer + formatDuration removed from this
+// component. The local useSessionTimer("listening", nowPlaying) was dead
+// code (shadowElapsed never used in JSX — Select-String confirmed zero
+// references) AND it double-counted time with the page-level timer in
+// /listening/page.tsx (both wrote to the "listening" bucket).
+// RealShadowClient is now a pure audio / recording UI; the page owns the
+// session timer and we bubble audio playing state via onAudioPlayingChange.
 
 const PROGRESS_KEY = "japanese:shadowing-motto-progress";
 const SHADOW_HISTORY_KEY = "japanese:shadowing-motto-history";
@@ -200,8 +206,19 @@ function computeSentenceTimings(
 
 export default function RealShadowClient({
   sentences,
+  onAudioPlayingChange,
 }: {
   sentences: MottoSentence[];
+  /**
+   * Frank #6653 / #6660: bubble realShadow audio play / pause state up
+   * to the parent /listening page so the page-level
+   * useSessionTimer("listening", effectiveSpeaking) ticks when the R2
+   * audio plays. Parent passes setRealShadowPlaying (memoized with
+   * useCallback); this component invokes it alongside the local
+   * nowPlaying setter via the updateNowPlaying wrapper in every
+   * onPlay / onPause / onEnded / playAudio / reset / pendingAutoPlay site.
+   */
+  onAudioPlayingChange?: (playing: boolean) => void;
 }) {
   const [idx, setIdx] = useState(0);
   const [progress, setProgress] = useState<Set<string>>(new Set());
@@ -216,6 +233,17 @@ export default function RealShadowClient({
   const [isRegrading, setIsRegrading] = useState(false);
   const [isTranscriptEdited, setIsTranscriptEdited] = useState(false);
   const [nowPlaying, setNowPlaying] = useState(false);
+  // Frank #6653 / #6660: single wrapper keeps local play-state and the
+  // parent's session timer signal in sync at every site. Without this,
+  // the parent never knows the R2 audio is playing, so the 听力 daily
+  // total stays at 0 min while realShadow is in use.
+  const updateNowPlaying = useCallback(
+    (playing: boolean) => {
+      setNowPlaying(playing);
+      onAudioPlayingChange?.(playing);
+    },
+    [onAudioPlayingChange]
+  );
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [jumpInput, setJumpInput] = useState("");
@@ -231,18 +259,6 @@ export default function RealShadowClient({
   const recordingStartRef = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const cancelledRef = useRef(false);
-
-  // Phase 1.5+ real-time session timer (per Frank #6175). Hook re-runs
-  // when the user navigates between Shadowing and other pages, so each
-  // session's time gets attributed to "shadowing" specifically.
-  // Per Frank #6555: pass `nowPlaying` (audio playback) so timer only
-  // counts when audio is playing — matches the page's core UX (audio
-  // playback + shadowing the spoken text).
-  // Frank #6643: 真人发音 time → 听力 bucket (no more separate "shadowing"
-// timer type). Was `useSessionTimer("shadowing", nowPlaying)` when this
-// lived at /shadowing. Renamed + retargeted to "listening" so accumulated
-// minutes roll up into the 听力 daily total on /today + dashboard.
-  const { elapsed: shadowElapsed } = useSessionTimer("listening", nowPlaying);
 
   const total = sentences.length;
   const cur = sentences[idx];
@@ -357,15 +373,15 @@ export default function RealShadowClient({
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
-      setNowPlaying(false);
+      updateNowPlaying(false);
       setCurrentTime(0);
       setDuration(0);
       if (pendingAutoPlayRef.current) {
         pendingAutoPlayRef.current = false;
         audioRef.current.playbackRate = playbackRate;
         audioRef.current.play().then(
-          () => setNowPlaying(true),
-          () => setNowPlaying(false)
+          () => updateNowPlaying(true),
+          () => updateNowPlaying(false)
         );
       }
     }
@@ -418,19 +434,19 @@ export default function RealShadowClient({
     if (!audioRef.current) return;
     if (nowPlaying) {
       audioRef.current.pause();
-      setNowPlaying(false);
+      updateNowPlaying(false);
       return;
     }
     audioRef.current.currentTime = 0;
     audioRef.current.play().then(
-      () => setNowPlaying(true),
+      () => updateNowPlaying(true),
       (e) => setError(`播放失败：${e.message}`)
     );
-  }, [nowPlaying]);
+  }, [nowPlaying, updateNowPlaying]);
 
   // Mark as heard after first play completes
   const markHeard = useCallback(() => {
-    setNowPlaying(false);
+    updateNowPlaying(false);
     const next = new Set(progress);
     next.add(cur.id);
     setProgress(next);
@@ -440,7 +456,7 @@ export default function RealShadowClient({
       pendingAutoPlayRef.current = true;
       setIdx((i) => (i + 1) % total);
     }
-  }, [progress, cur, autoNext, loopCurrent, total]);
+  }, [progress, cur, autoNext, loopCurrent, total, updateNowPlaying]);
 
   const seekTo = useCallback(
     (seconds: number) => {
@@ -795,129 +811,7 @@ export default function RealShadowClient({
           )}
         </div>
 
-        {/* Frank #6648: audio player — moved here from sticky bottom.
-            Inline (no longer sticky), sits right below the translation
-            toggle so the user hears the reference audio before recording.
-            Wrapper style: top border + padding, matches the shadow
-            controls block below for visual rhythm. */}
-        <div className="border-t border-gray-200 pt-4 mt-4">
-          <audio
-            ref={audioRef}
-            src={cur.audioUrl}
-            preload="metadata"
-            loop={loopCurrent}
-            onLoadedMetadata={(e) => {
-              setDuration(e.currentTarget.duration || 0);
-              if (e.currentTarget) e.currentTarget.playbackRate = playbackRate;
-            }}
-            onTimeUpdate={(e) =>
-              setCurrentTime(e.currentTarget.currentTime || 0)
-            }
-            onEnded={markHeard}
-            onPause={() => setNowPlaying(false)}
-            onPlay={() => setNowPlaying(true)}
-          >
-            <track kind="captions" srcLang="ja" label="Japanese" />
-          </audio>
 
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <button
-              type="button"
-              onClick={goPrev}
-              className="w-9 h-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg flex-shrink-0"
-              title="上一段"
-              aria-label="上一段"
-            >
-              ‹
-            </button>
-            <button
-              type="button"
-              onClick={playAudio}
-              className={`w-11 h-11 rounded-full text-white transition-colors flex items-center justify-center flex-shrink-0 text-base ${
-                nowPlaying
-                  ? "bg-red-500 hover:bg-red-600"
-                  : "bg-gray-900 hover:bg-gray-800"
-              }`}
-              title={nowPlaying ? "暂停" : "播放"}
-              aria-label={nowPlaying ? "暂停" : "播放"}
-            >
-              {nowPlaying ? "⏸" : "▶"}
-            </button>
-            <button
-              type="button"
-              onClick={goNext}
-              className="w-9 h-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg flex-shrink-0"
-              title="下一段"
-              aria-label="下一段"
-            >
-              ›
-            </button>
-            <button
-              type="button"
-              onClick={() => setLoopCurrent((v) => !v)}
-              aria-pressed={loopCurrent}
-              title={loopCurrent ? "单篇循环 · 开" : "单篇循环 · 关"}
-              aria-label="单篇循环"
-              className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm flex-shrink-0 transition-colors ${
-                loopCurrent
-                  ? "border-blue-400 bg-blue-50 text-blue-600"
-                  : "border-gray-300 text-gray-500 hover:bg-gray-50"
-              }`}
-            >
-              ↻
-            </button>
-            <button
-              type="button"
-              onClick={() => setAutoNext((v) => !v)}
-              aria-pressed={autoNext}
-              title={autoNext ? "自动播放下一篇 · 开" : "自动播放下一篇 · 关"}
-              aria-label="自动播放下一篇"
-              className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm flex-shrink-0 transition-colors ${
-                autoNext
-                  ? "border-blue-400 bg-blue-50 text-blue-600"
-                  : "border-gray-300 text-gray-500 hover:bg-gray-50"
-              }`}
-            >
-              ⏭
-            </button>
-
-            <div className="flex-1 min-w-0">
-              <div className="text-xs text-gray-400 truncate">
-                {cur.id} · {cur.prefix}
-                {cur.filename}
-              </div>
-              <div className="text-sm font-medium text-gray-900">
-                第 {idx + 1} 段 / 共 {total} 段
-              </div>
-            </div>
-
-            <select
-              value={playbackRate}
-              onChange={(e) => setPlaybackRate(parseFloat(e.target.value))}
-              className="text-xs px-2 py-1 border border-gray-300 rounded bg-white focus:border-gray-500 focus:outline-none flex-shrink-0"
-              aria-label="语速"
-            >
-              <option value="1.0">1.0x</option>
-              <option value="1.1">1.1x</option>
-              <option value="1.2">1.2x</option>
-            </select>
-
-            <div className="text-xs font-mono text-gray-500 flex-shrink-0 tabular-nums">
-              {formatAudioTime(currentTime)} / {formatAudioTime(duration)}
-            </div>
-          </div>
-
-          <input
-            type="range"
-            min={0}
-            max={duration || 1}
-            step={0.1}
-            value={currentTime}
-            onChange={(e) => seekTo(parseFloat(e.target.value))}
-            className="w-full h-1 accent-gray-900 cursor-pointer"
-            aria-label="音频进度"
-          />
-        </div>
 
         {/* Shadow controls */}
         <div className="border-t border-gray-200 pt-4">
@@ -1131,6 +1025,133 @@ export default function RealShadowClient({
       <div className="mt-6 text-xs text-gray-400 text-center space-y-1">
         <div>🔊 真人发音 · Cloudflare R2 jp-audio bucket</div>
         <div>🎤 Shadow: gpt-4o-transcribe + gpt-4o-mini（中文反馈 · 历史进 localStorage）</div>
+      </div>
+
+      {/* Frank #6653 / #6660: restore sticky bottom audio player.
+          b077377 moved it inline (per Frank #6648, fixing nested <main>);
+          this commit puts the floating bar back so play / pause / rate /
+          seek stay reachable without scrolling back to the sentence card.
+          Lives inside /listening's <main> (parent provides outer chrome),
+          so the -mx-6 px-6 trick cancels main's px-6 to span full
+          viewport width — same pattern as the listen-mode sticky in
+          /listening/page.tsx. */}
+      <div className="sticky bottom-0 z-50 bg-white border-t border-gray-200 shadow-md -mx-6 px-6 py-3 mt-6">
+        <audio
+          ref={audioRef}
+          src={cur.audioUrl}
+          preload="metadata"
+          loop={loopCurrent}
+          onLoadedMetadata={(e) => {
+            setDuration(e.currentTarget.duration || 0);
+            if (e.currentTarget) e.currentTarget.playbackRate = playbackRate;
+          }}
+          onTimeUpdate={(e) =>
+            setCurrentTime(e.currentTarget.currentTime || 0)
+          }
+          onEnded={markHeard}
+          onPause={() => updateNowPlaying(false)}
+          onPlay={() => updateNowPlaying(true)}
+        >
+          <track kind="captions" srcLang="ja" label="Japanese" />
+        </audio>
+
+        <div className="flex items-center gap-2 mb-2 flex-wrap">
+          <button
+            type="button"
+            onClick={goPrev}
+            className="w-9 h-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg flex-shrink-0"
+            title="上一段"
+            aria-label="上一段"
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            onClick={playAudio}
+            className={`w-11 h-11 rounded-full text-white transition-colors flex items-center justify-center flex-shrink-0 text-base ${
+              nowPlaying
+                ? "bg-red-500 hover:bg-red-600"
+                : "bg-gray-900 hover:bg-gray-800"
+            }`}
+            title={nowPlaying ? "暂停" : "播放"}
+            aria-label={nowPlaying ? "暂停" : "播放"}
+          >
+            {nowPlaying ? "⏸" : "▶"}
+          </button>
+          <button
+            type="button"
+            onClick={goNext}
+            className="w-9 h-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg flex-shrink-0"
+            title="下一段"
+            aria-label="下一段"
+          >
+            ›
+          </button>
+          <button
+            type="button"
+            onClick={() => setLoopCurrent((v) => !v)}
+            aria-pressed={loopCurrent}
+            title={loopCurrent ? "单篇循环 · 开" : "单篇循环 · 关"}
+            aria-label="单篇循环"
+            className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm flex-shrink-0 transition-colors ${
+              loopCurrent
+                ? "border-blue-400 bg-blue-50 text-blue-600"
+                : "border-gray-300 text-gray-500 hover:bg-gray-50"
+            }`}
+          >
+            ↻
+          </button>
+          <button
+            type="button"
+            onClick={() => setAutoNext((v) => !v)}
+            aria-pressed={autoNext}
+            title={autoNext ? "自动播放下一篇 · 开" : "自动播放下一篇 · 关"}
+            aria-label="自动播放下一篇"
+            className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm flex-shrink-0 transition-colors ${
+              autoNext
+                ? "border-blue-400 bg-blue-50 text-blue-600"
+                : "border-gray-300 text-gray-500 hover:bg-gray-50"
+            }`}
+          >
+            ⏭
+          </button>
+
+          <div className="flex-1 min-w-0">
+            <div className="text-xs text-gray-400 truncate">
+              {cur.id} · {cur.prefix}
+              {cur.filename}
+            </div>
+            <div className="text-sm font-medium text-gray-900">
+              第 {idx + 1} 段 / 共 {total} 段
+            </div>
+          </div>
+
+          <select
+            value={playbackRate}
+            onChange={(e) => setPlaybackRate(parseFloat(e.target.value))}
+            className="text-xs px-2 py-1 border border-gray-300 rounded bg-white focus:border-gray-500 focus:outline-none flex-shrink-0"
+            aria-label="语速"
+          >
+            <option value="1.0">1.0x</option>
+            <option value="1.1">1.1x</option>
+            <option value="1.2">1.2x</option>
+          </select>
+
+          <div className="text-xs font-mono text-gray-500 flex-shrink-0 tabular-nums">
+            {formatAudioTime(currentTime)} / {formatAudioTime(duration)}
+          </div>
+        </div>
+
+        <input
+          type="range"
+          min={0}
+          max={duration || 1}
+          step={0.1}
+          value={currentTime}
+          onChange={(e) => seekTo(parseFloat(e.target.value))}
+          className="w-full h-1 accent-gray-900 cursor-pointer"
+          aria-label="音频进度"
+        />
       </div>
 
       </>

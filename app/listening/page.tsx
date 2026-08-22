@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
 // Force dynamic rendering — useSearchParams() inside ListeningPageContent
 // is not compatible with static prerendering even inside a Suspense boundary
@@ -299,9 +299,24 @@ function ListeningPageContent() {
   // cleanup fires, and elapsed time is attributed to the previous mode
   // before the new session starts. Per Frank #6522: pass `speaking`
   // (TTS playback) so timer only counts when audio is playing.
+  // Frank #6653 / #6660: in realShadow mode `speaking` stays false (no
+  // TTS — the R2 audio file plays directly). Bubble the R2 audio's
+  // play / pause state up from RealShadowClient via onAudioPlayingChange
+  // so the timer ticks during realShadow playback too — otherwise time
+  // spent in 真人发音 mode never accumulates into the 听力 daily total
+  // (localStorage japaneseLearning.accumulated.listening.* stays at 0).
   const sessionType =
     mode === "shadow" ? "shadowing" : "listening";
-  const { elapsed } = useSessionTimer(sessionType, speaking);
+  const [realShadowPlaying, setRealShadowPlaying] = useState(false);
+  // useCallback with [] keeps the prop reference stable across renders
+  // so RealShadowClient's useCallback deps (which now include
+  // onAudioPlayingChange via the updateNowPlaying wrapper) don't churn.
+  const handleRealShadowPlayingChange = useCallback((playing: boolean) => {
+    setRealShadowPlaying(playing);
+  }, []);
+  const effectiveSpeaking =
+    mode === "realShadow" ? realShadowPlaying : speaking;
+  const { elapsed } = useSessionTimer(sessionType, effectiveSpeaking);
   const [progress, setProgress] = useState<Record<string, Set<string>>>({});
   const [browserSupportsTts, setBrowserSupportsTts] = useState(true);
 
@@ -1192,7 +1207,10 @@ function ListeningPageContent() {
           with its own <main> wrapper, audio player, sentence tree, and
           sticky player, so we don't nest it inside this listen/shadow card). */}
       {mode === "realShadow" ? (
-        <RealShadowClient sentences={MOTTO_SENTENCES} />
+        <RealShadowClient
+          sentences={MOTTO_SENTENCES}
+          onAudioPlayingChange={handleRealShadowPlayingChange}
+        />
       ) : (
       <section className="border border-gray-200 rounded-2xl p-6 mb-6 bg-white">
         <div className="text-sm text-gray-500 mb-3 flex items-center justify-between">
