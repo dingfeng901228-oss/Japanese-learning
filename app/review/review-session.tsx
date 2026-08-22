@@ -5,12 +5,14 @@
 // Frank #6663 redesign replaces the old fill-in (4 multiple-choice) +
 // dictation (TTS-only) two-mode UI with one state machine:
 //
-//   QUIZ            → target blanked, full reading + Chinese + 🔊, [显示单词]
+//   QUIZ            → target blanked (input field per Frank #6668),
+//                     reading HIDDEN (Frank #6668 — overrides doc §3),
+//                     Chinese + 🔊, [显示单词]
 //   ANSWER_REVEALED → full sentence (target bolded) + reading + Chinese +
 //                     🔊, [再来一次] [记住了]
 //
 // Key design points from the doc:
-//   §3 — full sentence reading always visible (never blanked)
+//   §3 — reading HIDDEN in QUIZ, revealed in ANSWER_REVEALED (Frank #6668)
 //   §4 — Chinese translation always visible (no toggle button)
 //   §6 — auto-play TTS on new question entry (toggleable inline)
 //   §7 + §16 — large Japanese + medium reading/Chinese + lots of
@@ -18,24 +20,26 @@
 //   §8 — target word font-weight: 700 in ANSWER_REVEALED
 //   §10 — bottom buttons [再来一次] (rating=again) / [记住了]
 //          (rating=remembered)
-//   §11 — reading must ALWAYS be complete, never blanked (critical,
-//          differentiates this mode from ordinary flashcards)
+//   §11 — reading always complete in ANSWER_REVEALED. Frank #6668
+//          removed QUIZ-phase reading because user can read along
+//          instead of actively listening + inferring the word.
 //   §12 — different blank strategies for 单词/动词/形容词/固定搭配/词组
+//
+// Frank #6668 iteration (after testing deployed #6667):
+//   - Reading hidden in QUIZ phase (overrides doc §3 + §11)
+//   - Blank is now an <input> field, not static ＿＿＿＿
+//   - Empty input OK; clicking 显示单词 reveals regardless
 //
 // SRS rating simplified from easy/medium/hard → remembered/again
 // (SM-2 quality 5 / 2). See lib/vocabulary/reviews.ts recordReview().
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import type { ReviewItem } from "@/lib/vocabulary/reviews";
 import { recordReviewAction } from "./actions";
 import { useSessionTimer, formatDuration } from "@/lib/today-stats";
 
 const AUTOPLAY_KEY = "japanese:review-autoplay";
-// Per docs §2 example: 6 全角横线 (Japanese-style underscore). One
-// character shorter than ＿＿＿＿ to keep the visual rhythm but still
-// reads as "blank" at sentence scale.
-const BLANK = "＿＿＿＿";
 
 function speakJa(text: string | null | undefined) {
   if (!text || typeof window === "undefined") return;
@@ -69,41 +73,56 @@ function saveAutoplayPref(on: boolean) {
 }
 
 /**
- * Blank the target word in the example sentence.
+ * Render the example sentence with an <input> field inserted where the
+ * target word appears (Frank #6668). User types their guess into the
+ * input; clicking 显示单词 reveals the answer regardless of whether
+ * anything was typed (empty input is OK).
  *
- * Per Frank #6663 choice C1 (simple substring match). The vocab data
- * stores the EXACT form to blank (§13 "必须根据 Vocabulary 中保存的
- * 目标词精确匹配"): 动词 stores the conjugated form (e.g. "歩きます"),
- * 形容词 stores the stem (e.g. "難しい"), 固定搭配 stores the full
- * phrase (e.g. "頭を抱える"). Single substring split covers all 5
- * word types in §12 if data is consistent.
+ * If target isn't in the example, returns the example unchanged — no
+ * input rendered (signals inconsistent vocab data; user can still read
+ * the full sentence but has no blank to fill in).
  *
- * Fallback chain (data inconsistent defense):
- *   1) primary: example.split(target).join(BLANK)
- *   2) longest suffix substring match (handles minor inflection
- *      variation, e.g. if target was "難しい" but sentence has "難しく")
- *   3) last resort: return unchanged (target shown normally — user
- *      still sees the word but no blank)
+ * Styling: bottom-border underline to read as "blank line" at sentence
+ * scale, bg-transparent so the surrounding text shows through. Width
+ * fixed at ~8 chars (w-32 = 128px) which fits most Japanese words; the
+ * sentence's flex-1 wrapper handles overflow.
  */
-function blankTarget(example: string, target: string): string {
-  if (!target || !example) return example;
-  if (example.includes(target)) {
-    return example.split(target).join(BLANK);
+function renderSentenceWithInput(
+  example: string,
+  target: string,
+  inputProps: {
+    value: string;
+    onChange: (v: string) => void;
+    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    inputRef: React.Ref<HTMLInputElement>;
   }
-  for (let len = target.length - 1; len >= 2; len--) {
-    const suffix = target.slice(-len);
-    if (example.includes(suffix)) {
-      return example.split(suffix).join(BLANK);
-    }
-  }
-  return example;
+): React.ReactNode {
+  if (!example.includes(target)) return example;
+  const parts = example.split(target);
+  return (
+    <>
+      {parts[0]}
+      <input
+        ref={inputProps.inputRef}
+        type="text"
+        value={inputProps.value}
+        onChange={(e) => inputProps.onChange(e.target.value)}
+        onKeyDown={inputProps.onKeyDown}
+        placeholder="＿"
+        aria-label="输入目标词"
+        className="inline-block w-32 mx-1 border-b-2 border-gray-900 bg-transparent text-2xl font-medium text-center focus:outline-none focus:border-blue-500 px-1"
+      />
+      {parts.slice(1).map((p, i) => (
+        <span key={i}>{p}</span>
+      ))}
+    </>
+  );
 }
 
 /**
  * Render sentence with target word bolded (font-weight: 700, §8).
- * Used in ANSWER_REVEALED phase. No fallback to "rendered plain" — if
- * data is inconsistent and target isn't in example, render the full
- * sentence plain (caller handles fallback via blankTarget).
+ * Used in ANSWER_REVEALED phase. If data is inconsistent and target
+ * isn't in example, render the full sentence plain (no bolding).
  */
 function renderWithBoldTarget(
   example: string,
@@ -135,6 +154,11 @@ export function ReviewSession({
   const [phase, setPhase] = useState<"QUIZ" | "ANSWER_REVEALED">("QUIZ");
   const [autoplay, setAutoplay] = useState(true);
   const [hydrated, setHydrated] = useState(false);
+  // Frank #6668: input field replaces the static ＿＿＿＿ blank in QUIZ
+  // phase. User types their guess; empty answer is OK — clicking
+  // 显示单词 still reveals the target.
+  const [userAnswer, setUserAnswer] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Per Frank #6175: session timer for the review bucket. Active=true
   // for the whole session (no easy UX signal to derive "active" from in
@@ -157,9 +181,16 @@ export function ReviewSession({
     if (hydrated) saveAutoplayPref(autoplay);
   }, [autoplay, hydrated]);
 
-  // Reset to QUIZ on new question entry.
+  // Reset to QUIZ on new question entry, clear typed answer, focus input.
+  // Frank #6668: input is the new QUIZ affordance — needs to receive
+  // focus automatically so user can type immediately.
   useEffect(() => {
     setPhase("QUIZ");
+    setUserAnswer("");
+    // requestAnimationFrame to wait for React to commit the new
+    // QUIZ render (and the input element to mount) before focusing.
+    const id = requestAnimationFrame(() => inputRef.current?.focus());
+    return () => cancelAnimationFrame(id);
   }, [index]);
 
   // Auto-play TTS on entering QUIZ (§6). Small delay so React commits
@@ -175,6 +206,7 @@ export function ReviewSession({
 
   const handleReveal = useCallback(() => {
     setPhase("ANSWER_REVEALED");
+    setUserAnswer(""); // clear typed guess (Frank #6668 — input is QUIZ-only)
     // §9: replay full sentence audio after reveal (helps user
     // confirm what they missed or got right).
     if (current?.example_sentence) speakJa(current.example_sentence);
@@ -214,12 +246,6 @@ export function ReviewSession({
   if (!current) return null;
 
   const hasExample = !!current.example_sentence;
-  // Non-null assertion: hasExample === true implies current.example_sentence
-  // is truthy, but TS doesn't narrow object properties through a boolean
-  // local. The `!` makes it explicit + matches the runtime invariant.
-  const blanked = hasExample
-    ? blankTarget(current.example_sentence!, current.word)
-    : null;
 
   return (
     <div className="space-y-8">
@@ -245,54 +271,67 @@ export function ReviewSession({
         🕐 {formatDuration(reviewElapsed)}
       </div>
 
-      {/* Japanese sentence — biggest, text-left, leading-loose (§7).
-         QUIZ: target blanked. ANSWER_REVEALED: target bolded. */}
-      <div className="text-2xl font-medium text-gray-900 leading-loose text-left break-words whitespace-pre-wrap">
-        {phase === "QUIZ" ? (
-          blanked ?? <span className="italic text-gray-400">(例句缺失)</span>
-        ) : hasExample && current.example_sentence ? (
-          renderWithBoldTarget(current.example_sentence, current.word)
-        ) : (
-          <span className="italic text-gray-400">(例句缺失)</span>
-        )}
-      </div>
-
-      {/* Reading + 🔊 inline (medium, §7 + §16). The 🔊 is on the same
-         row as the reading, right-aligned — matches the doc sketch. */}
-      <div className="flex items-start gap-3">
-        <div className="flex-1 text-base text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
-          {current.example_reading ?? (
-            <span className="italic text-gray-400">(读音缺失)</span>
+      {phase === "QUIZ" ? (
+        <>
+          {/* Frank #6668: QUIZ — sentence with inline input for active
+             recall, no reading shown yet. The 🔊 is the only audio cue
+             in QUIZ since reading is hidden. */}
+          {hasExample && current.example_sentence ? (
+            <div className="flex items-start gap-3">
+              <div className="flex-1 text-2xl font-medium text-gray-900 leading-loose text-left break-words whitespace-pre-wrap">
+                {renderSentenceWithInput(
+                  current.example_sentence,
+                  current.word,
+                  {
+                    value: userAnswer,
+                    onChange: setUserAnswer,
+                    onKeyDown: (e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleReveal();
+                      }
+                    },
+                    inputRef,
+                  }
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (current.example_sentence)
+                    speakJa(current.example_sentence);
+                }}
+                className="flex-shrink-0 w-10 h-10 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-base"
+                title="播放整句"
+                aria-label="播放整句"
+              >
+                🔊
+              </button>
+            </div>
+          ) : (
+            <div className="text-2xl font-medium text-gray-900 leading-loose text-left break-words whitespace-pre-wrap">
+              <span className="italic text-gray-400">(例句缺失)</span>
+            </div>
           )}
-        </div>
-        {hasExample && (
-          <button
-            type="button"
-            onClick={() => {
-              if (current.example_sentence) speakJa(current.example_sentence);
-            }}
-            className="flex-shrink-0 w-10 h-10 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-base"
-            title={phase === "QUIZ" ? "播放整句" : "重播整句"}
-            aria-label={phase === "QUIZ" ? "播放整句" : "重播整句"}
-          >
-            🔊
-          </button>
-        )}
-      </div>
 
-      {/* Chinese translation — always visible (§4, no toggle). */}
-      <div className="text-base text-gray-600 leading-relaxed">
-        {current.example_translation ?? (
-          <span className="italic text-gray-400">(翻译缺失)</span>
-        )}
-      </div>
+          {/* Frank #6668: reading HIDDEN in QUIZ — only revealed alongside
+             the answer in ANSWER_REVEALED. Doc §3 said show reading, but
+             Frank #6668 testing revealed visible reading defeats the
+             active-recall UX (user can read along instead of listening
+             + inferring the word from audio + Chinese context). */}
 
-      {/* Bottom action — phase-specific (§7 + §16).
-         QUIZ: center-aligned [显示单词] button.
-         ANSWER_REVEALED: two full-width buttons [再来一次] [记住了]. */}
-      <div className="pt-4">
-        {phase === "QUIZ" ? (
-          <div className="flex justify-center">
+          {/* Chinese translation — always visible (§4). */}
+          <div className="text-base text-gray-600 leading-relaxed">
+            {current.example_translation ?? (
+              <span className="italic text-gray-400">(翻译缺失)</span>
+            )}
+          </div>
+
+          {/* Frank #6668: empty input is OK — clicking 显示单词
+             reveals the answer regardless of whether the user typed
+             anything. The input is purely for active-recall practice,
+             not for grading. */}
+          <div className="pt-4 flex justify-center">
             <button
               type="button"
               onClick={handleReveal}
@@ -301,8 +340,53 @@ export function ReviewSession({
               显示单词
             </button>
           </div>
-        ) : (
-          <div className="flex gap-3">
+        </>
+      ) : (
+        <>
+          {/* ANSWER_REVEALED: sentence with bold target (§8). */}
+          <div className="text-2xl font-medium text-gray-900 leading-loose text-left break-words whitespace-pre-wrap">
+            {hasExample ? (
+              renderWithBoldTarget(current.example_sentence!, current.word)
+            ) : (
+              <span className="italic text-gray-400">(例句缺失)</span>
+            )}
+          </div>
+
+          {/* Reading + 🔊 — revealed alongside the answer (Frank #6668).
+             Reading was hidden in QUIZ per Frank's feedback that visible
+             reading defeats the active-recall UX; now shown in
+             ANSWER_REVEALED as part of the answer reveal. */}
+          <div className="flex items-start gap-3">
+            <div className="flex-1 text-base text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
+              {current.example_reading ?? (
+                <span className="italic text-gray-400">(读音缺失)</span>
+              )}
+            </div>
+            {hasExample && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (current.example_sentence)
+                    speakJa(current.example_sentence);
+                }}
+                className="flex-shrink-0 w-10 h-10 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-base"
+                title="重播整句"
+                aria-label="重播整句"
+              >
+                🔊
+              </button>
+            )}
+          </div>
+
+          {/* Chinese translation — always visible (§4). */}
+          <div className="text-base text-gray-600 leading-relaxed">
+            {current.example_translation ?? (
+              <span className="italic text-gray-400">(翻译缺失)</span>
+            )}
+          </div>
+
+          {/* 再来一次 / 记住了 (§10). */}
+          <div className="flex gap-3 pt-4">
             <button
               type="button"
               onClick={() => handleOutcome("again")}
@@ -318,8 +402,8 @@ export function ReviewSession({
               记住了
             </button>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }
