@@ -81,6 +81,47 @@ function saveShadowHistory(history: ShadowHistoryEntry[]) {
   );
 }
 
+// Frank #6636: align with shadowing module — playback prefs persistence
+// (loop current / auto-play next / playback rate). Same pattern as
+// japanese:shadowing-motto-playback-prefs but a different key so the two
+// modules don't share prefs.
+const PLAYBACK_PREFS_KEY = "japanese:listening-playback-prefs";
+const VALID_RATES: readonly number[] = [1.0, 1.1, 1.2];
+
+type ListeningPlaybackPrefs = {
+  loopCurrent: boolean;
+  autoNext: boolean;
+  playbackRate: number;
+};
+
+function loadListeningPlaybackPrefs(): ListeningPlaybackPrefs {
+  if (typeof window === "undefined") {
+    return { loopCurrent: false, autoNext: false, playbackRate: 1.0 };
+  }
+  try {
+    const raw = window.localStorage.getItem(PLAYBACK_PREFS_KEY);
+    if (!raw) return { loopCurrent: false, autoNext: false, playbackRate: 1.0 };
+    const parsed = JSON.parse(raw);
+    const rate =
+      typeof parsed.playbackRate === "number" &&
+      VALID_RATES.includes(parsed.playbackRate)
+        ? parsed.playbackRate
+        : 1.0;
+    return {
+      loopCurrent: !!parsed.loopCurrent,
+      autoNext: !!parsed.autoNext,
+      playbackRate: rate,
+    };
+  } catch {
+    return { loopCurrent: false, autoNext: false, playbackRate: 1.0 };
+  }
+}
+
+function saveListeningPlaybackPrefs(p: ListeningPlaybackPrefs) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(PLAYBACK_PREFS_KEY, JSON.stringify(p));
+}
+
 function formatHistoryTime(ts: number): string {
   const d = new Date(ts);
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -177,10 +218,13 @@ function StatTile({
   );
 }
 
+// Frank #6636: align with shadowing module — 1.0 / 1.1 / 1.2 (was 0.7/0.9/1.0
+// "slow / normal / original"). Frank wanted the same rate ladder as the
+// 跟读 module; 0.7x had no equivalent there.
 const RATE_OPTIONS = [
-  { v: 0.7, label: "0.7x", desc: "慢速" },
-  { v: 0.9, label: "0.9x", desc: "常速" },
   { v: 1.0, label: "1.0x", desc: "原速" },
+  { v: 1.1, label: "1.1x", desc: "稍快" },
+  { v: 1.2, label: "1.2x", desc: "快速" },
 ] as const;
 
 type Mode = "listen" | "shadow";
@@ -226,8 +270,17 @@ function ListeningPageContent() {
   // Listen state (preserved from Phase 1)
   const [categoryIdx, setCategoryIdx] = useState(0);
   const [sentenceIdx, setSentenceIdx] = useState(0);
-  const [rate, setRate] = useState<number>(0.9);
+  const [rate, setRate] = useState<number>(1.0);
   const [speaking, setSpeaking] = useState(false);
+  // Frank #6636: playback prefs (match shadowing module UX — loop current,
+  // auto-play next sentence, 1.0/1.1/1.2 rate).
+  const [loopCurrent, setLoopCurrent] = useState(false);
+  const [autoNext, setAutoNext] = useState(false);
+  // Frank #6636: speak() reads closure (rate, loopCurrent, sentence).
+  // Auto-play-next needs to bump idx → React re-render → speak() picks up
+  // the new sentence. speakRef points to the latest speak() on every render
+  // so setTimeout chains can invoke the fresh closure.
+  const speakRef = useRef<(() => void) | null>(null);
 
   // Real-time session timer (per Frank #6175). Hook re-runs when mode
   // toggles between Listen and Shadow (type is in the dep list), the
@@ -373,7 +426,23 @@ function ListeningPageContent() {
     setBrowserSupportsTts(Boolean(window.speechSynthesis));
     setProgress(loadProgress());
     setShadowHistory(loadShadowHistory());
+    // Frank #6636: load playback prefs (loop / auto-next / rate)
+    const prefs = loadListeningPlaybackPrefs();
+    setLoopCurrent(prefs.loopCurrent);
+    setAutoNext(prefs.autoNext);
+    setRate(prefs.playbackRate);
   }, []);
+
+  // Frank #6636: persist playback prefs whenever they change. Validates
+  // rate against VALID_RATES inside saveListeningPlaybackPrefs so a
+  // tampered localStorage value can't write back garbage.
+  useEffect(() => {
+    saveListeningPlaybackPrefs({
+      loopCurrent,
+      autoNext,
+      playbackRate: rate,
+    });
+  }, [loopCurrent, autoNext, rate]);
 
   // Phase 5 enhancement: read ?c=<categoryId> from URL and pre-select that
   // category. Lets /today's "去练习" link deep-link to the right category.
@@ -504,30 +573,85 @@ function ListeningPageContent() {
     setCurrentChunkIdx(useChunked ? 0 : -1);
     setSpeaking(true);
 
-    const playNext = () => {
-      if (speakCancelRef.current || pieceIdx >= pieces.length) {
+    // Frank #6636: split into per-utterance speakOne + onend handler so
+    // we can apply loop / auto-next after the LAST piece finishes (the
+    // previous playNext() bailed on `pieceIdx >= pieces.length` before
+    // applying any post-play policy).
+    const speakOne = (idx: number) => {
+      if (speakCancelRef.current) {
         setSpeaking(false);
         setCurrentChunkIdx(-1);
         return;
       }
-      if (useChunked) setCurrentChunkIdx(pieceIdx);
-      const u = new SpeechSynthesisUtterance(pieces[pieceIdx]);
+      const u = new SpeechSynthesisUtterance(pieces[idx]);
       u.lang = "ja-JP";
       u.rate = rate;
       u.onend = () => {
+        if (speakCancelRef.current) {
+          setSpeaking(false);
+          setCurrentChunkIdx(-1);
+          return;
+        }
         setCurrentChunkIdx(-1);
         pieceIdx++;
-        if (useChunked && pieceIdx < pieces.length) {
-          // 1.5s pause between chunks; bail if cancelled during the pause.
-          setTimeout(() => {
-            if (speakCancelRef.current) {
-              setSpeaking(false);
+        if (pieceIdx < pieces.length) {
+          // More chunks to play
+          if (useChunked) {
+            // 1.5s pause between shadow chunks
+            setTimeout(() => {
+              if (speakCancelRef.current) {
+                setSpeaking(false);
+                setCurrentChunkIdx(-1);
+                return;
+              }
+              setCurrentChunkIdx(pieceIdx);
+              speakOne(pieceIdx);
+            }, 1500);
+          } else {
+            // Single-piece listen mode — no pause between
+            speakOne(pieceIdx);
+          }
+        } else {
+          // All pieces done. Apply loop / auto-next policy (listen mode only;
+          // shadow's chunked playback keeps its current "play once" behavior).
+          if (mode === "listen" && !useChunked) {
+            if (loopCurrent) {
+              pieceIdx = 0;
               setCurrentChunkIdx(-1);
+              setTimeout(() => {
+                if (speakCancelRef.current) {
+                  setSpeaking(false);
+                  return;
+                }
+                speakOne(0);
+              }, 600);
               return;
             }
-            playNext();
-          }, 1500);
-        } else {
+            if (autoNext) {
+              setSpeaking(false);
+              setCurrentChunkIdx(-1);
+              // Advance sentence without calling stopSpeech() (would set the
+              // cancel flag and kill our chain). Direct setters only.
+              setTimeout(() => {
+                if (speakCancelRef.current) return;
+                if (sentenceIdx < totalInCat - 1) {
+                  setSentenceIdx(sentenceIdx + 1);
+                } else if (categoryIdx < CATEGORIES.length - 1) {
+                  setCategoryIdx(categoryIdx + 1);
+                  setSentenceIdx(0);
+                } else {
+                  setSentenceIdx(0);
+                }
+                // Wait for React to re-render then call the latest speak via
+                // speakRef (the new closure sees the new sentence).
+                setTimeout(() => {
+                  if (speakCancelRef.current) return;
+                  speakRef.current?.();
+                }, 100);
+              }, 300);
+              return;
+            }
+          }
           setSpeaking(false);
           setCurrentChunkIdx(-1);
         }
@@ -539,7 +663,7 @@ function ListeningPageContent() {
       window.speechSynthesis.speak(u);
     };
 
-    playNext();
+    speakOne(pieceIdx);
 
     // Mark sentence as listened (Listen mode only).
     if (mode === "listen") {
@@ -553,6 +677,11 @@ function ListeningPageContent() {
       saveProgress(newProgress);
     }
   }
+
+  // Frank #6636: keep speakRef pointing at the latest speak() so the
+  // auto-play-next chain (state change + React re-render) calls the
+  // closure that sees the new sentence.
+  speakRef.current = speak;
 
   function next() {
     stopSpeech();
@@ -1064,45 +1193,12 @@ function ListeningPageContent() {
         </div>
 
         {mode === "listen" ? (
-          /* ─── Listen controls ─── */
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={speak}
-              disabled={!browserSupportsTts}
-              className={`px-6 py-3 rounded-lg text-base font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
-                speaking
-                  ? "bg-red-500 text-white hover:bg-red-600"
-                  : "bg-gray-900 text-white hover:bg-gray-800"
-              }`}
-            >
-              {speaking ? "⏹ 停止" : "🔊 听"}
-            </button>
-
-            <div
-              className="inline-flex rounded-lg border border-gray-200 overflow-hidden self-center"
-              role="group"
-              aria-label="语速"
-            >
-              {RATE_OPTIONS.map((opt, i) => (
-                <button
-                  key={opt.v}
-                  type="button"
-                  onClick={() => setRateAndCancel(opt.v)}
-                  className={`px-3 py-3 text-sm transition-colors ${
-                    i > 0 ? "border-l border-gray-200" : ""
-                  } ${
-                    rate === opt.v
-                      ? "bg-gray-900 text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-50"
-                  }`}
-                  title={`${opt.desc} ${opt.label}`}
-                  aria-pressed={rate === opt.v}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+          /* ─── Listen controls moved to sticky bottom player (Frank #6636) ───
+             Card stays clean (just sentence + translation); all playback
+             controls (play / loop / auto-next / rate / prev / next) live
+             in the sticky bar to match the shadowing module's UX. */
+          <div className="text-xs text-gray-400 text-center py-3">
+            👇 用底部播放器播放 · 循环 · 自动播下一句 · 调语速
           </div>
         ) : (
           /* ─── Shadow controls ─── */
@@ -1435,41 +1531,37 @@ function ListeningPageContent() {
         </section>
       )}
 
-      {/* Navigation */}
-      <div className="flex items-center justify-between gap-3 mb-6">
-        <button
-          type="button"
-          onClick={prev}
-          className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-sm"
-        >
-          ← 上一句
-        </button>
+      {/* Navigation — Frank #6636: hidden in listen mode (sticky bottom
+          player covers prev/next + progress info). Shadow mode keeps the
+          prev/next + stats row since its recording UI has no sticky bar. */}
+      {mode === "shadow" && (
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <button
+            type="button"
+            onClick={prev}
+            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-sm"
+          >
+            ← 上一句
+          </button>
 
-        <div className="flex-1 text-sm text-gray-500 text-center">
-          {mode === "listen" ? (
-            <>
-              本组完成 {completedInCat}/{totalInCat} · 总进度 {totalCompleted}/150
-            </>
-          ) : (
-            <>
-              Shadow 历史 {shadowHistory.length}
-              {shadowHistory.length > 0 && (
-                <span className="ml-2 text-xs text-gray-400">
-                  · 最近 50 条
-                </span>
-              )}
-            </>
-          )}
+          <div className="flex-1 text-sm text-gray-500 text-center">
+            Shadow 历史 {shadowHistory.length}
+            {shadowHistory.length > 0 && (
+              <span className="ml-2 text-xs text-gray-400">
+                · 最近 50 条
+              </span>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={next}
+            className="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors text-sm"
+          >
+            下一句 →
+          </button>
         </div>
-
-        <button
-          type="button"
-          onClick={next}
-          className="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors text-sm"
-        >
-          下一句 →
-        </button>
-      </div>
+      )}
 
       {/* Shadow history for current sentence (Shadow mode only) */}
       {mode === "shadow" && shadowHistoryForSentence.length > 0 && (
@@ -1580,6 +1672,99 @@ function ListeningPageContent() {
       {!browserSupportsTts && (
         <div className="mt-4 border border-red-200 bg-red-50 rounded-2xl p-4 text-sm text-red-700 text-center">
           当前浏览器不支持 Web Speech API。请用 Chrome / Safari 打开本页面。
+        </div>
+      )}
+
+      {/* Frank #6636: sticky bottom player — mirrors the shadowing module's
+          player UX (Frank #6459). Listen mode only (shadow has its own
+          recording flow). TTS has no duration, so no progress bar; everything
+          else (prev / play / next / ↻ / ⏭ / 1.0/1.1/1.2 rate) is identical. */}
+      {mode === "listen" && (
+        <div className="sticky bottom-0 z-50 bg-white border-t border-gray-200 shadow-md -mx-6 px-6 py-3 mt-6">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <button
+              type="button"
+              onClick={prev}
+              className="w-9 h-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg flex-shrink-0"
+              title="上一句"
+              aria-label="上一句"
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              onClick={speak}
+              disabled={!browserSupportsTts}
+              className={`w-11 h-11 rounded-full text-white transition-colors flex items-center justify-center flex-shrink-0 text-base disabled:opacity-40 disabled:cursor-not-allowed ${
+                speaking
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-gray-900 hover:bg-gray-800"
+              }`}
+              title={speaking ? "停止" : "播放"}
+              aria-label={speaking ? "停止" : "播放"}
+            >
+              {speaking ? "⏸" : "▶"}
+            </button>
+            <button
+              type="button"
+              onClick={next}
+              className="w-9 h-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg flex-shrink-0"
+              title="下一句"
+              aria-label="下一句"
+            >
+              ›
+            </button>
+            <button
+              type="button"
+              onClick={() => setLoopCurrent((v) => !v)}
+              aria-pressed={loopCurrent}
+              title={loopCurrent ? "单句循环 · 开" : "单句循环 · 关"}
+              aria-label="单句循环"
+              className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm flex-shrink-0 transition-colors ${
+                loopCurrent
+                  ? "border-blue-400 bg-blue-50 text-blue-600"
+                  : "border-gray-300 text-gray-500 hover:bg-gray-50"
+              }`}
+            >
+              ↻
+            </button>
+            <button
+              type="button"
+              onClick={() => setAutoNext((v) => !v)}
+              aria-pressed={autoNext}
+              title={autoNext ? "自动播下一句 · 开" : "自动播下一句 · 关"}
+              aria-label="自动播下一句"
+              className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm flex-shrink-0 transition-colors ${
+                autoNext
+                  ? "border-blue-400 bg-blue-50 text-blue-600"
+                  : "border-gray-300 text-gray-500 hover:bg-gray-50"
+              }`}
+            >
+              ⏭
+            </button>
+
+            <div className="flex-1 min-w-0">
+              <div className="text-xs text-gray-400 truncate">
+                {category.label} · 第 {sentenceIdx + 1} / {totalInCat} 句
+              </div>
+              <div className="text-sm font-medium text-gray-900">
+                {sentenceHeard ? "✓ 听过了" : "未听"}
+              </div>
+            </div>
+
+            <select
+              value={rate}
+              onChange={(e) => setRateAndCancel(parseFloat(e.target.value))}
+              className="text-xs px-2 py-1 border border-gray-300 rounded bg-white focus:border-gray-500 focus:outline-none flex-shrink-0"
+              aria-label="语速"
+            >
+              {RATE_OPTIONS.map((opt) => (
+                <option key={opt.v} value={opt.v}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       )}
 
