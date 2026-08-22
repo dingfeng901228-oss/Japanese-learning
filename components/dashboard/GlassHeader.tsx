@@ -1,17 +1,20 @@
 "use client";
 
-// GlassHeader — extracted from app/layout.tsx to host the scroll listener
-// that deepens the navbar shadow once the user scrolls past 10px.
-//
-// Background is a subtle vertical gradient (more transparent at the
-// bottom) with a heavy backdrop-blur — the spec §21 "no glassmorphism"
-// rule is overridden by Frank 2026-08-19 #6214, and made more
-// pronounced in #6217.
+// GlassHeader — Frank #6678 UI3.0.docx revamp:
+//   - Solid white bg (no gradient, no shadow, no backdrop-blur) per
+//     spec §7 "保持当前白色背景和底部细分割线。不要增加阴影。不要
+//     增加渐变。" — this reverses the #6214/#6217 glassmorphism
+//     override and goes back to the spec §21 "no glassmorphism" rule.
+//   - Scroll listener removed (no more shadow deepening on scroll).
+//   - Nav replaced by <TopNav> for active-state indicator + smooth
+//     slide between items (see TopNav.tsx for the animation logic).
+//   - Header height (h-16) + layout (logo left / nav center / user
+//     menu right) unchanged per spec §5.
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { UserMenu } from "@/components/UserMenu";
 import { MobileNav } from "@/components/dashboard/MobileNav";
+import { TopNav } from "@/components/dashboard/TopNav";
 
 export interface GlassHeaderProps {
   navItems: Array<{ label: string; href: string }>;
@@ -23,40 +26,13 @@ export interface GlassHeaderProps {
 }
 
 export function GlassHeader({ navItems, userInfo }: GlassHeaderProps) {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    function onScroll() {
-      setScrolled(window.scrollY > 10);
-    }
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <header
-      className={`sticky top-0 z-30 border-b border-line transition-shadow duration-200 ease-out ${
-        scrolled
-          ? "bg-gradient-to-b from-white/45 to-white/25 backdrop-blur-2xl shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
-          : "bg-gradient-to-b from-white/45 to-white/25 backdrop-blur-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)]"
-      }`}
-    >
+    <header className="sticky top-0 z-30 bg-white border-b border-line">
       <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
         <Link href="/" className="font-bold text-base text-ink">
           FastStudy
         </Link>
-        <nav className="hidden md:flex items-center gap-1 text-[15px]">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <TopNav items={navItems} />
         <div className="hidden md:block">
           <UserMenu
             email={userInfo.email}

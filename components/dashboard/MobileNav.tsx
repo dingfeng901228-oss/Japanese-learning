@@ -1,12 +1,21 @@
 "use client";
 
-// Mobile hamburger menu — spec §22.
-// md:hidden wrapper keeps it off desktop. Includes its own UserMenu
-// (the desktop nav has its own). Outside-click + Escape close.
+// Mobile hamburger menu — Frank #6678 UI3.0.docx revamp:
+//   - md:hidden wrapper keeps it off desktop. Includes its own UserMenu
+//     (the desktop nav has its own). Outside-click + Escape close.
+//   - Nav items use <NavLink size="md"> for active/hover/pressed
+//     states — same logic as desktop, just bigger text per the
+//     existing mobile styling.
+//   - The desktop bottom-indicator line doesn't make sense in a
+//     vertical stack, so the active state is communicated purely
+//     through text color + weight (text-ink + font-medium). The
+//     same affordance works in the vertical mobile layout.
+//   - Sheet still closes on link click (existing behavior).
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { UserMenu } from "@/components/UserMenu";
+import { NavLink } from "./NavLink";
 
 export interface MobileNavProps {
   items: Array<{ label: string; href: string }>;
@@ -18,8 +27,15 @@ export interface MobileNavProps {
 }
 
 export function MobileNav({ items, userInfo }: MobileNavProps) {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  // Close the sheet automatically on route change (covers the
+  // back/forward browser nav, not just clicks on a NavLink).
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   // Close on Escape.
   useEffect(() => {
@@ -93,18 +109,28 @@ export function MobileNav({ items, userInfo }: MobileNavProps) {
       </div>
 
       {open && (
-        <div className="absolute left-0 right-0 top-16 bg-white border-b border-line shadow-md z-40">
-          <nav className="px-6 py-4 flex flex-col gap-1">
-            {items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-base transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
+        <div className="absolute left-0 right-0 top-16 bg-white border-b border-line z-40">
+          <nav
+            aria-label="主导航"
+            className="px-6 py-4 flex flex-col gap-1"
+          >
+            {items.map((item) => {
+              const isActive =
+                item.href === "/"
+                  ? pathname === "/"
+                  : pathname === item.href ||
+                    pathname.startsWith(item.href + "/");
+              return (
+                <NavLink
+                  key={item.href}
+                  href={item.href}
+                  label={item.label}
+                  isActive={isActive}
+                  size="md"
+                  className="w-full"
+                />
+              );
+            })}
           </nav>
         </div>
       )}
