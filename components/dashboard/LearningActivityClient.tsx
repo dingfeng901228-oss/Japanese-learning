@@ -186,6 +186,26 @@ export function LearningActivityClient({
             strokeLinejoin="round"
             strokeLinecap="round"
           />
+          {/* Per Frank #6671 (UI优化.docx): render small data-point
+             markers on the line chart so the user can distinguish
+             individual days + their relative intensity at a glance,
+             not just the smooth line. Rendered AFTER the path so the
+             dots sit on top of the line; the hover crosshair + larger
+             dot still render last to overlay on top. Opacity 60 keeps
+             the line readable when many points overlap (1Y view = 365
+             dots), and we only render dots for minutes > 0 so a flat
+             "no training yet" line stays clean. */}
+          {pts.map((p, i) =>
+            p.minutes > 0 ? (
+              <circle
+                key={i}
+                cx={p.x}
+                cy={p.y}
+                r="1.6"
+                className="fill-ink opacity-60"
+              />
+            ) : null
+          )}
           {hoverPoint && (
             <>
               <line
