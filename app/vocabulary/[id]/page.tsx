@@ -27,6 +27,7 @@ import {
 } from "@/lib/vocabulary";
 import { SpeakButton } from "@/components/SpeakButton";
 import { WordCardSwipeable } from "./WordCardSwipeable";
+import { VocabSessionTimer } from "@/components/vocabulary/VocabSessionTimer";
 import {
   deleteVocabularyItemAction,
   regenerateExampleAction,
@@ -100,12 +101,20 @@ export default async function VocabularyDetailPage({
           >
             ← 返回收藏列表
           </Link>
-          <Link
-            href="/vocabulary/new"
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
-          >
-            + 手动添加
-          </Link>
+          <div className="flex items-center gap-3">
+            {/* Per Frank #6671 (UI优化.docx § 12): vocab 详情页加
+                5s/word 计时器。segmentKey=item.id — user 翻下个词时
+                useSessionTimer 自动重置 segment，计时器重新走 5s。
+                "vocab" bucket 跟 /review 共用（UI优化.docx § 9），所
+                以这里的时间和复习页时间都进 词汇 daily_rollups。 */}
+            <VocabSessionTimer vocabId={item.id} />
+            <Link
+              href="/vocabulary/new"
+              className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+            >
+              + 手动添加
+            </Link>
+          </div>
         </div>
         <div className="flex items-center gap-2 mt-4 flex-wrap">
           <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">

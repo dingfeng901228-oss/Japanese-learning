@@ -370,7 +370,7 @@ export function useStreak(): { current: number; longest: number } {
 
 // React hook for tracking session time on a training page. Returns:
 //   - elapsed: ms since the timer started (updates every second)
-//   - running: true while the timer is active
+//   - running: true while the timer is actively counting (active && !capped)
 //
 // On unmount or pagehide (covers tab close + mobile app switch),
 // accumulates elapsed minutes into DayAccumulated under `type`.
@@ -382,26 +382,50 @@ export function useStreak(): { current: number; longest: number } {
 // flips false → true, start a new segment; true → false, accumulate
 // the in-progress segment into `accumulatedMs` and stop ticking.
 // `elapsed` = accumulatedMs + (active ? now - segmentStart : 0).
+//
+// Per Frank #6671 (UI优化.docx): add per-segment cap support so
+// /vocabulary/[id] can cap at 5s/word and /review can cap at 10s/question.
+// `maxMsPerSegment` = single segment budget. When segmentElapsed
+// reaches the cap, the segment freezes (accumulatedMs += cap,
+// segmentStartRef = null) and `running` flips to false — no more
+// accumulation until either `active` flips back to true (manual
+// resume) or `segmentKey` changes (new item). Default undefined =
+// no cap (backward compat with /listening, /speaking, /shadowing).
 export function useSessionTimer(
   type: TrainingItemId,
-  active: boolean = true
+  active: boolean = true,
+  options?: { maxMsPerSegment?: number; segmentKey?: string }
 ): {
   elapsed: number;
   running: boolean;
 } {
+  const { maxMsPerSegment, segmentKey } = options ?? {};
   const [elapsed, setElapsed] = useState(0);
+  // `running` is now internal state — it can differ from `active`
+  // when the cap is reached (active=true, running=false). UI can
+  // use this to show "(已暂停)" hint without exposing the active
+  // prop to the consumer.
+  const [running, setRunning] = useState(active);
   const accumulatedMsRef = useRef(0);
   const segmentStartRef = useRef<number | null>(null);
   const activeRef = useRef(active);
 
-  // Init on mount + cleanup on unmount (also handles type change).
+  // Init on mount + reset on type OR segmentKey change + cleanup on
+  // unmount. Per-segment reset is what makes the cap UX work: when
+  // the user navigates to a new vocab item, `segmentKey` changes,
+  // accumulatedMs zeros, and a fresh 5s/10s segment starts.
   useEffect(() => {
+    accumulatedMsRef.current = 0;
     if (active) {
       segmentStartRef.current = Date.now();
       setActiveSession({ type, startedAt: Date.now() });
+      setRunning(true);
     } else {
       segmentStartRef.current = null;
+      setActiveSession(null);
+      setRunning(false);
     }
+    setElapsed(0);
 
     return () => {
       const finalMs =
@@ -415,42 +439,61 @@ export function useSessionTimer(
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type]);
+  }, [type, segmentKey]);
 
-  // Handle active state changes (pause / resume).
+  // Handle active state changes (user pause / resume).
   useEffect(() => {
     const wasActive = activeRef.current;
     if (wasActive === active) return;
     activeRef.current = active;
 
     if (active && !wasActive) {
-      // Resume: start a new segment from now.
+      // Resume: start a new segment from now. The cap is reset too
+      // (a manual resume after a cap-reach should give the user a
+      // fresh budget — otherwise they'd get capped again in <1s).
       segmentStartRef.current = Date.now();
+      setRunning(true);
     } else if (!active && wasActive) {
       // Pause: accumulate the in-progress segment into the buffer.
       if (segmentStartRef.current !== null) {
         accumulatedMsRef.current += Date.now() - segmentStartRef.current;
         segmentStartRef.current = null;
       }
+      setRunning(false);
     }
   }, [active]);
 
-  // Tick interval — only when active. When active flips false the
-  // interval is cleared by the cleanup below.
+  // Tick interval. Gated on BOTH `active` and `running` so the cap
+  // can short-circuit the interval without re-running the active
+  // effect. The interval self-clears when running flips to false.
   useEffect(() => {
-    if (!active) return;
+    if (!active || !running) return;
     const interval = window.setInterval(() => {
-      const total =
-        accumulatedMsRef.current +
-        (segmentStartRef.current !== null
+      const segMs =
+        segmentStartRef.current !== null
           ? Date.now() - segmentStartRef.current
-          : 0);
+          : 0;
+
+      // Cap check: if segmentElapsed >= maxMsPerSegment, freeze the
+      // segment at the cap and flip running=false. The interval's
+      // own dep on `running` means the next re-render clears it.
+      if (maxMsPerSegment !== undefined && segMs >= maxMsPerSegment) {
+        if (segmentStartRef.current !== null) {
+          accumulatedMsRef.current += maxMsPerSegment;
+          segmentStartRef.current = null;
+        }
+        setElapsed(accumulatedMsRef.current);
+        setRunning(false);
+        return;
+      }
+
+      const total = accumulatedMsRef.current + segMs;
       setElapsed(total);
     }, 1000);
     return () => window.clearInterval(interval);
-  }, [active]);
+  }, [active, running, maxMsPerSegment]);
 
-  return { elapsed, running: active };
+  return { elapsed, running };
 }
 
 export function formatDuration(ms: number): string {

@@ -160,16 +160,31 @@ export function ReviewSession({
   const [userAnswer, setUserAnswer] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Derived state must be declared BEFORE any hook that reads it —
+  // rules-of-hooks + TS2448 ("used before declaration"). The session
+  // timer below needs `current?.id` as segmentKey, so we compute
+  // done/current first.
+  const done = index >= initialItems.length;
+  const current = done ? null : initialItems[index];
+
   // Per Frank #6175: session timer for the vocab bucket (vocab + review
   // pages both feed into this bucket per UI优化.docx — "词汇" item covers
   // /vocabulary/[id] + /review time). Active=true for the whole session
   // (no easy UX signal to derive "active" from in pure-recall flow —
   // there's no recording, no playback state tied to a single action,
   // the user is actively recalling throughout).
-  const { elapsed: reviewElapsed } = useSessionTimer("vocab");
-
-  const done = index >= initialItems.length;
-  const current = done ? null : initialItems[index];
+  //
+  // Per Frank #6671 (UI优化.docx § 13): 复习界面 10s/题 cap. segmentKey
+  // = current?.id → when the user advances to the next question (index
+  // increments, current changes), useSessionTimer resets the segment and
+  // a fresh 10s budget starts. maxMsPerSegment=10000 → after 10s the
+  // timer pauses until the next question. Together with the vocab page's
+  // 5s/word cap (VocabSessionTimer.tsx), this enforces "看一个词最多
+  // 5秒、答一道题最多 10秒" across the learning flow.
+  const { elapsed: reviewElapsed } = useSessionTimer("vocab", true, {
+    maxMsPerSegment: 10000,
+    segmentKey: current?.id,
+  });
 
   // Hydrate autoplay pref from localStorage on mount.
   useEffect(() => {
