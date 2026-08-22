@@ -437,7 +437,19 @@ export default function RealShadowClient({
       updateNowPlaying(false);
       return;
     }
-    audioRef.current.currentTime = 0;
+    // Per Frank #6671 (UI优化.docx § 13): "暂停后，再点播放时，从暂
+    // 停位置开始继续播放" — DO NOT reset currentTime to 0 on play.
+    // The audio resumes from wherever the user paused. The only
+    // exception: if the audio has already ended (currentTime at/near
+    // duration, which happens after onEnded fires for non-looping
+    // tracks), restart from 0 — otherwise play() from the end would
+    // no-op and the user would think the button is broken.
+    if (
+      audioRef.current.duration > 0 &&
+      audioRef.current.currentTime >= audioRef.current.duration - 0.5
+    ) {
+      audioRef.current.currentTime = 0;
+    }
     audioRef.current.play().then(
       () => updateNowPlaying(true),
       (e) => setError(`播放失败：${e.message}`)

@@ -28,6 +28,8 @@ import {
 import { SpeakButton } from "@/components/SpeakButton";
 import { WordCardSwipeable } from "./WordCardSwipeable";
 import { VocabSessionTimer } from "@/components/vocabulary/VocabSessionTimer";
+import { VocabAutoSpeak } from "@/components/vocabulary/VocabAutoSpeak";
+import { SpeakableClick } from "@/components/vocabulary/SpeakableClick";
 import {
   deleteVocabularyItemAction,
   regenerateExampleAction,
@@ -102,6 +104,10 @@ export default async function VocabularyDetailPage({
             ← 返回收藏列表
           </Link>
           <div className="flex items-center gap-3">
+            {/* Per Frank #6671 (UI优化.docx § 14): vocab 详情页加
+                「自动发音」toggle。on 时进入页面 / 翻下个词自动读
+                单词。状态 localStorage 跨 session 保留。 */}
+            <VocabAutoSpeak word={item.word} />
             {/* Per Frank #6671 (UI优化.docx § 12): vocab 详情页加
                 5s/word 计时器。segmentKey=item.id — user 翻下个词时
                 useSessionTimer 自动重置 segment，计时器重新走 5s。
@@ -266,20 +272,26 @@ export default async function VocabularyDetailPage({
           </form>
         ) : (
           <>
-            <div className="flex items-start gap-3 mb-2">
-              <h1 className="flex-1 text-4xl font-bold break-words">
-                {item.word}
-              </h1>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <SpeakButton text={item.word} />
-                <Link
-                  href={`/vocabulary/${id}?edit_word=1`}
-                  className="text-xs text-gray-500 hover:text-gray-900 underline-offset-2 hover:underline"
-                >
-                  编辑
-                </Link>
+            {/* Per Frank #6671 (UI优化.docx § 15): 单词卡片整张可点
+                击朗读。SpeakableClick 包整张卡，onClick 走跟
+                SpeakButton 一样的 Web Speech API（点击会 cancel
+                当前正在读的 utterance，避免重叠）。SpeakButton 仍
+                保留在右上角给想要视觉提示的用户。 */}
+            <SpeakableClick text={item.word}>
+              <div className="flex items-start gap-3 mb-2">
+                <h1 className="flex-1 text-4xl font-bold break-words">
+                  {item.word}
+                </h1>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <SpeakButton text={item.word} />
+                  <Link
+                    href={`/vocabulary/${id}?edit_word=1`}
+                    className="text-xs text-gray-500 hover:text-gray-900 underline-offset-2 hover:underline"
+                  >
+                    编辑
+                  </Link>
+                </div>
               </div>
-            </div>
             {item.reading && (
               <p className="text-lg text-gray-500 mb-4">{item.reading}</p>
             )}
@@ -319,6 +331,7 @@ export default async function VocabularyDetailPage({
                 </span>
               )}
             </div>
+            </SpeakableClick>
           </>
         )}
       </article>
@@ -412,6 +425,12 @@ export default async function VocabularyDetailPage({
             </div>
           </form>
         ) : example ? (
+          // Per Frank #6671 (UI优化.docx § 15): 例句卡片整张可点击朗读。
+          // SpeakableClick 包整张卡，onClick 走跟 SpeakButton 一样的
+          // Web Speech API。SpeakButton 仍保留在右上角给想要视觉
+          // 提示的用户。JSX comment `{/* */}` 在 JavaScript ternary
+          // 表达式里不认 — 用 // 行注释替代。
+          <SpeakableClick text={example.sentence}>
           <div className="space-y-2">
             <div className="flex items-start gap-2">
               <p className="flex-1 text-lg text-gray-900 break-words">
@@ -435,6 +454,7 @@ export default async function VocabularyDetailPage({
               <p className="text-xs text-gray-400 italic">已手动编辑</p>
             )}
           </div>
+          </SpeakableClick>
         ) : (
           <p className="text-sm text-gray-500">
             还没有例句，点"生成例句"让 AI 生成一个。
