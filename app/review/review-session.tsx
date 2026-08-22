@@ -241,6 +241,18 @@ export function ReviewSession({
     [current]
   );
 
+  // Frank #6680: prev/next navigation. Clamped at [0, length-1] so
+  // the buttons disable cleanly at boundaries (no wrap-around). These
+  // change `index` only — they do NOT call recordReviewAction, so
+  // skipping a question with 「下一题」 keeps it due for next
+  // session. The primary way to grade is still 再来一次 / 记住了.
+  const goPrev = useCallback(() => {
+    setIndex((i) => Math.max(0, i - 1));
+  }, []);
+  const goNext = useCallback(() => {
+    setIndex((i) => Math.min(initialItems.length - 1, i + 1));
+  }, [initialItems.length]);
+
   // --- Now safe to early-return ---
   if (done) {
     return (
@@ -250,11 +262,14 @@ export function ReviewSession({
         <p className="text-sm text-gray-500 mt-2">
           共复习 {initialItems.length} 个单词。
         </p>
+        {/* Frank #6671 (UI优化.docx) removed /today route. Send the
+            user back to /vocabulary to add more words or pick a
+            different study mode. */}
         <Link
-          href="/today"
+          href="/vocabulary"
           className="inline-block mt-6 px-5 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800"
         >
-          回到今日
+          返回词汇
         </Link>
       </div>
     );
@@ -348,13 +363,31 @@ export function ReviewSession({
              reveals the answer regardless of whether the user typed
              anything. The input is purely for active-recall practice,
              not for grading. */}
-          <div className="pt-4 flex justify-center">
+          <div className="pt-4 flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={goPrev}
+              disabled={index === 0}
+              className="px-4 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+              aria-label="上一题"
+            >
+              ← 上一题
+            </button>
             <button
               type="button"
               onClick={handleReveal}
               className="px-8 py-3 rounded-xl bg-gray-900 text-white hover:bg-gray-800 transition-colors text-base font-medium"
             >
               显示单词
+            </button>
+            <button
+              type="button"
+              onClick={goNext}
+              disabled={index === initialItems.length - 1}
+              className="px-4 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+              aria-label="下一题"
+            >
+              下一题 →
             </button>
           </div>
         </>
@@ -402,8 +435,30 @@ export function ReviewSession({
             )}
           </div>
 
-          {/* 再来一次 / 记住了 (§10). */}
-          <div className="flex gap-3 pt-4">
+          {/* 再来一次 / 记住了 (§10). Frank #6680 added prev/next above
+             so the rating buttons stay primary (full-width, big touch
+             target) and prev/next are a secondary nav row above. */}
+          <div className="flex items-center justify-between gap-3 pt-4">
+            <button
+              type="button"
+              onClick={goPrev}
+              disabled={index === 0}
+              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm"
+              aria-label="上一题"
+            >
+              ← 上一题
+            </button>
+            <button
+              type="button"
+              onClick={goNext}
+              disabled={index === initialItems.length - 1}
+              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm"
+              aria-label="下一题"
+            >
+              下一题 →
+            </button>
+          </div>
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={() => handleOutcome("again")}
