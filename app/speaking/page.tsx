@@ -588,19 +588,17 @@ const data = (await r.json()) as {
 
   return (
     <main className="min-h-screen flex flex-col px-6 py-8 max-w-3xl mx-auto">
-      <header className="mb-6 flex items-center justify-between gap-3">
-        <Link href="/today" className="text-sm text-gray-500 hover:text-gray-900">
-          ← 今日训练
-        </Link>
-        <div className="flex items-center gap-3">
-          <span
-            aria-label="本次学习时长"
-            className="text-sm text-gray-500 tabular-nums"
-          >
-            🕐 {formatDuration(speakingElapsed)}
-          </span>
-          <span className="text-sm text-gray-400">AI 口语教练</span>
-        </div>
+      {/* Frank #6671 (UI优化.docx): drop "← 今日训练" nav link — /today page is
+          removed; nav would 404. Keep the timer + coach label on the right
+          so the user still sees how long they've been speaking. */}
+      <header className="mb-6 flex items-center justify-end gap-3">
+        <span
+          aria-label="本次学习时长"
+          className="text-sm text-gray-500 tabular-nums"
+        >
+          🕐 {formatDuration(speakingElapsed)}
+        </span>
+        <span className="text-sm text-gray-400">AI 口语教练</span>
       </header>
 
       <h1 className="text-2xl font-bold mb-2">

@@ -18,7 +18,7 @@
 import { useEffect, useRef, useState } from "react";
 import { enqueueSync, flushSync } from "@/lib/training-queue";
 
-export type TrainingItemId = "listening" | "speaking" | "shadowing" | "review";
+export type TrainingItemId = "listening" | "speaking" | "vocab";
 
 export type TrainingItemDef = {
   id: TrainingItemId;
@@ -28,18 +28,21 @@ export type TrainingItemDef = {
   href: string;
 };
 
-// Order matters — this is the order the user sees on /today.
-// Frank #6643: renamed 3rd item from "Shadowing" → "真人发音" + href points
-// to the moved-from-/shadowing realShadow mode. id stays "shadowing" for
-// localStorage backward compat (accumulated.minutes key didn't change).
-// Note: the existing TTS-based shadow mode (2nd tab inside /listening) is
-// no longer surfaced as a separate /today item — real-person audio is the
-// canonical shadowing experience going forward.
+// Frank #6671 (UI优化.docx): the daily 学習 module now shows just
+// three items, with data sources aligned to the spec:
+//   听力 = /listening page time (Listen + Shadow + 真人发音 modes all
+//          roll up into this single bucket — the old "shadowing" id is
+//          gone, its localStorage history migrates automatically since
+//          the label only changed in code).
+//   口语 = /speaking page time (unchanged).
+//   词汇 = /vocabulary (any detail page) + /review page time (combined
+//          into the new "vocab" id — /review previously used the
+//          "review" id; old history stays under that key for users who
+//          don't re-train).
 export const TRAINING_ITEMS: TrainingItemDef[] = [
   { id: "listening", label: "听力", emoji: "🎧", minutes: 10, href: "/listening" },
   { id: "speaking", label: "口语", emoji: "🎤", minutes: 10, href: "/speaking" },
-  { id: "shadowing", label: "真人发音", emoji: "🎧", minutes: 5, href: "/listening?mode=realShadow" },
-  { id: "review", label: "复习", emoji: "📝", minutes: 5, href: "/review" },
+  { id: "vocab", label: "词汇", emoji: "📚", minutes: 10, href: "/vocabulary" },
 ];
 
 export const TOTAL_TARGET_MINUTES = TRAINING_ITEMS.reduce(

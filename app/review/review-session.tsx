@@ -160,11 +160,13 @@ export function ReviewSession({
   const [userAnswer, setUserAnswer] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Per Frank #6175: session timer for the review bucket. Active=true
-  // for the whole session (no easy UX signal to derive "active" from in
-  // pure-recall flow — there's no recording, no playback state tied to
-  // a single action, the user is actively recalling throughout).
-  const { elapsed: reviewElapsed } = useSessionTimer("review");
+  // Per Frank #6175: session timer for the vocab bucket (vocab + review
+  // pages both feed into this bucket per UI优化.docx — "词汇" item covers
+  // /vocabulary/[id] + /review time). Active=true for the whole session
+  // (no easy UX signal to derive "active" from in pure-recall flow —
+  // there's no recording, no playback state tied to a single action,
+  // the user is actively recalling throughout).
+  const { elapsed: reviewElapsed } = useSessionTimer("vocab");
 
   const done = index >= initialItems.length;
   const current = done ? null : initialItems[index];

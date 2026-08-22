@@ -294,19 +294,18 @@ function ListeningPageContent() {
   // during render (React lint react-hooks/refs) — only inside effects.
   const pendingAutoPlayRef = useRef(false);
 
-  // Real-time session timer (per Frank #6175). Hook re-runs when mode
-  // toggles between Listen and Shadow (type is in the dep list), the
-  // cleanup fires, and elapsed time is attributed to the previous mode
-  // before the new session starts. Per Frank #6522: pass `speaking`
-  // (TTS playback) so timer only counts when audio is playing.
+  // Frank #6671 (UI优化.docx): the 学習 module's "听力" bucket covers
+  // /listening page time across ALL modes (Listen + Shadow + 真人发音).
+  // Previously shadow mode wrote to "shadowing" and realShadow wrote to
+  // "shadowing" too — now they all roll into the single "listening"
+  // bucket so the dashboard's progress matches the doc's data-source
+  // rule "听力数据 = 听力页面的时间数据".
   // Frank #6653 / #6660: in realShadow mode `speaking` stays false (no
   // TTS — the R2 audio file plays directly). Bubble the R2 audio's
   // play / pause state up from RealShadowClient via onAudioPlayingChange
   // so the timer ticks during realShadow playback too — otherwise time
   // spent in 真人发音 mode never accumulates into the 听力 daily total
   // (localStorage japaneseLearning.accumulated.listening.* stays at 0).
-  const sessionType =
-    mode === "shadow" ? "shadowing" : "listening";
   const [realShadowPlaying, setRealShadowPlaying] = useState(false);
   // useCallback with [] keeps the prop reference stable across renders
   // so RealShadowClient's useCallback deps (which now include
@@ -316,7 +315,7 @@ function ListeningPageContent() {
   }, []);
   const effectiveSpeaking =
     mode === "realShadow" ? realShadowPlaying : speaking;
-  const { elapsed } = useSessionTimer(sessionType, effectiveSpeaking);
+  const { elapsed } = useSessionTimer("listening", effectiveSpeaking);
   const [progress, setProgress] = useState<Record<string, Set<string>>>({});
   const [browserSupportsTts, setBrowserSupportsTts] = useState(true);
 
@@ -1050,27 +1049,18 @@ function ListeningPageContent() {
 
   return (
     <main className="min-h-screen flex flex-col px-6 py-8 max-w-3xl mx-auto">
-      <header className="mb-6 flex items-center justify-between gap-3">
-        <Link
-          href="/today"
-          className="text-sm text-gray-500 hover:text-gray-900"
+      {/* Frank #6671 (UI优化.docx): drop both "← 今日训练" + "口语训练 →"
+          nav links — /today page is removed (nav would 404) and Frank
+          doesn't want the right-side cross-link clutter on the listening
+          page header. Keep the session timer so the user still sees how
+          long they've been training. */}
+      <header className="mb-6 flex items-center justify-end gap-3">
+        <span
+          aria-label="本次学习时长"
+          className="text-sm text-gray-500 tabular-nums"
         >
-          ← 今日训练
-        </Link>
-        <div className="flex items-center gap-3">
-          <span
-            aria-label="本次学习时长"
-            className="text-sm text-gray-500 tabular-nums"
-          >
-            🕐 {formatDuration(elapsed)}
-          </span>
-          <Link
-            href="/speaking"
-            className="text-sm text-gray-500 hover:text-gray-900"
-          >
-            口语训练 →
-          </Link>
-        </div>
+          🕐 {formatDuration(elapsed)}
+        </span>
       </header>
 
       <h1 className="text-2xl font-bold mb-2">

@@ -53,20 +53,10 @@ export default async function ProgressPage() {
 
   return (
     <main className="min-h-screen flex flex-col px-6 py-8 max-w-3xl mx-auto">
-      <header className="mb-6 flex items-center justify-between gap-3">
-        <Link
-          href="/today"
-          className="text-sm text-gray-500 hover:text-gray-900"
-        >
-          ← 今日训练
-        </Link>
-        <Link
-          href="/listening"
-          className="text-sm text-gray-500 hover:text-gray-900"
-        >
-          听力训练 →
-        </Link>
-      </header>
+      {/* Frank #6671 (UI优化.docx): drop both "← 今日训练" + "听力训练 →"
+          nav links — /today page is removed and Frank doesn't want the
+          nav clutter on /progress. */}
+      <div className="mb-6" />
 
       <h1 className="text-2xl font-bold mb-2">📊 学习进度</h1>
       <p className="text-sm text-gray-500 mb-6">

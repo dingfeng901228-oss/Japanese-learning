@@ -57,13 +57,9 @@ export default async function ReviewPage({
   return (
     <main className="min-h-screen px-6 py-12 max-w-2xl mx-auto">
       <header className="mb-8">
-        <Link
-          href="/today"
-          className="text-sm text-gray-500 hover:text-gray-900"
-        >
-          ← 返回
-        </Link>
-        <h1 className="text-3xl font-bold mt-4">🔁 今日复习</h1>
+        {/* Frank #6671 (UI优化.docx): drop "← 返回" nav link — /today page is
+          removed; nav would 404. */}
+        <h1 className="text-3xl font-bold">🔁 今日复习</h1>
         <p className="text-gray-600 mt-2">
           看到日语句子（目标词隐藏） + 完整读音 + 中文，主动回忆目标日语文字。
           点「显示单词」检查，记住了就下次再来，没记住马上复习。

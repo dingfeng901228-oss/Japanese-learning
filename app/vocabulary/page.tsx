@@ -85,12 +85,6 @@ export default async function VocabularyListPage({
   return (
     <main className="min-h-screen px-6 py-12 max-w-3xl mx-auto">
       <header className="mb-8">
-        <Link
-          href="/today"
-          className="inline-block text-sm text-gray-500 hover:text-gray-900 mb-4"
-        >
-          ← 返回
-        </Link>
         {/* Per Frank #6578: put "我的收藏", "共~项", and "+手动添加" on
             the same row (header). Title on the left, count in the middle,
             styled "+手动添加" button on the far right. Matches the visual

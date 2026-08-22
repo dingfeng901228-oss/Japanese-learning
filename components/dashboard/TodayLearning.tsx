@@ -1,13 +1,20 @@
 "use client";
 
-// Today's Learning — spec §10, §11, §12.
-// Reads today's accumulated training minutes from lib/today-stats.ts
-// (date-keyed localStorage written by useSessionTimer on training
-// pages) and renders the completion %, per-item progress, Today's 3
-// Tasks, and the main CTA button.
+// Today's Learning — 听力/口语/词汇 三大训练目标 + 总进度 (per UI优化.docx).
+//
+// Per Frank #6671 (UI优化.docx):
+//   - Drop the "Today's 3 tasks" sub-section — the explicit checklist
+//     belonged to the retired /today page; the home dashboard now just
+//     shows the 3 daily targets with progress minutes.
+//   - Drop the "开始今日学习" CTA button — /today is gone and the home
+//     dashboard's role is to summarize, not funnel to a session page.
+//   - Drop the 4-item inline progress list (听力 / 口语 / 真人发音 / 复习).
+//   - Keep the big "今日の学習" header + total % bar.
+//   - Show the new 3-item list (听力 / 口语 / 词汇) — loop iterates the
+//     updated TRAINING_ITEMS in lib/today-stats.ts (listening / speaking
+//     / vocab), so this component auto-follows any future item changes.
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   TRAINING_ITEMS,
   TOTAL_TARGET_MINUTES,
@@ -38,10 +45,6 @@ export function TodayLearning() {
     Math.round((totalMinutes / TOTAL_TARGET_MINUTES) * 100)
   );
   const isCompleted = percent >= 100;
-
-  // Per spec §12: 挑 3 个核心任务 (skip shadowing — it's a sub-mode of
-  // listening, not a separate training mode).
-  const tasks = TRAINING_ITEMS.filter((i) => i.id !== "shadowing");
 
   function isItemDone(id: TrainingItemId): boolean {
     const item = TRAINING_ITEMS.find((i) => i.id === id);
@@ -83,7 +86,7 @@ export function TodayLearning() {
         />
       </div>
 
-      <ul className="space-y-2 mb-6">
+      <ul className="space-y-2">
         {TRAINING_ITEMS.map((item) => {
           const minutes = Math.round(accumulated?.accumulated[item.id] ?? 0);
           const done = isItemDone(item.id);
@@ -102,51 +105,6 @@ export function TodayLearning() {
           );
         })}
       </ul>
-
-      <div className="border-t border-line pt-5 mb-5">
-        <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">
-          今日の 3 つ
-        </p>
-        <ul className="space-y-1">
-          {tasks.map((task) => {
-            const done = isItemDone(task.id);
-            return (
-              <li key={task.id}>
-                <Link
-                  href={task.href}
-                  className="flex items-center gap-3 py-2 hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors"
-                >
-                  <span
-                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center text-xs flex-shrink-0 ${
-                      done
-                        ? "bg-success border-success text-white"
-                        : "border-gray-300"
-                    }`}
-                    aria-hidden="true"
-                  >
-                    {done && "✓"}
-                  </span>
-                  <span
-                    className={
-                      done ? "text-gray-400 line-through" : "text-gray-900"
-                    }
-                  >
-                    {task.label}{" "}
-                    <span className="text-gray-500">{task.minutes} 分钟</span>
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-
-      <Link
-        href="/today"
-        className="block w-full text-center px-6 py-3 bg-ink text-white rounded-xl hover:bg-ink-700 transition-colors font-medium"
-      >
-        {isCompleted ? "今日学习已完成 ✓" : "开始今日学习 →"}
-      </Link>
     </section>
   );
 }

@@ -463,26 +463,12 @@ export function ClientProgress() {
          state when there's no history yet, so safe to mount unconditionally. */}
       <WeaknessProfile />
 
-      {/* Empty state */}
-      {isEmpty && (
-        <section className="border border-gray-200 rounded-2xl p-8 bg-white text-center">
-          <div className="text-3xl mb-3">🌱</div>
-          <div className="text-base font-medium text-gray-800 mb-2">
-            还没有数据
-          </div>
-          <div className="text-sm text-gray-500">
-            去{" "}
-            <Link href="/listening" className="text-blue-600 underline">
-              听力训练
-            </Link>{" "}
-            或{" "}
-            <Link href="/speaking" className="text-blue-600 underline">
-              口语训练
-            </Link>{" "}
-            开始练习，统计会在这里累积。
-          </div>
-        </section>
-      )}
+      {/* Frank #6671 (UI优化.docx): dropped the standalone "🌱 还没有数据"
+          empty state CTA. Per-progress sections (Mastery stats /
+          Needs Review / Top Mastered / Listening completion / Shadow
+          stats / Recent recordings / Weakness profile) each carry their
+          own graceful "no data" rendering, so the top-level empty state
+          was redundant. */}
 
       <div className="mt-6 text-xs text-gray-400 text-center">
         数据来自 localStorage · 不同设备 / 浏览器之间不同步

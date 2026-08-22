@@ -24,12 +24,11 @@ export function TodayHeader() {
         </p>
         <TodayCountdown />
       </div>
+      {/* Per Frank #6671 (UI优化.docx): drop "今天也使用日语吧。" — keeping
+          only the JP greeting line for visual hierarchy. */}
       <h1 className="font-jp text-[32px] md:text-[40px] font-bold mt-3 leading-tight text-ink">
         今日も、日本語を使おう。
       </h1>
-      <p className="font-sc text-[18px] mt-2 text-gray-700">
-        今天也使用日语吧。
-      </p>
     </header>
   );
 }

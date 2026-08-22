@@ -66,10 +66,12 @@ export const metadata: Metadata = {
 // Frank #6643: removed standalone "跟读" menu item — 真人发音 is now a
 // tab inside /listening (accessed via ?mode=realShadow). The /shadowing
 // route still exists as a redirect for backward compat with bookmarks.
+// Frank #6671 (UI优化.docx): "收藏" → "词汇" — the menu label now matches
+// the page rename + the "vocab" timer bucket in today-stats.ts.
 const NAV_ITEMS = [
   { label: "听力", href: "/listening" },
   { label: "口语", href: "/speaking" },
-  { label: "收藏", href: "/vocabulary" },
+  { label: "词汇", href: "/vocabulary" },
   { label: "复习", href: "/review" },
   { label: "进度", href: "/progress" },
 ];
