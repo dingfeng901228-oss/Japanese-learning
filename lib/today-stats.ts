@@ -29,10 +29,16 @@ export type TrainingItemDef = {
 };
 
 // Order matters — this is the order the user sees on /today.
+// Frank #6643: renamed 3rd item from "Shadowing" → "真人发音" + href points
+// to the moved-from-/shadowing realShadow mode. id stays "shadowing" for
+// localStorage backward compat (accumulated.minutes key didn't change).
+// Note: the existing TTS-based shadow mode (2nd tab inside /listening) is
+// no longer surfaced as a separate /today item — real-person audio is the
+// canonical shadowing experience going forward.
 export const TRAINING_ITEMS: TrainingItemDef[] = [
   { id: "listening", label: "听力", emoji: "🎧", minutes: 10, href: "/listening" },
   { id: "speaking", label: "口语", emoji: "🎤", minutes: 10, href: "/speaking" },
-  { id: "shadowing", label: "Shadowing", emoji: "🔁", minutes: 5, href: "/listening?mode=shadow" },
+  { id: "shadowing", label: "真人发音", emoji: "🎧", minutes: 5, href: "/listening?mode=realShadow" },
   { id: "review", label: "复习", emoji: "📝", minutes: 5, href: "/review" },
 ];
 

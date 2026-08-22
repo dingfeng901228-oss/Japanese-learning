@@ -198,7 +198,7 @@ function computeSentenceTimings(
   return timings;
 }
 
-export default function ShadowingClient({
+export default function RealShadowClient({
   sentences,
 }: {
   sentences: MottoSentence[];
@@ -238,7 +238,11 @@ export default function ShadowingClient({
   // Per Frank #6555: pass `nowPlaying` (audio playback) so timer only
   // counts when audio is playing — matches the page's core UX (audio
   // playback + shadowing the spoken text).
-  const { elapsed: shadowElapsed } = useSessionTimer("shadowing", nowPlaying);
+  // Frank #6643: 真人发音 time → 听力 bucket (no more separate "shadowing"
+// timer type). Was `useSessionTimer("shadowing", nowPlaying)` when this
+// lived at /shadowing. Renamed + retargeted to "listening" so accumulated
+// minutes roll up into the 听力 daily total on /today + dashboard.
+  const { elapsed: shadowElapsed } = useSessionTimer("listening", nowPlaying);
 
   const total = sentences.length;
   const cur = sentences[idx];
@@ -476,7 +480,7 @@ export default function ShadowingClient({
             transcript: tData.text,
             target: cur.ja,
             sentenceId: cur.id,
-            categoryLabel: "Motto Shadowing",
+            categoryLabel: "真人发音",
           }),
         });
         if (!gRes.ok) {
@@ -608,7 +612,7 @@ export default function ShadowingClient({
           transcript: editableTranscript,
           target: cur.ja,
           sentenceId: cur.id,
-          categoryLabel: "Motto Shadowing",
+          categoryLabel: "真人发音",
         }),
       });
       if (!gRes.ok) {

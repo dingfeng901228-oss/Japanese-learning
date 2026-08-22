@@ -17,6 +17,10 @@ import {
   CATEGORY_LABELS,
 } from "@/lib/sentences";
 import { useSessionTimer, formatDuration } from "@/lib/today-stats";
+// Frank #6643: RealShadowClient is the moved-from-/shadowing 真人发音 mode,
+// now embedded as a 3rd tab in /listening instead of a separate route.
+import RealShadowClient from "./RealShadowClient";
+import { MOTTO_SENTENCES } from "@/lib/motto-sentences";
 
 const PROGRESS_KEY = "japanese:listen-progress";
 const SHADOW_HISTORY_KEY = "japanese:shadow-history";
@@ -227,7 +231,9 @@ const RATE_OPTIONS = [
   { v: 1.2, label: "1.2x", desc: "快速" },
 ] as const;
 
-type Mode = "listen" | "shadow";
+// Frank #6643: added "realShadow" — formerly /shadowing route's real-person
+// audio shadowing (now embedded in /listening as a 3rd mode tab).
+type Mode = "listen" | "shadow" | "realShadow";
 type ShadowPhase =
   | "idle"
   | "recording"
@@ -255,7 +261,11 @@ function ListeningPageContent() {
     // "flash of listen mode" on first paint.
     if (typeof window === "undefined") return "listen";
     const params = new URLSearchParams(window.location.search);
-    return params.get("mode") === "shadow" ? "shadow" : "listen";
+    // Frank #6643: also accept ?mode=realShadow so deep-links from /today
+    // and the old /shadowing redirect land directly on 真人发音.
+    const m = params.get("mode");
+    if (m === "shadow" || m === "realShadow") return m;
+    return "listen";
   });
 
   // Real-time session timer (per Frank #6175). When the user toggles
@@ -1089,6 +1099,19 @@ function ListeningPageContent() {
         >
           🎤 Shadow 跟读
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === "realShadow"}
+          onClick={() => switchMode("realShadow")}
+          className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm transition-colors ${
+            mode === "realShadow"
+              ? "bg-gray-900 text-white"
+              : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+          }`}
+        >
+          🎧 真人发音
+        </button>
       </div>
 
       {/* Difficulty tabs (N5 / N4 / N3 / N2 / N1) — Phase 6 */}
@@ -1161,7 +1184,14 @@ function ListeningPageContent() {
         })}
       </div>
 
-      {/* Sentence card */}
+      {/* Sentence card (Frank #6643: realShadow mode renders the moved
+          <RealShadowClient /> (former /shadowing route) instead of this
+          TTS-based sentence card — RealShadowClient has its own full UI
+          with its own <main> wrapper, audio player, sentence tree, and
+          sticky player, so we don't nest it inside this listen/shadow card). */}
+      {mode === "realShadow" ? (
+        <RealShadowClient sentences={MOTTO_SENTENCES} />
+      ) : (
       <section className="border border-gray-200 rounded-2xl p-6 mb-6 bg-white">
         <div className="text-sm text-gray-500 mb-3 flex items-center justify-between">
           <span>
@@ -1509,6 +1539,7 @@ function ListeningPageContent() {
           </div>
         )}
       </section>
+      )}
 
       {/* Phase 5: Shadow stats / trends panel */}
       {mode === "shadow" && shadowStats.total > 0 && (
