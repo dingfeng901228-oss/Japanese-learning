@@ -276,11 +276,13 @@ function ListeningPageContent() {
   // auto-play next sentence, 1.0/1.1/1.2 rate).
   const [loopCurrent, setLoopCurrent] = useState(false);
   const [autoNext, setAutoNext] = useState(false);
-  // Frank #6636: speak() reads closure (rate, loopCurrent, sentence).
-  // Auto-play-next needs to bump idx → React re-render → speak() picks up
-  // the new sentence. speakRef points to the latest speak() on every render
-  // so setTimeout chains can invoke the fresh closure.
-  const speakRef = useRef<(() => void) | null>(null);
+  // Frank #6636: auto-play-next chain — speak() sets this flag and bumps
+  // sentenceIdx; the useEffect watching [sentenceIdx, categoryIdx,
+  // levelIdx, mode] calls speak() after the re-render so the new sentence
+  // closure is in scope. Clear in next/prev/changeCategory/switchMode so
+  // manual nav doesn't accidentally auto-play. Refs must NOT be written
+  // during render (React lint react-hooks/refs) — only inside effects.
+  const pendingAutoPlayRef = useRef(false);
 
   // Real-time session timer (per Frank #6175). Hook re-runs when mode
   // toggles between Listen and Shadow (type is in the dep list), the
@@ -444,6 +446,26 @@ function ListeningPageContent() {
     });
   }, [loopCurrent, autoNext, rate]);
 
+  // Frank #6636: trigger speak() after auto-play-next bumps the sentence.
+  // Watches all state that speak()'s autoNext branch touches. Runs after
+  // React commits the new render, so the speak() captured in this effect's
+  // closure sees the fresh sentence (no ref trick needed — refs cannot be
+  // written during render per react-hooks/refs).
+  // The reset effect on the same deps also fires here but doesn't conflict
+  // — it clears shadow state, then this effect calls speak() which sets
+  // the new playback. Guarded by pendingAutoPlayRef so user-driven nav
+  // (next/prev/changeCategory/switchMode) doesn't trigger auto-play.
+  useEffect(() => {
+    if (pendingAutoPlayRef.current && mode === "listen") {
+      pendingAutoPlayRef.current = false;
+      speak();
+    }
+    // speak intentionally omitted from deps — effect re-runs on every
+    // listed dep change anyway, and the closure captures the fresh speak
+    // at render time (React rule for refs: only access in effects/handlers).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sentenceIdx, categoryIdx, levelIdx, mode]);
+
   // Phase 5 enhancement: read ?c=<categoryId> from URL and pre-select that
   // category. Lets /today's "去练习" link deep-link to the right category.
   // Run once on mount (empty deps) so we don't reset the user's position if
@@ -458,7 +480,6 @@ function ListeningPageContent() {
       setCategoryIdx(idx);
       setSentenceIdx(0);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Cleanup on unmount.
@@ -507,8 +528,6 @@ function ListeningPageContent() {
     // Per Frank #6338: reset translation toggle when sentence changes so
     // each new sentence starts hidden (forces learner to read Japanese).
     setShowTranslation(false);
-    // intentionally only depending on sentence/category/level idx
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryIdx, sentenceIdx, levelIdx]);
 
   function stopSpeech() {
@@ -521,6 +540,9 @@ function ListeningPageContent() {
   }
 
   function switchMode(next: Mode) {
+    // Frank #6636: clear auto-play flag so manual mode toggle doesn't
+    // trigger auto-play of the just-changed mode.
+    pendingAutoPlayRef.current = false;
     stopSpeech();
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -545,6 +567,9 @@ function ListeningPageContent() {
   }
 
   function changeCategory(i: number) {
+    // Frank #6636: clear auto-play flag so manual category click doesn't
+    // trigger auto-play of the new category's first sentence.
+    pendingAutoPlayRef.current = false;
     setCategoryIdx(i);
     setSentenceIdx(0);
     stopSpeech();
@@ -630,10 +655,17 @@ function ListeningPageContent() {
             if (autoNext) {
               setSpeaking(false);
               setCurrentChunkIdx(-1);
-              // Advance sentence without calling stopSpeech() (would set the
-              // cancel flag and kill our chain). Direct setters only.
+              // Mark flag + advance sentence. The useEffect watching
+              // [sentenceIdx, categoryIdx, levelIdx, mode] fires after the
+              // re-render and calls speak() with the fresh closure (which
+              // captures the new sentence). No ref trick — refs cannot be
+              // written during render (react-hooks/refs rule).
+              pendingAutoPlayRef.current = true;
               setTimeout(() => {
-                if (speakCancelRef.current) return;
+                if (speakCancelRef.current) {
+                  pendingAutoPlayRef.current = false;
+                  return;
+                }
                 if (sentenceIdx < totalInCat - 1) {
                   setSentenceIdx(sentenceIdx + 1);
                 } else if (categoryIdx < CATEGORIES.length - 1) {
@@ -642,12 +674,6 @@ function ListeningPageContent() {
                 } else {
                   setSentenceIdx(0);
                 }
-                // Wait for React to re-render then call the latest speak via
-                // speakRef (the new closure sees the new sentence).
-                setTimeout(() => {
-                  if (speakCancelRef.current) return;
-                  speakRef.current?.();
-                }, 100);
               }, 300);
               return;
             }
@@ -678,12 +704,10 @@ function ListeningPageContent() {
     }
   }
 
-  // Frank #6636: keep speakRef pointing at the latest speak() so the
-  // auto-play-next chain (state change + React re-render) calls the
-  // closure that sees the new sentence.
-  speakRef.current = speak;
-
   function next() {
+    // Frank #6636: clear auto-play flag so manual "next sentence" doesn't
+    // chain an auto-play on top of the user's manual nav.
+    pendingAutoPlayRef.current = false;
     stopSpeech();
     if (sentenceIdx < totalInCat - 1) {
       setSentenceIdx(sentenceIdx + 1);
@@ -697,6 +721,9 @@ function ListeningPageContent() {
   }
 
   function prev() {
+    // Frank #6636: clear auto-play flag so manual "prev sentence" doesn't
+    // chain an auto-play on top of the user's manual nav.
+    pendingAutoPlayRef.current = false;
     stopSpeech();
     if (sentenceIdx > 0) {
       setSentenceIdx(sentenceIdx - 1);
