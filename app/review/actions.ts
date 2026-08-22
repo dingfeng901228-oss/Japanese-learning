@@ -1,10 +1,14 @@
 "use server";
 
-// Server Action for the fill-in review session (Phase 8). Reads the
-// review id + answer + correct + difficulty from FormData and routes
-// them through lib/vocabulary/reviews.ts recordReview(), which runs
-// the SM-2 algorithm and updates next_review_at / interval / ease /
-// mastery in Supabase.
+// Server Action for the new single recall flow (per docs/review.docx,
+// Frank #6663 redesign). Reads `review_id` + `outcome` ("remembered"
+// or "again") from FormData and routes through
+// lib/vocabulary/reviews.ts recordReview(), which runs the SM-2
+// algorithm (quality=5 on remembered, quality=2 on again) and updates
+// next_review_at / interval / ease / mastery in Supabase.
+//
+// Dropped: `answer`, `correct`, `difficulty` fields — the new flow has
+// no text input and only two outcomes (binary), no middle ground.
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -15,17 +19,18 @@ import {
 
 export async function recordReviewAction(formData: FormData) {
   const reviewId = String(formData.get("review_id") ?? "").trim();
-  const answer = String(formData.get("answer") ?? "");
-  const correct = formData.get("correct") === "1";
-  const difficultyRaw = String(formData.get("difficulty") ?? "medium");
-  const difficulty: "easy" | "medium" | "hard" =
-    difficultyRaw === "easy" || difficultyRaw === "hard"
-      ? difficultyRaw
-      : "medium";
+  const outcomeRaw = String(formData.get("outcome") ?? "");
+  // Strict whitelist — any unexpected value falls back to "again" so a
+  // bug or tampered FormData can't accidentally pass `remembered` and
+  // bump a review interval the user never explicitly approved.
+  const outcome: "remembered" | "again" =
+    outcomeRaw === "remembered" || outcomeRaw === "again"
+      ? outcomeRaw
+      : "again";
 
   if (!reviewId) return;
 
-  await recordReview(reviewId, answer, correct, difficulty);
+  await recordReview(reviewId, outcome);
   revalidatePath("/review");
 }
 

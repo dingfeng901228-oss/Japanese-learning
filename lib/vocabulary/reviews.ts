@@ -36,17 +36,13 @@ const DEFAULT_EASE = 2.5;
 const MIN_EASE = 1.3;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-function qualityFor(
-  correct: boolean,
-  difficulty: "easy" | "medium" | "hard"
-): number {
-  // SM-2 quality score (0-5). 0-2 = incorrect, 3-5 = correct with
-  // varying confidence.
-  if (!correct) return 2;
-  if (difficulty === "easy") return 5;
-  if (difficulty === "medium") return 4;
-  return 3;
-}
+// Frank #6663 redesign: rating simplified from easy/medium/hard → binary
+// remembered/again. Per docs/review.docx §10:
+//   - remembered (user clicked 记住了 after reveal) → SM-2 quality 5
+//   - again (user clicked 再来一次) → SM-2 quality 2
+// dropped the easy/medium/hard difficulty param entirely — the new flow
+// has only 2 outcomes.
+
 
 // Upsert a review row for the (user, vocabulary) pair. Idempotent: if a
 // row already exists, leave its SRS state untouched (the user's progress
@@ -174,9 +170,7 @@ export async function getDueReviews(limit = 20): Promise<ReviewItem[]> {
 
 export async function recordReview(
   reviewId: string,
-  userAnswer: string,
-  correct: boolean,
-  difficulty: "easy" | "medium" | "hard"
+  outcome: "remembered" | "again"
 ): Promise<void> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -190,7 +184,11 @@ export async function recordReview(
     .maybeSingle();
   if (fetchErr || !existing) return;
 
-  const q = qualityFor(correct, difficulty);
+  // Frank #6663: outcome → SM-2 quality mapping. remembered=5 (perfect
+  // recall), again=2 (failed). No middle ground — user clicks one of
+  // two buttons in the new recall flow.
+  const correct = outcome === "remembered";
+  const q = correct ? 5 : 2;
   let interval: number;
   let ease = Number(existing.ease_factor);
 
@@ -218,6 +216,10 @@ export async function recordReview(
     ? Math.min(100, existing.mastery + 10)
     : Math.max(0, existing.mastery - 10);
 
+  // Frank #6663: dropped user_answer (no text input in new flow) and
+  // review_type="fill-in" (old multiple-choice mode removed). Columns
+  // stay nullable in DB so old rows still read fine; new rows just
+  // don't set these fields.
   await supabase
     .from("vocabulary_reviews")
     .update({
@@ -227,8 +229,6 @@ export async function recordReview(
       ease_factor: ease,
       mastery: newMastery,
       correct,
-      user_answer: userAnswer,
-      review_type: "fill-in",
     })
     .eq("id", reviewId);
 }

@@ -1,60 +1,42 @@
-// /review — today's SRS queue (Phase 7 + Phase 8 lite).
+// /review — today's SRS queue (single recall flow per docs/review.docx).
 //
-// Two review modes (Phase 8):
-//   - "fill-in" (default): see the blanked example sentence + meaning
-//     hint, type the missing word back.
-//   - "dictation": TTS auto-plays the example sentence, the sentence
-//     is HIDDEN until after you answer (forces listening, not reading).
+// Frank #6663 redesign replaces the old fill-in (4 multiple-choice) +
+// dictation (TTS-only) two-mode UI with one state machine (full spec
+// in docs/review.docx):
+//   - QUIZ: target word blanked, full reading + Chinese + 🔊 + 显示单词
+//   - ANSWER_REVEALED: full sentence (target bolded) + reading + Chinese +
+//     🔊 + [再来一次] [记住了]
 //
-// Same SM-2 recordReview mechanism for both modes. Mode is a query
-// param: /review (fill-in) vs /review?mode=dictation.
+// Rating simplified from easy/medium/hard → remembered/again (SM-2
+// quality 5 / 2). Mode URL param `?mode=dictation` is still accepted
+// for backward compat but ignored — both old routes now serve the new
+// single flow.
 
 import Link from "next/link";
 import {
   getDueReviews,
   getUserVocabCount,
   userHasVocabWithExamples,
-  type ReviewItem,
 } from "@/lib/vocabulary/reviews";
-import { generateDistractors } from "@/lib/vocabulary/distractors";
 import { backfillUserReviewsAction } from "./actions";
-import { ReviewSession, type ReviewMode } from "./review-session";
+import { ReviewSession } from "./review-session";
 
 export const dynamic = "force-dynamic";
 
-// Per Frank #6390: cf9d167 (multiple-choice) never reached production
-// because page.tsx render takes >10s on Vercel Hobby default
-// (generateDistractors batched gpt-4o-mini call ≈ 3-4s for 22 items,
-// can spike higher under load). Bump to 60s (Hobby ceiling) so the
-// next push actually deploys.
-export const maxDuration = 60;
+// Frank #6663: dropped the generateDistractors batched LLM call — no
+// more multiple-choice, so no distractors needed. Removed the 60s
+// maxDuration override too (back to Vercel default 10s, plenty for the
+// new pure-data page that only awaits getDueReviews + 2 cheap counts).
 
 export default async function ReviewPage({
   searchParams,
 }: {
   searchParams: Promise<{ mode?: string }>;
 }) {
-  const sp = await searchParams;
-  const mode: ReviewMode = sp.mode === "dictation" ? "dictation" : "fill-in";
+  // Accept ?mode=dictation for backward compat (old bookmarks) but
+  // ignore it — single flow serves both old fill-in + dictation routes.
+  await searchParams;
   const items = await getDueReviews(20);
-  // Per Frank #6372: fetch AI-generated distractors alongside items in
-  // one batched LLM call (~3s for 22 items — single pause when /review
-  // first loads). Multiple-choice mode in ReviewSession consumes them.
-  const distractors: Record<string, string[]> = {};
-  if (items.length > 0) {
-    const sets = await generateDistractors(
-      items.map((it) => ({
-        id: it.vocabulary_id,
-        word: it.word,
-        meaning: it.meaning,
-        reading: it.reading,
-        type: it.type,
-      }))
-    );
-    for (const s of sets) {
-      distractors[s.id] = s.distractors;
-    }
-  }
   // Per Frank #6348 + #6353: drive the empty-state UI from server-side
   // data, not URL search params (the previous ?notice=no_examples flag
   // was getting stripped somewhere in the redirect chain and the page
@@ -83,32 +65,9 @@ export default async function ReviewPage({
         </Link>
         <h1 className="text-3xl font-bold mt-4">🔁 今日复习</h1>
         <p className="text-gray-600 mt-2">
-          {mode === "dictation"
-            ? "听例句，写出听到的单词。按 Enter 检查。"
-            : "用例句挖空来考自己。输入单词，按 Enter 检查。"}
+          看到日语句子（目标词隐藏） + 完整读音 + 中文，主动回忆目标日语文字。
+          点「显示单词」检查，记住了就下次再来，没记住马上复习。
         </p>
-        <nav className="flex gap-2 mt-4">
-          <Link
-            href="/review"
-            className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-              mode === "fill-in"
-                ? "bg-gray-900 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            填空
-          </Link>
-          <Link
-            href="/review?mode=dictation"
-            className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-              mode === "dictation"
-                ? "bg-gray-900 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            🎧 听写
-          </Link>
-        </nav>
       </header>
 
       {items.length === 0 ? (
@@ -184,11 +143,7 @@ export default async function ReviewPage({
           </div>
         )
       ) : (
-        <ReviewSession
-          initialItems={items}
-          mode={mode}
-          distractors={distractors}
-        />
+        <ReviewSession initialItems={items} />
       )}
     </main>
   );
