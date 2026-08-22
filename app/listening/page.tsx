@@ -1059,12 +1059,14 @@ function ListeningPageContent() {
       </header>
 
       <h1 className="text-2xl font-bold mb-2">
-        {mode === "listen" ? "听力训练" : "跟读训练"}
+        {mode === "listen" ? "听力训练" : mode === "shadow" ? "跟读训练" : "真人发音"}
       </h1>
       <p className="text-sm text-gray-500 mb-6">
         {mode === "listen"
           ? "听 AI 朗读：5 场景 × 5 难度 × 6 句 = 150 句 N5/N4/N3/N2/N1 起步。所有汉字标假名（振り仮名）。点 🔊 听、慢速 / 常速切换、上一句 / 下一句。"
-          : "跟 AI 读：先点 ▶ 听 AI 示范 → 点 🎤 跟读 → 录完自动评分 → 显示结果卡。"}
+          : mode === "shadow"
+            ? "跟 AI 读：先点 ▶ 听 AI 示范 → 点 🎤 跟读 → 录完自动评分 → 显示结果卡。"
+            : "听真人日语发音 → 跟读 → AI 评分。真人发音比 TTS 自然 — 多角色语气、停顿、连读都更真实。"}
       </p>
 
       {/* Mode tabs (Listen vs Shadow) */}
