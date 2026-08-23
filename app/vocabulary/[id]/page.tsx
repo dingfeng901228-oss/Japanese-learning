@@ -49,9 +49,13 @@ const TYPE_LABEL: Record<VocabularyType, string> = {
 const JLPT_OPTIONS = ["", "N5", "N4", "N3", "N2", "N1"] as const;
 
 function formatDateTime(iso: string): string {
+  // See formatDate in app/vocabulary/page.tsx for the rationale —
+  // Vercel server runs in UTC but the user is in JST (GMT+9), so
+  // shift +9h and use getUTC* methods to display in JST.
   const d = new Date(iso);
+  const jst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
   const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `${jst.getUTCFullYear()}-${pad(jst.getUTCMonth() + 1)}-${pad(jst.getUTCDate())} ${pad(jst.getUTCHours())}:${pad(jst.getUTCMinutes())}`;
 }
 
 export default async function VocabularyDetailPage({
