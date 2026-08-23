@@ -169,22 +169,15 @@ export function ReviewSession({
 
   // Per Frank #6175: session timer for the vocab bucket (vocab + review
   // pages both feed into this bucket per UI优化.docx — "词汇" item covers
-  // /vocabulary/[id] + /review time). Active=true for the whole session
-  // (no easy UX signal to derive "active" from in pure-recall flow —
-  // there's no recording, no playback state tied to a single action,
-  // the user is actively recalling throughout).
+  // /vocabulary/[id] + /review time). Active=true for the whole session.
   //
-  // Per Frank #6671 (UI优化.docx § 13): 复习界面 10s/题 cap. segmentKey
-  // = current?.id → when the user advances to the next question (index
-  // increments, current changes), useSessionTimer resets the segment and
-  // a fresh 10s budget starts. maxMsPerSegment=10000 → after 10s the
-  // timer pauses until the next question. Together with the vocab page's
-  // 5s/word cap (VocabSessionTimer.tsx), this enforces "看一个词最多
-  // 5秒、答一道题最多 10秒" across the learning flow.
-  const { elapsed: reviewElapsed } = useSessionTimer("vocab", true, {
-    maxMsPerSegment: 10000,
-    segmentKey: current?.id,
-  });
+  // Per Frank #6683: 计时逻辑有问题，不是每次切换下一个都重新计时，
+  // 而应该是累加计时. So we drop both segmentKey and maxMsPerSegment
+  // here — under cumulative timing a per-question cap (10s) would
+  // permanently pause after the first question, defeating the whole
+  // point. The timer now accumulates from mount to unmount and only
+  // resets when the user leaves the /review page entirely.
+  const { elapsed: reviewElapsed } = useSessionTimer("vocab", true);
 
   // Hydrate autoplay pref from localStorage on mount.
   useEffect(() => {
