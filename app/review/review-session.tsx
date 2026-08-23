@@ -171,22 +171,33 @@ export function ReviewSession({
   // pages both feed into this bucket per UI优化.docx — "词汇" item covers
   // /vocabulary/[id] + /review time). Active=true for the whole session.
   //
-  // Per Frank #6690 + #6692 + docs/计时规则.docx: per-item cumulative
-  // timer, capped at 10s PER QUESTION.
-  //   - Each question has its own accumulator (per-item)
-  //   - Timer accumulates time spent on THAT question across multiple
-  //     visits (user can leave and come back, timer resumes from
-  //     stored value)
-  //   - maxMsPerSegment = 10000 → each question can contribute up to
-  //     10s before its per-question cap pauses the timer
-  //   - When user switches to a DIFFERENT question, the new
-  //     question's timer starts fresh from 0 (per docx §关键澄清:
-  //     "新题是独立的累加计数器")
-  //   - Display resets when switching items (per-item, NOT
-  //     cumulative across items)
+  // Per Frank #6696: 都改为跨词累加 (回退 from #6690/#6692 per-item
+  // to cross-item cumulative). The display never resets on question
+  // switch — it keeps showing the running total until the per-question
+  // cap is reached. The elapsed value you see is the session's
+  // cumulative total across all visited questions.
   //
-  // Per-item persistence is implemented inside useSessionTimer via
-  // localStorage keyed by `current.id`.
+  // Behavior:
+  //   - maxMsPerSegment = 10000 → each question VISIT can
+  //     contribute up to 10s. When a question hits 10s, the timer
+  //     pauses.
+  //   - When the user navigates to a new question, the segment
+  //     resets (fresh 10s budget for the new question) but the
+  //     total accumulatedMsRef carries over.
+  //
+  // Example: Q1 8s → switch to Q2 → display 8s (carried), Q2 fresh
+  // 10s budget. Q2 runs 5s → display 13s. Q2 runs another 5s →
+  // display 18s, Q2 cap reached, pause. Switch to Q3 → display 18s,
+  // Q3 fresh 10s budget.
+  //
+  // Note: this contradicts docs/计时规则.docx §关键澄清 ("新词是
+  // 独立的累加计数器") — Frank #6696 explicitly asked for
+  // cross-item, so that's what ships. If he reverts, swap back to
+  // per-item (see #6690/#6692 commit 45cf6bd).
+  //
+  // /listening / /speaking / /shadowing don't pass `segmentKey` so
+  // they keep their old behavior (accumulate from mount to unmount,
+  // no per-item logic) per Frank #6692.
   const { elapsed: reviewElapsed } = useSessionTimer("vocab", true, {
     maxMsPerSegment: 10000,
     segmentKey: current?.id,
