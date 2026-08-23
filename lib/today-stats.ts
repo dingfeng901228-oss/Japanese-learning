@@ -410,26 +410,70 @@ export function useSessionTimer(
   const segmentStartRef = useRef<number | null>(null);
   const activeRef = useRef(active);
 
+  // Per Frank #6690 + #6692 + docs/计时规则.docx: per-item timer.
+  // When `segmentKey` is provided, we PERSIST the accumulated time to
+  // localStorage so the same item's timer continues across navigations
+  // (user can leave and come back, timer resumes from stored value).
+  // When the user switches to a DIFFERENT item, the new item starts
+  // fresh from 0 (each item has independent accumulator per docx §关键
+  // 澄清: "新词是独立的累加计数器，不是接着上一个词的秒数走").
+  //
+  // localStorage is per-tab/per-browser and survives page reloads. The
+  // docx doesn't require cross-reload persistence, but localStorage is
+  // the simplest in-tab persistence layer available.
+  //
+  // Callers that DON'T pass `segmentKey` (/listening / /speaking /
+  // /shadowing per #6692) keep the old behavior: accumulate from
+  // mount to unmount, no per-item persistence.
+  const persistKey = segmentKey
+    ? `japanese:item-timer:${segmentKey}`
+    : null;
+
+  function readStored(): number {
+    if (!persistKey || typeof window === "undefined") return 0;
+    try {
+      const raw = localStorage.getItem(persistKey);
+      if (!raw) return 0;
+      const parsed = JSON.parse(raw) as { accumulated?: number };
+      return typeof parsed.accumulated === "number" ? parsed.accumulated : 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  function writeStored(value: number): void {
+    if (!persistKey || typeof window === "undefined") return;
+    try {
+      localStorage.setItem(
+        persistKey,
+        JSON.stringify({ accumulated: value })
+      );
+    } catch {
+      // quota / private mode — silently ignore
+    }
+  }
+
   // Init on mount + on type OR segmentKey change + cleanup on unmount.
   //
-  // Per Frank #6688: timer is CUMULATIVE across word/question switches.
-  // So when `segmentKey` changes (user navigates to a new vocab item
-  // or review question), we do NOT reset `accumulatedMsRef` — the
-  // running total carries over. We only reset `segmentStartRef` so the
-  // per-segment cap check starts fresh for the new word/question.
-  //
-  // Example (vocab, cap=5s): word A 3s → switch to word B → total
-  // continues from 3s, word B's own time starts fresh at 0, word B
-  // can run up to 5 more seconds before its per-word cap pauses the
-  // timer. Switch to word C → total continues from 8s, word C fresh.
-  //
-  // The per-segment cap logic (in the tick effect below) still uses
-  // `segMs = now - segmentStartRef`, so each word/question can only
-  // contribute up to `maxMsPerSegment` to the running total.
+  // Per-item cumulative (Frank #6692 + docs/计时规则.docx):
+  //   1. On setup: read the previous accumulated time for this
+  //      segmentKey from localStorage. accumulatedMsRef starts there.
+  //   2. Start a fresh segmentStartRef so the cap check measures only
+  //      THIS visit's elapsed (cap is per-segment, not per-item).
+  //   3. On cleanup (unmount OR segmentKey change): save the current
+  //      total accumulated (stored + this segment's elapsed) back to
+  //      localStorage for next visit.
+  //   4. Commit only the SESSION DELTA to daily_rollups — the stored
+  //      amount was already counted when it was first accumulated (so
+  //      no double counting across visits).
   useEffect(() => {
-    // NOTE: do NOT reset accumulatedMsRef here — that would defeat the
-    // cumulative timing Frank asked for in #6688.
-    if (active) {
+    const storedAccumulated = readStored();
+    accumulatedMsRef.current = storedAccumulated;
+
+    const atCap =
+      maxMsPerSegment !== undefined && storedAccumulated >= maxMsPerSegment;
+
+    if (active && !atCap) {
       segmentStartRef.current = Date.now();
       setActiveSession({ type, startedAt: Date.now() });
       setRunning(true);
@@ -438,18 +482,28 @@ export function useSessionTimer(
       setActiveSession(null);
       setRunning(false);
     }
-    // Don't reset elapsed display either — it keeps showing the
-    // cumulative total across the segmentKey change.
+    setElapsed(storedAccumulated);
 
     return () => {
-      const finalMs =
-        accumulatedMsRef.current +
-        (segmentStartRef.current !== null
+      const segMs =
+        segmentStartRef.current !== null
           ? Date.now() - segmentStartRef.current
-          : 0);
+          : 0;
+      const cap = maxMsPerSegment ?? Infinity;
+      const newAccumulated = Math.min(
+        accumulatedMsRef.current + segMs,
+        cap
+      );
+
+      // Per-item: persist for next visit.
+      writeStored(newAccumulated);
+
+      // Daily rollups: only the delta from THIS session (the stored
+      // amount was already counted when it was first accumulated).
+      const sessionDelta = newAccumulated - storedAccumulated;
       setActiveSession(null);
-      if (finalMs >= 1000) {
-        accumulateMinutes(type, finalMs / 60000);
+      if (sessionDelta >= 1000) {
+        accumulateMinutes(type, sessionDelta / 60000);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -487,29 +541,26 @@ export function useSessionTimer(
         segmentStartRef.current !== null
           ? Date.now() - segmentStartRef.current
           : 0;
+      const currentTotal = accumulatedMsRef.current + segMs;
+      const cap = maxMsPerSegment ?? Infinity;
 
-      // Cap check: if segmentElapsed >= maxMsPerSegment, freeze the
-      // CURRENT segment at the cap and flip running=false. The
-      // total accumulatedMsRef gets the cap added so the cumulative
-      // display doesn't reset — it just stops ticking until the user
-      // navigates to a new word/question (segmentKey change → fresh
-      // segmentStartRef → resume). The interval's own dep on
-      // `running` means the next re-render clears it.
-      if (maxMsPerSegment !== undefined && segMs >= maxMsPerSegment) {
-        if (segmentStartRef.current !== null) {
-          accumulatedMsRef.current += maxMsPerSegment;
-          segmentStartRef.current = null;
-        }
-        setElapsed(accumulatedMsRef.current);
+      // Cap check: if (stored + this segment's elapsed) >= cap, freeze
+      // at the cap and flip running=false. Both stored and the current
+      // segment contribute to the total — this matches the docx's
+      // "封顶累加" model where each item can contribute up to its cap.
+      if (maxMsPerSegment !== undefined && currentTotal >= cap) {
+        accumulatedMsRef.current = cap;
+        segmentStartRef.current = null;
+        writeStored(cap);
+        setElapsed(cap);
         setRunning(false);
         return;
       }
 
-      const total = accumulatedMsRef.current + segMs;
-      setElapsed(total);
+      setElapsed(currentTotal);
     }, 1000);
     return () => window.clearInterval(interval);
-  }, [active, running, maxMsPerSegment]);
+  }, [active, running, maxMsPerSegment, segmentKey]);
 
   return { elapsed, running };
 }

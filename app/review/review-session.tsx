@@ -171,19 +171,22 @@ export function ReviewSession({
   // pages both feed into this bucket per UI优化.docx — "词汇" item covers
   // /vocabulary/[id] + /review time). Active=true for the whole session.
   //
-  // Per Frank #6688: 累加计时 + per-question 10s cap restored.
-  //   - Timer accumulates across question switches (CUMULATIVE total)
-  //   - maxMsPerSegment = 10000 → each question can contribute up
-  //     to 10s to the running total. When a question hits 10s, the
-  //     timer pauses.
-  //   - When the user navigates to a new question (segmentKey change),
-  //     the per-question cap resets but the cumulative total carries
-  //     over — the display continues from the old total.
+  // Per Frank #6690 + #6692 + docs/计时规则.docx: per-item cumulative
+  // timer, capped at 10s PER QUESTION.
+  //   - Each question has its own accumulator (per-item)
+  //   - Timer accumulates time spent on THAT question across multiple
+  //     visits (user can leave and come back, timer resumes from
+  //     stored value)
+  //   - maxMsPerSegment = 10000 → each question can contribute up to
+  //     10s before its per-question cap pauses the timer
+  //   - When user switches to a DIFFERENT question, the new
+  //     question's timer starts fresh from 0 (per docx §关键澄清:
+  //     "新题是独立的累加计数器")
+  //   - Display resets when switching items (per-item, NOT
+  //     cumulative across items)
   //
-  //   Example: Q1 8s → switch to Q2 → display 8s (carried), Q2 fresh
-  //   10s budget. Q2 runs 5s → display 13s, Q2 still under cap.
-  //   Q2 runs another 5s → display 18s, Q2 cap reached, pause.
-  //   Switch to Q3 → display 18s, Q3 fresh 10s budget.
+  // Per-item persistence is implemented inside useSessionTimer via
+  // localStorage keyed by `current.id`.
   const { elapsed: reviewElapsed } = useSessionTimer("vocab", true, {
     maxMsPerSegment: 10000,
     segmentKey: current?.id,
