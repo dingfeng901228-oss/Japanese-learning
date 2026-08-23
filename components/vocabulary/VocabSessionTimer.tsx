@@ -45,10 +45,9 @@ export function VocabSessionTimer({ vocabId }: { vocabId: string }) {
     <span
       className="text-xs text-gray-500 tabular-nums"
       aria-label="本次学习时长"
-      title={running ? "累加计时 — 切换单词不重置，单词访问 5s 上限" : "已暂停 — 切到下个词继续（每个词最多 5s）"}
+      title="累加计时 — 切换单词不重置，单词访问 5s 上限"
     >
       🕐 {formatDuration(elapsed)}
-      {!running && <span className="ml-1 text-gray-400">(已暂停)</span>}
     </span>
   );
 }
