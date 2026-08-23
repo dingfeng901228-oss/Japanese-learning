@@ -361,7 +361,7 @@ export function ReviewSession({
               type="button"
               onClick={goPrev}
               disabled={index === 0}
-              className="px-4 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+              className="px-4 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100 active:translate-y-px disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm font-medium"
               aria-label="上一题"
             >
               ← 上一题
@@ -369,7 +369,7 @@ export function ReviewSession({
             <button
               type="button"
               onClick={handleReveal}
-              className="px-8 py-3 rounded-xl bg-gray-900 text-white hover:bg-gray-800 transition-colors text-base font-medium"
+              className="px-8 py-3 rounded-xl bg-gray-900 text-white hover:bg-gray-800 active:bg-gray-700 active:translate-y-px transition-all text-base font-medium"
             >
               显示单词
             </button>
@@ -377,7 +377,7 @@ export function ReviewSession({
               type="button"
               onClick={goNext}
               disabled={index === initialItems.length - 1}
-              className="px-4 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+              className="px-4 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100 active:translate-y-px disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm font-medium"
               aria-label="下一题"
             >
               下一题 →
@@ -436,7 +436,7 @@ export function ReviewSession({
               type="button"
               onClick={goPrev}
               disabled={index === 0}
-              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm"
+              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100 active:translate-y-px disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm"
               aria-label="上一题"
             >
               ← 上一题
@@ -445,7 +445,7 @@ export function ReviewSession({
               type="button"
               onClick={goNext}
               disabled={index === initialItems.length - 1}
-              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm"
+              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100 active:translate-y-px disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm"
               aria-label="下一题"
             >
               下一题 →
@@ -455,14 +455,14 @@ export function ReviewSession({
             <button
               type="button"
               onClick={() => handleOutcome("again")}
-              className="flex-1 px-6 py-4 rounded-xl border-2 border-red-300 text-red-700 hover:bg-red-50 transition-colors text-base font-medium"
+              className="flex-1 px-6 py-4 rounded-xl border-2 border-red-300 text-red-700 hover:bg-red-50 active:bg-red-100 active:translate-y-px transition-all text-base font-medium"
             >
               再来一次
             </button>
             <button
               type="button"
               onClick={() => handleOutcome("remembered")}
-              className="flex-1 px-6 py-4 rounded-xl border-2 border-green-300 text-green-700 hover:bg-green-50 transition-colors text-base font-medium"
+              className="flex-1 px-6 py-4 rounded-xl border-2 border-green-300 text-green-700 hover:bg-green-50 active:bg-green-100 active:translate-y-px transition-all text-base font-medium"
             >
               记住了
             </button>
