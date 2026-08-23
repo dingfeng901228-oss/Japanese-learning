@@ -410,12 +410,25 @@ export function useSessionTimer(
   const segmentStartRef = useRef<number | null>(null);
   const activeRef = useRef(active);
 
-  // Init on mount + reset on type OR segmentKey change + cleanup on
-  // unmount. Per-segment reset is what makes the cap UX work: when
-  // the user navigates to a new vocab item, `segmentKey` changes,
-  // accumulatedMs zeros, and a fresh 5s/10s segment starts.
+  // Init on mount + on type OR segmentKey change + cleanup on unmount.
+  //
+  // Per Frank #6688: timer is CUMULATIVE across word/question switches.
+  // So when `segmentKey` changes (user navigates to a new vocab item
+  // or review question), we do NOT reset `accumulatedMsRef` — the
+  // running total carries over. We only reset `segmentStartRef` so the
+  // per-segment cap check starts fresh for the new word/question.
+  //
+  // Example (vocab, cap=5s): word A 3s → switch to word B → total
+  // continues from 3s, word B's own time starts fresh at 0, word B
+  // can run up to 5 more seconds before its per-word cap pauses the
+  // timer. Switch to word C → total continues from 8s, word C fresh.
+  //
+  // The per-segment cap logic (in the tick effect below) still uses
+  // `segMs = now - segmentStartRef`, so each word/question can only
+  // contribute up to `maxMsPerSegment` to the running total.
   useEffect(() => {
-    accumulatedMsRef.current = 0;
+    // NOTE: do NOT reset accumulatedMsRef here — that would defeat the
+    // cumulative timing Frank asked for in #6688.
     if (active) {
       segmentStartRef.current = Date.now();
       setActiveSession({ type, startedAt: Date.now() });
@@ -425,7 +438,8 @@ export function useSessionTimer(
       setActiveSession(null);
       setRunning(false);
     }
-    setElapsed(0);
+    // Don't reset elapsed display either — it keeps showing the
+    // cumulative total across the segmentKey change.
 
     return () => {
       const finalMs =
@@ -475,8 +489,12 @@ export function useSessionTimer(
           : 0;
 
       // Cap check: if segmentElapsed >= maxMsPerSegment, freeze the
-      // segment at the cap and flip running=false. The interval's
-      // own dep on `running` means the next re-render clears it.
+      // CURRENT segment at the cap and flip running=false. The
+      // total accumulatedMsRef gets the cap added so the cumulative
+      // display doesn't reset — it just stops ticking until the user
+      // navigates to a new word/question (segmentKey change → fresh
+      // segmentStartRef → resume). The interval's own dep on
+      // `running` means the next re-render clears it.
       if (maxMsPerSegment !== undefined && segMs >= maxMsPerSegment) {
         if (segmentStartRef.current !== null) {
           accumulatedMsRef.current += maxMsPerSegment;

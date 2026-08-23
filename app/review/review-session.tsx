@@ -171,13 +171,23 @@ export function ReviewSession({
   // pages both feed into this bucket per UI优化.docx — "词汇" item covers
   // /vocabulary/[id] + /review time). Active=true for the whole session.
   //
-  // Per Frank #6683: 计时逻辑有问题，不是每次切换下一个都重新计时，
-  // 而应该是累加计时. So we drop both segmentKey and maxMsPerSegment
-  // here — under cumulative timing a per-question cap (10s) would
-  // permanently pause after the first question, defeating the whole
-  // point. The timer now accumulates from mount to unmount and only
-  // resets when the user leaves the /review page entirely.
-  const { elapsed: reviewElapsed } = useSessionTimer("vocab", true);
+  // Per Frank #6688: 累加计时 + per-question 10s cap restored.
+  //   - Timer accumulates across question switches (CUMULATIVE total)
+  //   - maxMsPerSegment = 10000 → each question can contribute up
+  //     to 10s to the running total. When a question hits 10s, the
+  //     timer pauses.
+  //   - When the user navigates to a new question (segmentKey change),
+  //     the per-question cap resets but the cumulative total carries
+  //     over — the display continues from the old total.
+  //
+  //   Example: Q1 8s → switch to Q2 → display 8s (carried), Q2 fresh
+  //   10s budget. Q2 runs 5s → display 13s, Q2 still under cap.
+  //   Q2 runs another 5s → display 18s, Q2 cap reached, pause.
+  //   Switch to Q3 → display 18s, Q3 fresh 10s budget.
+  const { elapsed: reviewElapsed } = useSessionTimer("vocab", true, {
+    maxMsPerSegment: 10000,
+    segmentKey: current?.id,
+  });
 
   // Hydrate autoplay pref from localStorage on mount.
   useEffect(() => {
