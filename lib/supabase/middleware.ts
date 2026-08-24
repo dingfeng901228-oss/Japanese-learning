@@ -16,7 +16,9 @@ import { NextResponse, type NextRequest } from "next/server";
 const PROTECTED_PREFIXES = [
   "/listening",
   "/speaking",
-  "/today",
+  // Frank #6671 (UI优化.docx): /today removed. Frank #6767 cleanup
+  // — drop the stale entry from the protected list (it would never
+  // match since the route doesn't exist).
   "/progress",
   "/vocabulary",
   "/review",

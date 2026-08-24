@@ -13,7 +13,11 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type");
-  const next = searchParams.get("next") ?? "/today";
+  // Frank #6767: post-login redirect defaults to "/" (home page)
+  // instead of "/today". /today was removed by Frank #6671
+  // (UI优化.docx), so the old fallback sent users to a 404 after
+  // every login. Home page is now the landing surface for new sessions.
+  const next = searchParams.get("next") ?? "/";
 
   // Magic link / email OTP: Supabase emails a URL like
   // /auth/callback?token_hash=***&type=magiclink.

@@ -12,7 +12,8 @@ const ROUTES: Array<{
   priority: number;
 }> = [
   { path: "/",            changeFrequency: "daily",   priority: 1.0 },
-  { path: "/today",       changeFrequency: "daily",   priority: 0.9 },
+  // Frank #6671 (UI优化.docx): /today removed. Frank #6767 cleanup
+  // — drop the stale sitemap entry (it would 404 anyway).
   { path: "/listening",   changeFrequency: "weekly",  priority: 0.8 },
   { path: "/speaking",    changeFrequency: "weekly",  priority: 0.8 },
   { path: "/vocabulary",  changeFrequency: "daily",   priority: 0.8 },

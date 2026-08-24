@@ -8,7 +8,8 @@
 //     redirects the browser to Google.
 //  2. Google bounces back to /auth/callback?code=…
 //  3. supabase.auth.exchangeCodeForSession(code) sets sb-* cookies.
-//  4. /auth/callback redirects to /today.
+//  4. /auth/callback redirects to /. Was /today before Frank #6767
+//     — /today route removed by Frank #6671 (UI优化.docx).
 //
 // next/navigation's `redirect()` throws — do NOT wrap it in a try/catch
 // that swallows errors, or you'll break the redirect.
