@@ -146,48 +146,42 @@ function findBlankRange(
 }
 
 /**
- * Render the example sentence with an <input> field inserted where the
- * target word appears (Frank #6668). User types their guess into the
- * input; clicking 显示单词 reveals the answer regardless of whether
- * anything was typed (empty input is OK).
+ * Frank #6742: replaced the old <input> field (Frank #6668) with a
+ * non-interactive horizontal line — the user does NOT type a guess.
+ * Pure passive recall: read the sentence, mentally fill in the
+ * blank, then click 显示答案 to reveal.
+ *
+ * Frank #6668 (input field for typing guesses) was the prior UX;
+ * Frank #6742 reverted to no-input since typing didn't add value
+ * to recall practice.
  *
  * Uses `findBlankRange` so conjugated forms (叩く → 叩いた) also get
  * a blank — exact substring match alone missed them (Frank #6707).
  *
  * If no reasonable blank position can be determined, returns the
- * example unchanged — no input rendered (signals inconsistent vocab
- * data; user can still read the full sentence but has no blank to fill
- * in).
+ * example unchanged — no blank rendered (signals inconsistent vocab
+ * data; user reads the full sentence with no blank to fill in).
  *
- * Styling: bottom-border underline to read as "blank line" at sentence
- * scale, bg-transparent so the surrounding text shows through. Width
- * fixed at ~8 chars (w-32 = 128px) which fits most Japanese words; the
- * sentence's flex-1 wrapper handles overflow.
+ * Width: w-32 = 128px, fits most Japanese words; the sentence's
+ * flex-1 wrapper handles overflow.
  */
 function renderSentenceWithInput(
   example: string,
-  target: string,
-  inputProps: {
-    value: string;
-    onChange: (v: string) => void;
-    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-    inputRef: React.Ref<HTMLInputElement>;
-  }
+  target: string
 ): React.ReactNode {
   const range = findBlankRange(example, target);
   if (!range) return example;
   return (
     <>
       {example.slice(0, range.start)}
-      <input
-        ref={inputProps.inputRef}
-        type="text"
-        value={inputProps.value}
-        onChange={(e) => inputProps.onChange(e.target.value)}
-        onKeyDown={inputProps.onKeyDown}
-        placeholder="＿"
-        aria-label="输入目标词"
-        className="inline-block w-32 mx-1 border-b-2 border-gray-900 bg-transparent text-2xl font-medium text-center focus:outline-none focus:border-blue-500 px-1"
+      {/* Frank #6742: replaced the prior <input> with a non-interactive
+          horizontal line. Same w-32 width as the old input so the
+          surrounding sentence doesn't reflow. align-baseline keeps
+          the underline aligned with the surrounding Japanese
+          text. No typing — just a visual placeholder for the blank. */}
+      <span
+        aria-label="目标词横线"
+        className="inline-block w-32 mx-1 border-b-2 border-gray-900 align-baseline"
       />
       {example.slice(range.end)}
     </>
@@ -230,10 +224,10 @@ export function ReviewSession({
   const [phase, setPhase] = useState<"QUIZ" | "ANSWER_REVEALED">("QUIZ");
   const [autoplay, setAutoplay] = useState(true);
   const [hydrated, setHydrated] = useState(false);
-  // Frank #6668: input field replaces the static ＿＿＿＿ blank in QUIZ
-  // phase. User types their guess; empty answer is OK — clicking
-  // 显示单词 still reveals the target.
-  const [userAnswer, setUserAnswer] = useState("");
+  // Frank #6742: userAnswer / inputRef removed. Frank wants pure
+  // passive recall — the user reads the sentence with the blank
+  // line and clicks 显示答案 to reveal. No typing. See
+  // renderSentenceWithInput doc comment for the rationale.
   // Frank #6710: rating buttons ("再来一次" / "记住了") were advancing
   // the question by +2 instead of +1. Root cause: handleOutcome is async
   // (awaits recordReviewAction → 100-500ms network round-trip) and the
@@ -243,7 +237,6 @@ export function ReviewSession({
   // Fix: in-flight flag that (a) early-returns on re-entry, (b) drives
   // `disabled` on both buttons so the second click is a no-op visually.
   const [outcomeInFlight, setOutcomeInFlight] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // Frank #6717/#6722: freeze initialItems at mount via useState
   // (NOT useRef — Next.js `react-hooks/refs` ESLint rule forbids
@@ -312,16 +305,10 @@ export function ReviewSession({
     if (hydrated) saveAutoplayPref(autoplay);
   }, [autoplay, hydrated]);
 
-  // Reset to QUIZ on new question entry, clear typed answer, focus input.
-  // Frank #6668: input is the new QUIZ affordance — needs to receive
-  // focus automatically so user can type immediately.
+  // Reset to QUIZ on new question entry. Frank #6742 removed the
+  // userAnswer reset + inputRef focus (no more input to focus).
   useEffect(() => {
     setPhase("QUIZ");
-    setUserAnswer("");
-    // requestAnimationFrame to wait for React to commit the new
-    // QUIZ render (and the input element to mount) before focusing.
-    const id = requestAnimationFrame(() => inputRef.current?.focus());
-    return () => cancelAnimationFrame(id);
   }, [index]);
 
   // Auto-play TTS on entering QUIZ (§6). Small delay so React commits
@@ -337,7 +324,7 @@ export function ReviewSession({
 
   const handleReveal = useCallback(() => {
     setPhase("ANSWER_REVEALED");
-    setUserAnswer(""); // clear typed guess (Frank #6668 — input is QUIZ-only)
+    // Frank #6742: setUserAnswer("") removed (no input anymore).
     // §9: replay full sentence audio after reveal (helps user
     // confirm what they missed or got right).
     if (current?.example_sentence) speakJa(current.example_sentence);
@@ -453,20 +440,12 @@ export function ReviewSession({
           {hasExample && current.example_sentence ? (
             <div className="flex items-start gap-3">
               <div className="flex-1 text-2xl font-medium text-gray-900 leading-loose text-left break-words whitespace-pre-wrap">
+                {/* Frank #6742: inputProps removed — no more typing.
+                    User just reads the sentence with the horizontal
+                    line and clicks 显示答案. */}
                 {renderSentenceWithInput(
                   current.example_sentence,
-                  current.word,
-                  {
-                    value: userAnswer,
-                    onChange: setUserAnswer,
-                    onKeyDown: (e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleReveal();
-                      }
-                    },
-                    inputRef,
-                  }
+                  current.word
                 )}
               </div>
               <button
@@ -520,7 +499,9 @@ export function ReviewSession({
               onClick={handleReveal}
               className="px-8 py-3 rounded-xl bg-gray-900 text-white hover:bg-gray-800 active:bg-gray-700 active:translate-y-px transition-all text-base font-medium"
             >
-              显示单词
+              {/* Frank #6742: renamed 显示单词 → 显示答案 to match the
+                  no-input UX (you're revealing the answer, not "the word"). */}
+              显示答案
             </button>
             <button
               type="button"
