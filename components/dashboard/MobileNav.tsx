@@ -60,7 +60,13 @@ export function MobileNav({ items, userInfo }: MobileNavProps) {
   }, [open]);
 
   return (
-    <div className="md:hidden" ref={ref}>
+    // Frank #6731: `mobile-show-only` is a defensive fallback for
+    // when Tailwind's `md:hidden` doesn't apply on Android Chrome.
+    // See globals.css for the matching media-query rule. Without
+    // this, MobileNav rendered on desktop too — producing a second
+    // UserMenu card AND a duplicate hamburger button next to the
+    // desktop nav.
+    <div className="md:hidden mobile-show-only" ref={ref}>
       <div className="flex items-center gap-2">
         <UserMenu
           email={userInfo.email}

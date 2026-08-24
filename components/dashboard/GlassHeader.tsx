@@ -32,8 +32,17 @@ export function GlassHeader({ navItems, userInfo }: GlassHeaderProps) {
         <Link href="/" className="font-bold text-base text-ink">
           FastStudy
         </Link>
-        <TopNav items={navItems} />
-        <div className="hidden md:block">
+        {/* Frank #6731: wrap TopNav in a defensive div carrying
+            `hidden md:block md-show-only`. The wrapper exists because
+            TopNav doesn't accept className. `md-show-only` is a
+            globals.css fallback that hides the wrapper on mobile if
+            Tailwind's `hidden md:block` doesn't apply on Android
+            Chrome (observed bug: all three header elements rendered
+            at once, producing 2× UserMenu cards). */}
+        <div className="hidden md:block md-show-only">
+          <TopNav items={navItems} />
+        </div>
+        <div className="hidden md:block md-show-only">
           <UserMenu
             email={userInfo.email}
             displayName={userInfo.displayName}

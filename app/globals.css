@@ -52,3 +52,25 @@ rt {
     animation: none;
   }
 }
+
+/* Frank #6731: defensive responsive-hide classes. Used by header
+   components to ensure desktop-only / mobile-only elements are
+   correctly hidden even if Tailwind's responsive `md:` prefix
+   fails to apply (observed on Android Chrome — desktop TopNav,
+   desktop UserMenu wrapper, and MobileNav were all rendering at
+   once, producing 2× UserMenu cards and a huge avatar).
+
+   These rules are no-ops when Tailwind is working (Tailwind's
+   `hidden md:block` / `md:hidden` already handles the responsive
+   state). When Tailwind fails, these `!important` rules ensure
+   the correct viewport-specific showing/hiding as a fallback. */
+@media (max-width: 767px) {
+  .md-show-only {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) {
+  .mobile-show-only {
+    display: none !important;
+  }
+}

@@ -65,6 +65,16 @@ export function UserMenu({ email, displayName, avatarUrl }: UserMenuProps) {
           <img
             src={avatarUrl}
             alt=""
+            width={28}
+            height={28}
+            // Frank #6731: explicit width/height HTML attributes +
+            // matching inline style are a defensive fallback for when
+            // Tailwind's `w-7 h-7` fails to apply on Android Chrome.
+            // Without these, the <img> renders at Google's natural
+            // avatar size (~96px), blowing the UserMenu button up into
+            // a huge red "F" card (one of the two visible on Android).
+            // Belt-and-suspenders: HTML attr + inline style + className.
+            style={{ width: 28, height: 28 }}
             className="w-7 h-7 rounded-full"
             referrerPolicy="no-referrer"
           />
