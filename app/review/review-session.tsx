@@ -406,6 +406,28 @@ export function ReviewSession({
 
   return (
     <div className="space-y-8">
+      {/* Frank #6734: heading + session timer on the SAME row,
+          timer right-justified. Heading was in page.tsx (the parent
+          Server Component) — moved into this Client Component so it
+          can share the flex row with the timer. The static header in
+          page.tsx was removed; empty states (no items / no examples /
+          no review queue) intentionally have no heading since their
+          own titles (🎉📝🔄) speak for themselves. */}
+      <header>
+        <div className="flex items-baseline justify-between gap-4">
+          <h1 className="text-3xl font-bold">🔁 今日复习</h1>
+          <div className="text-xs text-gray-400 tabular-nums whitespace-nowrap">
+            🕐 {formatDuration(reviewElapsed)}
+          </div>
+        </div>
+        {/* Description moved from page.tsx so it only renders during
+            active review (was above the empty-state branch). */}
+        <p className="text-gray-600 mt-2">
+          看到日语句子（目标词隐藏） + 完整读音 + 中文，主动回忆目标日语文字。
+          点「显示单词」检查，记住了就下次再来，没记住马上复习。
+        </p>
+      </header>
+
       {/* Progress + autoplay toggle (top, §16) */}
       <div className="flex items-center justify-between text-sm text-gray-500">
         <div>复习 · {index + 1} / {items.length}</div>
@@ -421,11 +443,6 @@ export function ReviewSession({
             <span>自动播放音频</span>
           </label>
         )}
-      </div>
-
-      {/* Session timer (top, §16) */}
-      <div className="text-xs text-gray-400 tabular-nums">
-        🕐 {formatDuration(reviewElapsed)}
       </div>
 
       {phase === "QUIZ" ? (

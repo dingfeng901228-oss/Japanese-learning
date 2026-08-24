@@ -56,15 +56,11 @@ export default async function ReviewPage({
 
   return (
     <main className="min-h-screen px-6 py-12 max-w-2xl mx-auto">
-      <header className="mb-8">
-        {/* Frank #6671 (UI优化.docx): drop "← 返回" nav link — /today page is
-          removed; nav would 404. */}
-        <h1 className="text-3xl font-bold">🔁 今日复习</h1>
-        <p className="text-gray-600 mt-2">
-          看到日语句子（目标词隐藏） + 完整读音 + 中文，主动回忆目标日语文字。
-          点「显示单词」检查，记住了就下次再来，没记住马上复习。
-        </p>
-      </header>
+      {/* Frank #6734: static heading + description moved into
+          ReviewSession (Client Component) so the session timer can
+          share the row with the heading (timer at right). Empty
+          states below still own their own page-level titles
+          (🎉📝🔄). No `<header>` rendered here anymore. */}
 
       {items.length === 0 ? (
         vocabCount === 0 ? (
