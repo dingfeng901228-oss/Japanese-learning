@@ -365,6 +365,48 @@ export function ReviewSession({
     setIndex((i) => Math.min(items.length - 1, i + 1));
   }, [items.length]);
 
+  // Frank #6746: swipe gestures on question card. Same detection
+  // pattern as WordCardSwipeable (50px threshold + horizontal
+  // dominance) but no page navigation — calls goPrev/goNext
+  // directly. Swipe left (dx < 0) → 上一题; swipe right (dx > 0)
+  // → 下一题.
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
+  function handleSwipeTouchStart(e: React.TouchEvent) {
+    if (e.touches.length !== 1) {
+      // ignore multi-finger (pinch etc.) — would produce ambiguous dx/dy
+      touchStartX.current = null;
+      touchStartY.current = null;
+      return;
+    }
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }
+
+  function handleSwipeTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const dx = endX - touchStartX.current;
+    const dy = endY - touchStartY.current;
+    touchStartX.current = null;
+    touchStartY.current = null;
+
+    // Threshold 50px + horizontal must dominate vertical — same as
+    // WordCardSwipeable. Prevents accidental triggers from scrolling
+    // or small horizontal jitter.
+    const SWIPE_THRESHOLD_PX = 50;
+    if (Math.abs(dx) < SWIPE_THRESHOLD_PX) return;
+    if (Math.abs(dx) <= Math.abs(dy)) return;
+
+    if (dx < 0) {
+      goPrev();
+    } else if (dx > 0) {
+      goNext();
+    }
+  }
+
   // --- Now safe to early-return ---
   if (done) {
     return (
@@ -438,7 +480,11 @@ export function ReviewSession({
              recall, no reading shown yet. The 🔊 is the only audio cue
              in QUIZ since reading is hidden. */}
           {hasExample && current.example_sentence ? (
-            <div className="flex items-start gap-3">
+            <div
+              className="flex items-start gap-3"
+              onTouchStart={handleSwipeTouchStart}
+              onTouchEnd={handleSwipeTouchEnd}
+            >
               <div className="flex-1 text-2xl font-medium text-gray-900 leading-loose text-left break-words whitespace-pre-wrap">
                 {/* Frank #6742: inputProps removed — no more typing.
                     User just reads the sentence with the horizontal
