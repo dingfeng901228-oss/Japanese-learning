@@ -245,17 +245,17 @@ export function ReviewSession({
   const [outcomeInFlight, setOutcomeInFlight] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Frank #6717: freeze initialItems at mount. The parent Server
-  // Component may re-render and pass new initialItems (e.g.
-  // revalidatePath in recordReviewAction invalidates /review and
-  // re-queries today's due reviews, dropping the just-reviewed word
-  // from the list). If we read the new initialItems while keeping our
-  // own index counter, index=1 now points to a different word than
-  // the user expected — looking like a +2 skip. Snapshotted via
-  // useRef so all internal reads see the same list the user started
-  // the session with.
-  const itemsRef = useRef(initialItems);
-  const items = itemsRef.current;
+  // Frank #6717/#6722: freeze initialItems at mount via useState
+  // (NOT useRef — Next.js `react-hooks/refs` ESLint rule forbids
+  // reading `.current` during render). useState without a setter
+  // only runs the initializer on first render, so `items` stays as
+  // the initialItems from mount time even if the parent re-renders
+  // with new initialItems props (e.g. revalidatePath in
+  // recordReviewAction re-queries today's due reviews and drops the
+  // just-reviewed word from the list — without this freeze, index=1
+  // would point to a different word than the user expected, looking
+  // like a +2 skip).
+  const [items] = useState(initialItems);
 
   // Derived state must be declared BEFORE any hook that reads it —
   // rules-of-hooks + TS2448 ("used before declaration"). The session
