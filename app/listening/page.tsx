@@ -1054,18 +1054,23 @@ function ListeningPageContent() {
           doesn't want the right-side cross-link clutter on the listening
           page header. Keep the session timer so the user still sees how
           long they've been training. */}
-      <header className="mb-6 flex items-center justify-end gap-3">
+      {/* Frank #6739: timer moved next to heading on the same row.
+          Old standalone `<header>` removed; timer now lives on the
+          heading row via flex justify-between. items-baseline
+          aligns the small timer text against the large h1 baseline
+          for visual stability. whitespace-nowrap keeps the
+          "🕐 MM:SS" timer on one line. */}
+      <div className="flex items-baseline justify-between gap-4 mb-2">
+        <h1 className="text-2xl font-bold">
+          {mode === "listen" ? "听力训练" : mode === "shadow" ? "跟读训练" : "真人发音"}
+        </h1>
         <span
           aria-label="本次学习时长"
-          className="text-sm text-gray-500 tabular-nums"
+          className="text-sm text-gray-500 tabular-nums whitespace-nowrap"
         >
           🕐 {formatDuration(elapsed)}
         </span>
-      </header>
-
-      <h1 className="text-2xl font-bold mb-2">
-        {mode === "listen" ? "听力训练" : mode === "shadow" ? "跟读训练" : "真人发音"}
-      </h1>
+      </div>
       <p className="text-sm text-gray-500 mb-6">
         {mode === "listen"
           ? "听 AI 朗读：5 场景 × 5 难度 × 6 句 = 150 句 N5/N4/N3/N2/N1 起步。所有汉字标假名（振り仮名）。点 🔊 听、慢速 / 常速切换、上一句 / 下一句。"

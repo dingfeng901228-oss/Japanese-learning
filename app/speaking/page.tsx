@@ -591,19 +591,26 @@ const data = (await r.json()) as {
       {/* Frank #6671 (UI优化.docx): drop "← 今日训练" nav link — /today page is
           removed; nav would 404. Keep the timer + coach label on the right
           so the user still sees how long they've been speaking. */}
-      <header className="mb-6 flex items-center justify-end gap-3">
-        <span
-          aria-label="本次学习时长"
-          className="text-sm text-gray-500 tabular-nums"
-        >
-          🕐 {formatDuration(speakingElapsed)}
-        </span>
-        <span className="text-sm text-gray-400">AI 口语教练</span>
-      </header>
-
-      <h1 className="text-2xl font-bold mb-2">
-        {selectedTopic ? selectedTopic.title : "自由对话"}
-      </h1>
+      {/* Frank #6739: timer moved next to heading on the same row.
+          Old standalone `<header>` removed; timer + "AI 口语教练"
+          label now sit on the heading row via flex justify-between.
+          items-baseline aligns the small timer text against the large
+          h1 baseline for visual stability. whitespace-nowrap keeps
+          the "🕐 MM:SS" timer on one line. */}
+      <div className="flex items-baseline justify-between gap-4 mb-2">
+        <h1 className="text-2xl font-bold">
+          {selectedTopic ? selectedTopic.title : "自由对话"}
+        </h1>
+        <div className="flex items-center gap-3 text-sm">
+          <span className="text-gray-400">AI 口语教练</span>
+          <span
+            aria-label="本次学习时长"
+            className="text-gray-500 tabular-nums whitespace-nowrap"
+          >
+            🕐 {formatDuration(speakingElapsed)}
+          </span>
+        </div>
+      </div>
       <p className="text-sm text-gray-500 mb-6">
         {conversationActive ? labels.descActive : labels.descDone}
       </p>
