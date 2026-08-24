@@ -34,8 +34,11 @@ export function WeekStats() {
       </div>
       <div>
         <p className="text-xs text-gray-500 mb-1">学习天数</p>
+        {/* Frank #6750: removed " / 7" — Frank wants just the number.
+            The "out of 7 days this week" denominator is implicit
+            (the title says 本周 — this week = last 7 days). */}
         <p className="text-lg font-bold tabular-nums text-ink">
-          {daysStudied} / 7
+          {daysStudied}
         </p>
       </div>
     </>
