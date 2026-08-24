@@ -245,12 +245,24 @@ export function ReviewSession({
   const [outcomeInFlight, setOutcomeInFlight] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Frank #6717: freeze initialItems at mount. The parent Server
+  // Component may re-render and pass new initialItems (e.g.
+  // revalidatePath in recordReviewAction invalidates /review and
+  // re-queries today's due reviews, dropping the just-reviewed word
+  // from the list). If we read the new initialItems while keeping our
+  // own index counter, index=1 now points to a different word than
+  // the user expected — looking like a +2 skip. Snapshotted via
+  // useRef so all internal reads see the same list the user started
+  // the session with.
+  const itemsRef = useRef(initialItems);
+  const items = itemsRef.current;
+
   // Derived state must be declared BEFORE any hook that reads it —
   // rules-of-hooks + TS2448 ("used before declaration"). The session
   // timer below needs `current?.id` as segmentKey, so we compute
   // done/current first.
-  const done = index >= initialItems.length;
-  const current = done ? null : initialItems[index];
+  const done = index >= items.length;
+  const current = done ? null : items[index];
 
   // Per Frank #6175: session timer for the vocab bucket (vocab + review
   // pages both feed into this bucket per UI优化.docx — "词汇" item covers
@@ -363,8 +375,8 @@ export function ReviewSession({
     setIndex((i) => Math.max(0, i - 1));
   }, []);
   const goNext = useCallback(() => {
-    setIndex((i) => Math.min(initialItems.length - 1, i + 1));
-  }, [initialItems.length]);
+    setIndex((i) => Math.min(items.length - 1, i + 1));
+  }, [items.length]);
 
   // --- Now safe to early-return ---
   if (done) {
@@ -373,7 +385,7 @@ export function ReviewSession({
         <div className="text-4xl mb-4">🎉</div>
         <p className="text-lg font-medium">复习完成！</p>
         <p className="text-sm text-gray-500 mt-2">
-          共复习 {initialItems.length} 个单词。
+          共复习 {items.length} 个单词。
         </p>
         {/* Frank #6671 (UI优化.docx) removed /today route. Send the
             user back to /vocabulary to add more words or pick a
@@ -396,7 +408,7 @@ export function ReviewSession({
     <div className="space-y-8">
       {/* Progress + autoplay toggle (top, §16) */}
       <div className="flex items-center justify-between text-sm text-gray-500">
-        <div>复习 · {index + 1} / {initialItems.length}</div>
+        <div>复习 · {index + 1} / {items.length}</div>
         {hydrated && (
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
@@ -496,7 +508,7 @@ export function ReviewSession({
             <button
               type="button"
               onClick={goNext}
-              disabled={index === initialItems.length - 1}
+              disabled={index === items.length - 1}
               className="px-4 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100 active:translate-y-px disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm font-medium"
               aria-label="下一题"
             >
@@ -564,7 +576,7 @@ export function ReviewSession({
             <button
               type="button"
               onClick={goNext}
-              disabled={index === initialItems.length - 1}
+              disabled={index === items.length - 1}
               className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100 active:translate-y-px disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm"
               aria-label="下一题"
             >
