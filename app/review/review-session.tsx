@@ -234,6 +234,15 @@ export function ReviewSession({
   // phase. User types their guess; empty answer is OK — clicking
   // 显示单词 still reveals the target.
   const [userAnswer, setUserAnswer] = useState("");
+  // Frank #6710: rating buttons ("再来一次" / "记住了") were advancing
+  // the question by +2 instead of +1. Root cause: handleOutcome is async
+  // (awaits recordReviewAction → 100-500ms network round-trip) and the
+  // buttons had no visual feedback during the await. Users (especially
+  // touch / IME / impatient) often re-clicked before the first await
+  // resolved, so handleOutcome fired twice and setIndex(i+1) ran twice.
+  // Fix: in-flight flag that (a) early-returns on re-entry, (b) drives
+  // `disabled` on both buttons so the second click is a no-op visually.
+  const [outcomeInFlight, setOutcomeInFlight] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Derived state must be declared BEFORE any hook that reads it —
@@ -324,14 +333,25 @@ export function ReviewSession({
 
   const handleOutcome = useCallback(
     async (outcome: "remembered" | "again") => {
-      if (!current) return;
-      const fd = new FormData();
-      fd.set("review_id", current.id);
-      fd.set("outcome", outcome);
-      await recordReviewAction(fd);
-      setIndex((i) => i + 1);
+      // Frank #6710: in-flight guard. The re-entry guard prevents the
+      // second click from firing a duplicate server action + duplicate
+      // setIndex. The `disabled` on the buttons is the user-facing
+      // half — this is the programmatic half.
+      if (!current || outcomeInFlight) return;
+      setOutcomeInFlight(true);
+      try {
+        const fd = new FormData();
+        fd.set("review_id", current.id);
+        fd.set("outcome", outcome);
+        await recordReviewAction(fd);
+        setIndex((i) => i + 1);
+      } finally {
+        // Always clear the flag — even if recordReviewAction throws —
+        // so the user isn't permanently locked out of grading.
+        setOutcomeInFlight(false);
+      }
     },
-    [current]
+    [current, outcomeInFlight]
   );
 
   // Frank #6680: prev/next navigation. Clamped at [0, length-1] so
@@ -555,14 +575,16 @@ export function ReviewSession({
             <button
               type="button"
               onClick={() => handleOutcome("again")}
-              className="flex-1 px-6 py-4 rounded-xl border-2 border-red-300 text-red-700 hover:bg-red-50 active:bg-red-100 active:translate-y-px transition-all text-base font-medium"
+              disabled={outcomeInFlight}
+              className="flex-1 px-6 py-4 rounded-xl border-2 border-red-300 text-red-700 hover:bg-red-50 active:bg-red-100 active:translate-y-px transition-all text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
             >
               再来一次
             </button>
             <button
               type="button"
               onClick={() => handleOutcome("remembered")}
-              className="flex-1 px-6 py-4 rounded-xl border-2 border-green-300 text-green-700 hover:bg-green-50 active:bg-green-100 active:translate-y-px transition-all text-base font-medium"
+              disabled={outcomeInFlight}
+              className="flex-1 px-6 py-4 rounded-xl border-2 border-green-300 text-green-700 hover:bg-green-50 active:bg-green-100 active:translate-y-px transition-all text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
             >
               记住了
             </button>
