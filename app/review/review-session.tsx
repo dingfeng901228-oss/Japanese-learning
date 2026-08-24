@@ -411,7 +411,7 @@ export function ReviewSession({
             active review (was above the empty-state branch). */}
         <p className="text-gray-600 mt-2">
           看到日语句子（目标词隐藏） + 完整读音 + 中文，主动回忆目标日语文字。
-          点「显示单词」检查，记住了就下次再来，没记住马上复习。
+          点「显示答案」检查，记住了就下次再来，没记住马上复习。
         </p>
       </header>
 
