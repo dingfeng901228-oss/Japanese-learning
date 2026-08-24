@@ -73,14 +73,91 @@ function saveAutoplayPref(on: boolean) {
 }
 
 /**
+ * Locate the [start, end) range in `example` that should be hidden /
+ * highlighted to represent the target word. Returns null if no
+ * reasonable position can be found — caller renders the example
+ * unchanged.
+ *
+ * Strategy (Frank #6707 — review showed full sentence for conjugated
+ * targets like 叩く in 彼はドアを叩いた。 because the old code only
+ * did exact `example.includes(target)` substring search):
+ *   1. Exact match — covers nouns, dictionary-form appearances, and
+ *      katakana/loan words.
+ *   2. Kanji-prefix match with trailing-hiragana extension — covers
+ *      verb/adj conjugations. Japanese verbs/adjectives keep their
+ *      kanji root at the same position when conjugated; everything
+ *      after the kanji until the next non-hiragana char is part of
+ *      the inflection.
+ *        叩く   → 叩いた / 叩いて / 叩かない / 叩ける / 叩けば
+ *        食べる → 食べた / 食べます / 食べない
+ *        飲む   → 飲んだ / 飲みます / 飲める / 飲もう
+ *        早い   → 早かった / 早くない
+ *        静か   → 静かな / 静かに
+ *   3. Longest-prefix match with trailing-hiragana extension — for
+ *      pure-hiragana targets (i-adjectives like おいしい→おいしく
+ *      なかった, humble verbs). Min prefix length 2 to avoid noise
+ *      from single-char particles.
+ *   4. Return null → caller renders example unchanged.
+ */
+type BlankRange = { start: number; end: number };
+
+function findBlankRange(
+  example: string,
+  target: string
+): BlankRange | null {
+  if (!example || !target) return null;
+
+  // 1. Exact match.
+  const exact = example.indexOf(target);
+  if (exact !== -1) {
+    return { start: exact, end: exact + target.length };
+  }
+
+  // 2. Kanji-prefix match. Leading run that's NOT hiragana/katakana
+  //    catches kanji + ASCII + symbols + half-width.
+  const kanjiPrefix = target.match(/^[^ぁ-ゟァ-ヿ]+/);
+  if (kanjiPrefix) {
+    const kanji = kanjiPrefix[0];
+    const idx = example.indexOf(kanji);
+    if (idx !== -1) {
+      let end = idx + kanji.length;
+      while (end < example.length && /[ぁ-ゟ]/.test(example[end])) {
+        end++;
+      }
+      return { start: idx, end };
+    }
+  }
+
+  // 3. Longest-prefix match for pure-hiragana targets (step 2 returned
+  //    nothing because target has no non-kana prefix).
+  for (let len = target.length - 1; len >= 2; len--) {
+    const prefix = target.slice(0, len);
+    const idx = example.indexOf(prefix);
+    if (idx !== -1) {
+      let end = idx + prefix.length;
+      while (end < example.length && /[ぁ-ゟ]/.test(example[end])) {
+        end++;
+      }
+      return { start: idx, end };
+    }
+  }
+
+  return null;
+}
+
+/**
  * Render the example sentence with an <input> field inserted where the
  * target word appears (Frank #6668). User types their guess into the
  * input; clicking 显示单词 reveals the answer regardless of whether
  * anything was typed (empty input is OK).
  *
- * If target isn't in the example, returns the example unchanged — no
- * input rendered (signals inconsistent vocab data; user can still read
- * the full sentence but has no blank to fill in).
+ * Uses `findBlankRange` so conjugated forms (叩く → 叩いた) also get
+ * a blank — exact substring match alone missed them (Frank #6707).
+ *
+ * If no reasonable blank position can be determined, returns the
+ * example unchanged — no input rendered (signals inconsistent vocab
+ * data; user can still read the full sentence but has no blank to fill
+ * in).
  *
  * Styling: bottom-border underline to read as "blank line" at sentence
  * scale, bg-transparent so the surrounding text shows through. Width
@@ -97,11 +174,11 @@ function renderSentenceWithInput(
     inputRef: React.Ref<HTMLInputElement>;
   }
 ): React.ReactNode {
-  if (!example.includes(target)) return example;
-  const parts = example.split(target);
+  const range = findBlankRange(example, target);
+  if (!range) return example;
   return (
     <>
-      {parts[0]}
+      {example.slice(0, range.start)}
       <input
         ref={inputProps.inputRef}
         type="text"
@@ -112,33 +189,32 @@ function renderSentenceWithInput(
         aria-label="输入目标词"
         className="inline-block w-32 mx-1 border-b-2 border-gray-900 bg-transparent text-2xl font-medium text-center focus:outline-none focus:border-blue-500 px-1"
       />
-      {parts.slice(1).map((p, i) => (
-        <span key={i}>{p}</span>
-      ))}
+      {example.slice(range.end)}
     </>
   );
 }
 
 /**
  * Render sentence with target word bolded (font-weight: 700, §8).
- * Used in ANSWER_REVEALED phase. If data is inconsistent and target
- * isn't in example, render the full sentence plain (no bolding).
+ * Used in ANSWER_REVEALED phase. Bolds the actual surface form in the
+ * example (via `findBlankRange`) so conjugated targets (叩く → 叩いた)
+ * still highlight the word the user was supposed to recall (Frank #6707).
+ *
+ * If no reasonable position can be determined, renders the full
+ * sentence plain (no bolding).
  */
 function renderWithBoldTarget(
   example: string,
   target: string
 ): React.ReactNode {
-  if (!target || !example || !example.includes(target)) return example;
-  const parts = example.split(target);
+  const range = findBlankRange(example, target);
+  if (!range) return example;
+  const surface = example.slice(range.start, range.end);
   return (
     <>
-      {parts[0]}
-      {parts.slice(1).map((p, i) => (
-        <span key={i}>
-          <strong className="font-bold">{target}</strong>
-          {p}
-        </span>
-      ))}
+      {example.slice(0, range.start)}
+      <strong className="font-bold">{surface}</strong>
+      {example.slice(range.end)}
     </>
   );
 }
