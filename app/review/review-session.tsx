@@ -562,6 +562,14 @@ export function ReviewSession({
         </>
       ) : (
         <>
+          {/* Frank #6748: swipe wrapper around sentence + reading + 🔊
+             + translation. Reuses handleSwipeTouchStart/End from
+             commit 1651ca9 (#6746). The rating buttons stay outside
+             so taps on 再来一次 / 记住 don't trigger swipes. */}
+          <div
+            onTouchStart={handleSwipeTouchStart}
+            onTouchEnd={handleSwipeTouchEnd}
+          >
           {/* ANSWER_REVEALED: sentence with bold target (§8). */}
           <div className="text-2xl font-medium text-gray-900 leading-loose text-left break-words whitespace-pre-wrap">
             {hasExample ? (
@@ -602,6 +610,7 @@ export function ReviewSession({
             {current.example_translation ?? (
               <span className="italic text-gray-400">(翻译缺失)</span>
             )}
+          </div>
           </div>
 
           {/* 再来一次 / 记住了 (§10). Frank #6680 added prev/next above
