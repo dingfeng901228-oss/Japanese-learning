@@ -132,9 +132,7 @@ export function LearningActivityClient({
       </div>
 
       <p className="text-sm text-gray-700 mb-4">
-        学习天数：<span className="font-bold text-ink">{totalDays}</span>
-        <span className="mx-2 text-gray-300">·</span>
-        总学习时间：<span className="font-bold text-ink">{totalDisplay}</span>
+        总共学习：<span className="font-bold text-ink">{totalDisplay}</span>
         <span className="mx-2 text-gray-300">·</span>
         最高：<span className="font-bold text-ink">{peakMinutes} 分</span>
       </p>
