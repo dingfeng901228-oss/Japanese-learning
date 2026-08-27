@@ -26,6 +26,30 @@ export const PRELOADED_BATCHES = [
     description:
       "饮食・烹饪 / 交通・出行 / 经济・金融 / 科技・IT / 教育・学习 / 法律・行政 / 文学・修辞 / 程度・副词 (N2:120 + N1:80)",
   },
+  {
+    filename: "jlpt-vocab-200-batch3.json",
+    label: "JLPT N2-N1 第三批 200 词",
+    description:
+      "娱乐・休闲 / 体育・运动 / 婚恋・家庭 / 艺术・设计 / 动植物 / 心理学 / 外交・军事 / 宗教・哲学 (N2:124 + N1:76)",
+  },
+  {
+    filename: "jlpt-vocab-200-batch4.json",
+    label: "JLPT N2-N1 第四批 200 词",
+    description:
+      "天文・地理 / 化学・物理 / 建筑・房产 / 政治・体制 / 商业・贸易 / 餐饮・服务业 / 时尚・穿搭 / 育儿・教育进阶 (N2:108 + N1:92)",
+  },
+  {
+    filename: "jlpt-vocab-200-batch5.json",
+    label: "JLPT N2-N1 第五批 200 词",
+    description:
+      "外貌・体态 / 气象・灾害进阶 / 能源・环保 / 影视・传媒 / 动漫・游戏 / 交际・礼仪进阶 / 财税・会计 / 拟声・拟态语 (N2:120 + N1:80)",
+  },
+  {
+    filename: "jlpt-vocab-200-batch6.json",
+    label: "JLPT N2-N1 第六批 200 词",
+    description:
+      "职场敬语实战 / 旅游・出行进阶 / 网络用语 / 四字熟语 / 故事・寓言常用词 / 家电・家居 / 求职・面试专用词 / 保险・风险管理 (N2:107 + N1:93)",
+  },
 ] as const;
 
 export type PreloadedBatchFilename = (typeof PRELOADED_BATCHES)[number]["filename"];

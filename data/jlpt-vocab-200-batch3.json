@@ -1,0 +1,2402 @@
+[
+  {
+    "word": "娯楽",
+    "reading": "ごらく",
+    "meaning": "娱乐",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "この町には娯楽施設が少ない。",
+      "reading": "まち・ごらくしせつ・すく",
+      "translation": "这个小镇娱乐设施很少。"
+    }
+  },
+  {
+    "word": "趣味",
+    "reading": "しゅみ",
+    "meaning": "爱好",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "趣味は写真を撮ることです。",
+      "reading": "しゅみ・しゃしん・と",
+      "translation": "我的爱好是拍照。"
+    }
+  },
+  {
+    "word": "余暇",
+    "reading": "よか",
+    "meaning": "闲暇",
+    "level": "N1",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "余暇を有効に使いたい。",
+      "reading": "よか・ゆうこう・つか",
+      "translation": "想有效利用闲暇时间。"
+    }
+  },
+  {
+    "word": "息抜き",
+    "reading": "いきぬき",
+    "meaning": "喘口气，放松",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "たまには息抜きも必要だ。",
+      "reading": "いきぬ・ひつよう",
+      "translation": "偶尔喘口气也是必要的。"
+    }
+  },
+  {
+    "word": "遊園地",
+    "reading": "ゆうえんち",
+    "meaning": "游乐园",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "子供を遊園地に連れて行った。",
+      "reading": "こども・ゆうえんち・つ・い",
+      "translation": "带孩子去了游乐园。"
+    }
+  },
+  {
+    "word": "観覧車",
+    "reading": "かんらんしゃ",
+    "meaning": "摩天轮",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "観覧車から街を見下ろした。",
+      "reading": "かんらんしゃ・まち・みお",
+      "translation": "从摩天轮上俯瞰了城市。"
+    }
+  },
+  {
+    "word": "気晴らし",
+    "reading": "きばらし",
+    "meaning": "消遣",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "散歩は良い気晴らしになる。",
+      "reading": "さんぽ・よ・きば",
+      "translation": "散步是很好的消遣。"
+    }
+  },
+  {
+    "word": "没頭",
+    "reading": "ぼっとう",
+    "meaning": "埋头，专注",
+    "level": "N1",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "仕事に没頭して時間を忘れた。",
+      "reading": "しごと・ぼっとう・じかん・わす",
+      "translation": "埋头工作忘记了时间。"
+    }
+  },
+  {
+    "word": "熱中",
+    "reading": "ねっちゅう",
+    "meaning": "热衷",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "最近、ガーデニングに熱中している。",
+      "reading": "さいきん・ねっちゅう",
+      "translation": "最近热衷于园艺。"
+    }
+  },
+  {
+    "word": "夢中",
+    "reading": "むちゅう",
+    "meaning": "入迷",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "漫画に夢中になっている。",
+      "reading": "まんが・むちゅう",
+      "translation": "正沉迷于漫画。"
+    }
+  },
+  {
+    "word": "退屈",
+    "reading": "たいくつ",
+    "meaning": "无聊",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "退屈な会議が続いた。",
+      "reading": "たいくつ・かいぎ・つづ",
+      "translation": "无聊的会议持续了很久。"
+    }
+  },
+  {
+    "word": "興じる",
+    "reading": "きょうじる",
+    "meaning": "尽兴，玩得起劲",
+    "level": "N1",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "友人とゲームに興じた。",
+      "reading": "ゆうじん・きょう",
+      "translation": "和朋友玩游戏玩得很尽兴。"
+    }
+  },
+  {
+    "word": "見物",
+    "reading": "けんぶつ",
+    "meaning": "参观，游览",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "祭りを見物しに出かけた。",
+      "reading": "まつ・けんぶつ・で",
+      "translation": "出门去看祭典了。"
+    }
+  },
+  {
+    "word": "鑑賞",
+    "reading": "かんしょう",
+    "meaning": "欣赏",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "美術館で絵画を鑑賞した。",
+      "reading": "びじゅつかん・かいが・かんしょう",
+      "translation": "在美术馆欣赏了绘画。"
+    }
+  },
+  {
+    "word": "撮影",
+    "reading": "さつえい",
+    "meaning": "拍摄",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "映画の撮影が来月始まる。",
+      "reading": "えいが・さつえい・らいげつ・はじ",
+      "translation": "电影拍摄下个月开始。"
+    }
+  },
+  {
+    "word": "収集",
+    "reading": "しゅうしゅう",
+    "meaning": "收集",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "切手の収集が趣味だ。",
+      "reading": "きって・しゅうしゅう・しゅみ",
+      "translation": "收集邮票是我的爱好。"
+    }
+  },
+  {
+    "word": "賭け",
+    "reading": "かけ",
+    "meaning": "赌注",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "これは一種の賭けだと思う。",
+      "reading": "いっしゅ・か・おも",
+      "translation": "我觉得这是一种赌注。"
+    }
+  },
+  {
+    "word": "抽選",
+    "reading": "ちゅうせん",
+    "meaning": "抽签",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "抽選でチケットが当たった。",
+      "reading": "ちゅうせん・あ",
+      "translation": "抽签抽中了票。"
+    }
+  },
+  {
+    "word": "当選",
+    "reading": "とうせん",
+    "meaning": "中选，中奖",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "宝くじに当選した。",
+      "reading": "たからくじ・とうせん",
+      "translation": "彩票中奖了。"
+    }
+  },
+  {
+    "word": "満喫",
+    "reading": "まんきつ",
+    "meaning": "尽情享受",
+    "level": "N1",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "旅行を存分に満喫した。",
+      "reading": "りょこう・ぞんぶん・まんきつ",
+      "translation": "尽情享受了这次旅行。"
+    }
+  },
+  {
+    "word": "遊び心",
+    "reading": "あそびごころ",
+    "meaning": "玩心，玩味",
+    "level": "N1",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "この商品には遊び心が感じられる。",
+      "reading": "しょうひん・あそびごころ・かん",
+      "translation": "这个商品能让人感受到玩趣之心。"
+    }
+  },
+  {
+    "word": "気分転換",
+    "reading": "きぶんてんかん",
+    "meaning": "转换心情",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "気分転換に散歩に出た。",
+      "reading": "きぶんてんかん・さんぽ・で",
+      "translation": "为了转换心情出去散步了。"
+    }
+  },
+  {
+    "word": "憩い",
+    "reading": "いこい",
+    "meaning": "休憩，安逸",
+    "level": "N1",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "公園は市民の憩いの場だ。",
+      "reading": "こうえん・しみん・いこ・ば",
+      "translation": "公园是市民休憩的场所。"
+    }
+  },
+  {
+    "word": "くつろぐ",
+    "reading": null,
+    "meaning": "放松",
+    "level": "N2",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "家でゆっくりくつろいだ。",
+      "reading": "いえ",
+      "translation": "在家悠闲地放松了一下。"
+    }
+  },
+  {
+    "word": "催し",
+    "reading": "もよおし",
+    "meaning": "活动",
+    "level": "N1",
+    "category": "娱乐・休闲",
+    "example": {
+      "sentence": "地域で様々な催しが開かれる。",
+      "reading": "ちいき・さまざま・もよお・ひら",
+      "translation": "当地会举办各种各样的活动。"
+    }
+  },
+  {
+    "word": "競技",
+    "reading": "きょうぎ",
+    "meaning": "竞技",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "陸上競技の大会に出場した。",
+      "reading": "りくじょうきょうぎ・たいかい・しゅつじょう",
+      "translation": "参加了田径竞技大会。"
+    }
+  },
+  {
+    "word": "試合",
+    "reading": "しあい",
+    "meaning": "比赛",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "明日は大事な試合がある。",
+      "reading": "あした・だいじ・しあい",
+      "translation": "明天有重要的比赛。"
+    }
+  },
+  {
+    "word": "選手",
+    "reading": "せんしゅ",
+    "meaning": "选手",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "日本代表の選手が活躍した。",
+      "reading": "にほんだいひょう・せんしゅ・かつやく",
+      "translation": "日本代表队的选手大显身手。"
+    }
+  },
+  {
+    "word": "監督",
+    "reading": "かんとく",
+    "meaning": "教练，主帅",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "新しい監督がチームを率いる。",
+      "reading": "あたら・かんとく・ひき",
+      "translation": "新教练率领着球队。"
+    }
+  },
+  {
+    "word": "審判",
+    "reading": "しんぱん",
+    "meaning": "裁判",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "審判の判定に選手が抗議した。",
+      "reading": "しんぱん・はんてい・せんしゅ・こうぎ",
+      "translation": "选手对裁判的判定提出了抗议。"
+    }
+  },
+  {
+    "word": "優勝",
+    "reading": "ゆうしょう",
+    "meaning": "冠军",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "チームは見事に優勝した。",
+      "reading": "みごと・ゆうしょう",
+      "translation": "这支队伍出色地夺得了冠军。"
+    }
+  },
+  {
+    "word": "敗北",
+    "reading": "はいぼく",
+    "meaning": "败北，落败",
+    "level": "N1",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "最後の一戦で敗北を喫した。",
+      "reading": "さいご・いっせん・はいぼく・きっ",
+      "translation": "在最后一场比赛中落败了。"
+    }
+  },
+  {
+    "word": "勝敗",
+    "reading": "しょうはい",
+    "meaning": "胜负",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "最後まで勝敗はわからなかった。",
+      "reading": "さいご・しょうはい",
+      "translation": "直到最后都不知道胜负如何。"
+    }
+  },
+  {
+    "word": "記録",
+    "reading": "きろく",
+    "meaning": "记录",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "世界記録を更新した。",
+      "reading": "せかいきろく・こうしん",
+      "translation": "刷新了世界纪录。"
+    }
+  },
+  {
+    "word": "鍛える",
+    "reading": "きたえる",
+    "meaning": "锻炼",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "毎日体を鍛えている。",
+      "reading": "まいにち・からだ・きた",
+      "translation": "每天都在锻炼身体。"
+    }
+  },
+  {
+    "word": "筋肉",
+    "reading": "きんにく",
+    "meaning": "肌肉",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "トレーニングで筋肉がついた。",
+      "reading": "きんにく",
+      "translation": "通过训练长出了肌肉。"
+    }
+  },
+  {
+    "word": "柔軟性",
+    "reading": "じゅうなんせい",
+    "meaning": "柔韧性",
+    "level": "N1",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "ストレッチで柔軟性を高める。",
+      "reading": "じゅうなんせい・たか",
+      "translation": "通过拉伸提高柔韧性。"
+    }
+  },
+  {
+    "word": "持久力",
+    "reading": "じきゅうりょく",
+    "meaning": "耐力",
+    "level": "N1",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "マラソンには持久力が欠かせない。",
+      "reading": "じきゅうりょく・か",
+      "translation": "马拉松离不开耐力。"
+    }
+  },
+  {
+    "word": "瞬発力",
+    "reading": "しゅんぱつりょく",
+    "meaning": "爆发力",
+    "level": "N1",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "短距離走には瞬発力が必要だ。",
+      "reading": "たんきょりそう・しゅんぱつりょく・ひつよう",
+      "translation": "短跑需要爆发力。"
+    }
+  },
+  {
+    "word": "怪我",
+    "reading": "けが",
+    "meaning": "受伤",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "練習中に怪我をしてしまった。",
+      "reading": "れんしゅうちゅう・けが",
+      "translation": "训练中受伤了。"
+    }
+  },
+  {
+    "word": "骨折",
+    "reading": "こっせつ",
+    "meaning": "骨折",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "転倒して足を骨折した。",
+      "reading": "てんとう・あし・こっせつ",
+      "translation": "摔倒后腿骨折了。"
+    }
+  },
+  {
+    "word": "捻挫",
+    "reading": "ねんざ",
+    "meaning": "扭伤",
+    "level": "N1",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "足首を捻挫してしまった。",
+      "reading": "あしくび・ねんざ",
+      "translation": "脚踝扭伤了。"
+    }
+  },
+  {
+    "word": "応援",
+    "reading": "おうえん",
+    "meaning": "声援，加油",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "スタンドから選手を応援した。",
+      "reading": "せんしゅ・おうえん",
+      "translation": "在看台上为选手加油。"
+    }
+  },
+  {
+    "word": "観客",
+    "reading": "かんきゃく",
+    "meaning": "观众",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "会場は観客で満員だった。",
+      "reading": "かいじょう・かんきゃく・まんいん",
+      "translation": "会场因观众爆满。"
+    }
+  },
+  {
+    "word": "大会",
+    "reading": "たいかい",
+    "meaning": "大会，赛事",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "全国大会に出場することになった。",
+      "reading": "ぜんこくたいかい・しゅつじょう",
+      "translation": "决定参加全国大赛。"
+    }
+  },
+  {
+    "word": "予選",
+    "reading": "よせん",
+    "meaning": "预赛",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "予選を突破して決勝に進んだ。",
+      "reading": "よせん・とっぱ・けっしょう・すす",
+      "translation": "突破预赛晋级决赛了。"
+    }
+  },
+  {
+    "word": "決勝",
+    "reading": "けっしょう",
+    "meaning": "决赛",
+    "level": "N2",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "決勝で強敵と対戦する。",
+      "reading": "けっしょう・きょうてき・たいせん",
+      "translation": "将在决赛中与强敌对战。"
+    }
+  },
+  {
+    "word": "棄権",
+    "reading": "きけん",
+    "meaning": "弃权",
+    "level": "N1",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "怪我のため試合を棄権した。",
+      "reading": "けが・しあい・きけん",
+      "translation": "因受伤弃权了比赛。"
+    }
+  },
+  {
+    "word": "反則",
+    "reading": "はんそく",
+    "meaning": "犯规",
+    "level": "N1",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "反則で退場を命じられた。",
+      "reading": "はんそく・たいじょう・めい",
+      "translation": "因犯规被勒令退场。"
+    }
+  },
+  {
+    "word": "奮闘",
+    "reading": "ふんとう",
+    "meaning": "奋斗，拼搏",
+    "level": "N1",
+    "category": "体育・运动",
+    "example": {
+      "sentence": "最後まで奮闘した姿に感動した。",
+      "reading": "さいご・ふんとう・すがた・かんどう",
+      "translation": "为他奋战到最后的身影而感动。"
+    }
+  },
+  {
+    "word": "婚約",
+    "reading": "こんやく",
+    "meaning": "订婚",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "二人は先月婚約した。",
+      "reading": "ふたり・せんげつ・こんやく",
+      "translation": "两人上个月订婚了。"
+    }
+  },
+  {
+    "word": "結婚式",
+    "reading": "けっこんしき",
+    "meaning": "婚礼",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "来春、結婚式を挙げる予定だ。",
+      "reading": "らいはる・けっこんしき・あ・よてい",
+      "translation": "预定明年春天举行婚礼。"
+    }
+  },
+  {
+    "word": "離婚",
+    "reading": "りこん",
+    "meaning": "离婚",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "あの夫婦は離婚したそうだ。",
+      "reading": "ふうふ・りこん",
+      "translation": "听说那对夫妻离婚了。"
+    }
+  },
+  {
+    "word": "夫婦",
+    "reading": "ふうふ",
+    "meaning": "夫妻",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "あの夫婦は仲がいい。",
+      "reading": "ふうふ・なか",
+      "translation": "那对夫妻感情很好。"
+    }
+  },
+  {
+    "word": "独身",
+    "reading": "どくしん",
+    "meaning": "单身",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "彼は三十代で独身だ。",
+      "reading": "かれ・さんじゅうだい・どくしん",
+      "translation": "他三十多岁还单身。"
+    }
+  },
+  {
+    "word": "恋愛",
+    "reading": "れんあい",
+    "meaning": "恋爱",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "恋愛には興味がないと言っていた。",
+      "reading": "れんあい・きょうみ・い",
+      "translation": "他说自己对恋爱不感兴趣。"
+    }
+  },
+  {
+    "word": "片思い",
+    "reading": "かたおもい",
+    "meaning": "单相思",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "長い間、片思いをしていた。",
+      "reading": "なが あいだ・かたおもい",
+      "translation": "长期以来一直在单相思。"
+    }
+  },
+  {
+    "word": "失恋",
+    "reading": "しつれん",
+    "meaning": "失恋",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "失恋して落ち込んでいる。",
+      "reading": "しつれん・お こ",
+      "translation": "因失恋而消沉。"
+    }
+  },
+  {
+    "word": "交際",
+    "reading": "こうさい",
+    "meaning": "交往",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "二人は交際を始めて三年になる。",
+      "reading": "ふたり・こうさい・はじ・さんねん",
+      "translation": "两人交往已经三年了。"
+    }
+  },
+  {
+    "word": "妊娠",
+    "reading": "にんしん",
+    "meaning": "怀孕",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "妻の妊娠がわかった。",
+      "reading": "つま・にんしん",
+      "translation": "得知妻子怀孕了。"
+    }
+  },
+  {
+    "word": "出産",
+    "reading": "しゅっさん",
+    "meaning": "生产，分娩",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "来月、出産を控えている。",
+      "reading": "らいげつ・しゅっさん・ひか",
+      "translation": "下个月即将临盆。"
+    }
+  },
+  {
+    "word": "育児",
+    "reading": "いくじ",
+    "meaning": "育儿",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "育児と仕事の両立は大変だ。",
+      "reading": "いくじ・しごと・りょうりつ・たいへん",
+      "translation": "兼顾育儿和工作很辛苦。"
+    }
+  },
+  {
+    "word": "子育て",
+    "reading": "こそだて",
+    "meaning": "育儿（口语）",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "子育てで毎日忙しい。",
+      "reading": "こそだ・まいにち・いそが",
+      "translation": "因育儿每天都很忙。"
+    }
+  },
+  {
+    "word": "親戚",
+    "reading": "しんせき",
+    "meaning": "亲戚",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "正月には親戚が集まる。",
+      "reading": "しょうがつ・しんせき・あつ",
+      "translation": "过年时亲戚们会聚在一起。"
+    }
+  },
+  {
+    "word": "血縁",
+    "reading": "けつえん",
+    "meaning": "血缘",
+    "level": "N1",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "血縁関係がなくても家族だ。",
+      "reading": "けつえんかんけい・かぞく",
+      "translation": "即使没有血缘关系也是家人。"
+    }
+  },
+  {
+    "word": "扶養",
+    "reading": "ふよう",
+    "meaning": "抚养",
+    "level": "N1",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "両親を扶養する義務がある。",
+      "reading": "りょうしん・ふよう・ぎむ",
+      "translation": "有抚养父母的义务。"
+    }
+  },
+  {
+    "word": "養育",
+    "reading": "よういく",
+    "meaning": "养育",
+    "level": "N1",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "子供の養育には責任が伴う。",
+      "reading": "こども・よういく・せきにん・ともな",
+      "translation": "养育孩子伴随着责任。"
+    }
+  },
+  {
+    "word": "遺産",
+    "reading": "いさん",
+    "meaning": "遗产",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "祖父の遺産を相続した。",
+      "reading": "そふ・いさん・そうぞく",
+      "translation": "继承了祖父的遗产。"
+    }
+  },
+  {
+    "word": "相続",
+    "reading": "そうぞく",
+    "meaning": "继承",
+    "level": "N1",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "財産の相続について話し合った。",
+      "reading": "ざいさん・そうぞく・はな あ",
+      "translation": "就财产继承进行了商谈。"
+    }
+  },
+  {
+    "word": "世代",
+    "reading": "せだい",
+    "meaning": "世代",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "世代によって考え方が違う。",
+      "reading": "せだい・かんが かた・ちが",
+      "translation": "想法因世代而异。"
+    }
+  },
+  {
+    "word": "円満",
+    "reading": "えんまん",
+    "meaning": "圆满",
+    "level": "N1",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "夫婦円満の秘訣を聞かれた。",
+      "reading": "ふうふえんまん・ひけつ・き",
+      "translation": "被问及夫妻和睦的秘诀。"
+    }
+  },
+  {
+    "word": "別居",
+    "reading": "べっきょ",
+    "meaning": "分居",
+    "level": "N1",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "仕事の都合で別居している。",
+      "reading": "しごと・つごう・べっきょ",
+      "translation": "因工作原因分居两地。"
+    }
+  },
+  {
+    "word": "嫁",
+    "reading": "よめ",
+    "meaning": "儿媳，新娘",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "息子の嫁は優しい人だ。",
+      "reading": "むすこ・よめ・やさ・ひと",
+      "translation": "儿子的媳妇是个温柔的人。"
+    }
+  },
+  {
+    "word": "婿",
+    "reading": "むこ",
+    "meaning": "女婿，新郎",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "娘の婿は真面目な性格だ。",
+      "reading": "むすめ・むこ・まじめ・せいかく",
+      "translation": "女儿的女婿性格很认真。"
+    }
+  },
+  {
+    "word": "養う",
+    "reading": "やしなう",
+    "meaning": "养活，抚养",
+    "level": "N2",
+    "category": "婚恋・家庭",
+    "example": {
+      "sentence": "家族を養うために働いている。",
+      "reading": "かぞく・やしな・はたら",
+      "translation": "为了养家而工作。"
+    }
+  },
+  {
+    "word": "芸術",
+    "reading": "げいじゅつ",
+    "meaning": "艺术",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "芸術に関心を持つようになった。",
+      "reading": "げいじゅつ・かんしん・も",
+      "translation": "开始对艺术产生了兴趣。"
+    }
+  },
+  {
+    "word": "美術",
+    "reading": "びじゅつ",
+    "meaning": "美术",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "美術の授業が好きだった。",
+      "reading": "びじゅつ・じゅぎょう・す",
+      "translation": "以前很喜欢美术课。"
+    }
+  },
+  {
+    "word": "彫刻",
+    "reading": "ちょうこく",
+    "meaning": "雕刻",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "木を彫刻して作品を作った。",
+      "reading": "き・ちょうこく・さくひん・つく",
+      "translation": "雕刻木头制作了作品。"
+    }
+  },
+  {
+    "word": "絵画",
+    "reading": "かいが",
+    "meaning": "绘画",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "絵画のコレクションを見せてもらった。",
+      "reading": "かいが",
+      "translation": "请对方给我看了绘画收藏品。"
+    }
+  },
+  {
+    "word": "展覧会",
+    "reading": "てんらんかい",
+    "meaning": "展览会",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "友人の展覧会に行ってきた。",
+      "reading": "ゆうじん・てんらんかい・い",
+      "translation": "去看了朋友的展览会。"
+    }
+  },
+  {
+    "word": "個展",
+    "reading": "こてん",
+    "meaning": "个展",
+    "level": "N1",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "来月、初めての個展を開く。",
+      "reading": "らいげつ・はじ・こてん・ひら",
+      "translation": "下个月要举办第一次个展。"
+    }
+  },
+  {
+    "word": "創作",
+    "reading": "そうさく",
+    "meaning": "创作",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "小説の創作に没頭している。",
+      "reading": "しょうせつ・そうさく・ぼっとう",
+      "translation": "正埋头于小说创作。"
+    }
+  },
+  {
+    "word": "独創的",
+    "reading": "どくそうてき",
+    "meaning": "独创的",
+    "level": "N1",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "独創的なアイデアが評価された。",
+      "reading": "どくそうてき・アイデア・ひょうか",
+      "translation": "独创的想法得到了好评。"
+    }
+  },
+  {
+    "word": "斬新",
+    "reading": "ざんしん",
+    "meaning": "新颖",
+    "level": "N1",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "斬新なデザインが話題になった。",
+      "reading": "ざんしん・デザイン・わだい",
+      "translation": "新颖的设计成为了话题。"
+    }
+  },
+  {
+    "word": "配色",
+    "reading": "はいしょく",
+    "meaning": "配色",
+    "level": "N1",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "この作品は配色が美しい。",
+      "reading": "さくひん・はいしょく・うつく",
+      "translation": "这幅作品配色很美。"
+    }
+  },
+  {
+    "word": "構図",
+    "reading": "こうず",
+    "meaning": "构图",
+    "level": "N1",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "写真の構図にこだわっている。",
+      "reading": "しゃしん・こうず",
+      "translation": "很讲究照片的构图。"
+    }
+  },
+  {
+    "word": "素材",
+    "reading": "そざい",
+    "meaning": "素材，材料",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "自然素材を使った家具が人気だ。",
+      "reading": "しぜんそざい・つか・かぐ・にんき",
+      "translation": "使用天然素材的家具很受欢迎。"
+    }
+  },
+  {
+    "word": "質感",
+    "reading": "しつかん",
+    "meaning": "质感",
+    "level": "N1",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "この布は独特の質感がある。",
+      "reading": "ぬの・どくとく・しつかん",
+      "translation": "这块布有独特的质感。"
+    }
+  },
+  {
+    "word": "装飾",
+    "reading": "そうしょく",
+    "meaning": "装饰",
+    "level": "N1",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "部屋を花で装飾した。",
+      "reading": "へや・はな・そうしょく",
+      "translation": "用花装饰了房间。"
+    }
+  },
+  {
+    "word": "模様",
+    "reading": "もよう",
+    "meaning": "花纹",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "花柄の模様が入った服だ。",
+      "reading": "はながら・もよう・はい・ふく",
+      "translation": "这是带有花朵图案的衣服。"
+    }
+  },
+  {
+    "word": "彫る",
+    "reading": "ほる",
+    "meaning": "雕刻",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "石に文字を彫った。",
+      "reading": "いし・もじ・ほ",
+      "translation": "在石头上刻了文字。"
+    }
+  },
+  {
+    "word": "描く",
+    "reading": "えがく",
+    "meaning": "描绘",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "将来の夢を絵に描いた。",
+      "reading": "しょうらい・ゆめ・え・えが",
+      "translation": "把将来的梦想画成了画。"
+    }
+  },
+  {
+    "word": "作品",
+    "reading": "さくひん",
+    "meaning": "作品",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "この作品には強いメッセージが込められている。",
+      "reading": "さくひん・つよ・こ",
+      "translation": "这部作品蕴含着强烈的信息。"
+    }
+  },
+  {
+    "word": "芸能",
+    "reading": "げいのう",
+    "meaning": "演艺",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "芸能界に興味がある若者は多い。",
+      "reading": "げいのうかい・きょうみ・わかもの・おお",
+      "translation": "对演艺圈感兴趣的年轻人很多。"
+    }
+  },
+  {
+    "word": "演奏",
+    "reading": "えんそう",
+    "meaning": "演奏",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "ピアノの演奏を聴きに行った。",
+      "reading": "ピアノ・えんそう・き・い",
+      "translation": "去听了钢琴演奏。"
+    }
+  },
+  {
+    "word": "舞台",
+    "reading": "ぶたい",
+    "meaning": "舞台",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "初めて舞台に立った。",
+      "reading": "はじ・ぶたい・た",
+      "translation": "第一次站上了舞台。"
+    }
+  },
+  {
+    "word": "演技",
+    "reading": "えんぎ",
+    "meaning": "演技",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "あの俳優は演技が上手だ。",
+      "reading": "はいゆう・えんぎ・じょうず",
+      "translation": "那位演员演技很好。"
+    }
+  },
+  {
+    "word": "才能",
+    "reading": "さいのう",
+    "meaning": "才能",
+    "level": "N2",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "彼女には音楽の才能がある。",
+      "reading": "かのじょ・おんがく・さいのう",
+      "translation": "她有音乐才能。"
+    }
+  },
+  {
+    "word": "巧み",
+    "reading": "たくみ",
+    "meaning": "巧妙",
+    "level": "N1",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "巧みな筆使いに感心した。",
+      "reading": "たく・ふでづか・かんしん",
+      "translation": "对巧妙的笔法感到钦佩。"
+    }
+  },
+  {
+    "word": "傑作",
+    "reading": "けっさく",
+    "meaning": "杰作",
+    "level": "N1",
+    "category": "艺术・设计",
+    "example": {
+      "sentence": "これは画家一生の傑作と言われている。",
+      "reading": "がか・いっしょう・けっさく・い",
+      "translation": "这被称为是这位画家一生的杰作。"
+    }
+  },
+  {
+    "word": "生物",
+    "reading": "せいぶつ",
+    "meaning": "生物",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "この島には珍しい生物が生息している。",
+      "reading": "しま・めずら・せいぶつ・せいそく",
+      "translation": "这座岛上栖息着珍稀的生物。"
+    }
+  },
+  {
+    "word": "昆虫",
+    "reading": "こんちゅう",
+    "meaning": "昆虫",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "夏になると昆虫採集をした。",
+      "reading": "なつ・こんちゅうさいしゅう",
+      "translation": "一到夏天就去采集昆虫。"
+    }
+  },
+  {
+    "word": "哺乳類",
+    "reading": "ほにゅうるい",
+    "meaning": "哺乳类",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "クジラは哺乳類に分類される。",
+      "reading": "クジラ・ほにゅうるい・ぶんるい",
+      "translation": "鲸鱼被归类为哺乳类。"
+    }
+  },
+  {
+    "word": "爬虫類",
+    "reading": "はちゅうるい",
+    "meaning": "爬行类",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "爬虫類が苦手な人は多い。",
+      "reading": "はちゅうるい・にがて・ひと・おお",
+      "translation": "害怕爬行类动物的人很多。"
+    }
+  },
+  {
+    "word": "両生類",
+    "reading": "りょうせいるい",
+    "meaning": "两栖类",
+    "level": "N1",
+    "category": "动植物",
+    "example": {
+      "sentence": "カエルは両生類の代表だ。",
+      "reading": "カエル・りょうせいるい・だいひょう",
+      "translation": "青蛙是两栖类的代表。"
+    }
+  },
+  {
+    "word": "品種",
+    "reading": "ひんしゅ",
+    "meaning": "品种",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "新しい品種の野菜が開発された。",
+      "reading": "あたら・ひんしゅ・やさい・かいはつ",
+      "translation": "开发出了新品种的蔬菜。"
+    }
+  },
+  {
+    "word": "繁殖",
+    "reading": "はんしょく",
+    "meaning": "繁殖",
+    "level": "N1",
+    "category": "动植物",
+    "example": {
+      "sentence": "この魚は水槽で繁殖しやすい。",
+      "reading": "さかな・すいそう・はんしょく",
+      "translation": "这种鱼在水槽中容易繁殖。"
+    }
+  },
+  {
+    "word": "進化",
+    "reading": "しんか",
+    "meaning": "进化",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "生物は環境に応じて進化する。",
+      "reading": "せいぶつ・かんきょう・おう・しんか",
+      "translation": "生物会根据环境进化。"
+    }
+  },
+  {
+    "word": "本能",
+    "reading": "ほんのう",
+    "meaning": "本能",
+    "level": "N1",
+    "category": "动植物",
+    "example": {
+      "sentence": "動物は本能で危険を察知する。",
+      "reading": "どうぶつ・ほんのう・きけん・さっち",
+      "translation": "动物凭本能察觉危险。"
+    }
+  },
+  {
+    "word": "習性",
+    "reading": "しゅうせい",
+    "meaning": "习性",
+    "level": "N1",
+    "category": "动植物",
+    "example": {
+      "sentence": "この鳥には夜行性の習性がある。",
+      "reading": "とり・やこうせい・しゅうせい",
+      "translation": "这种鸟有夜行性的习性。"
+    }
+  },
+  {
+    "word": "天敵",
+    "reading": "てんてき",
+    "meaning": "天敌",
+    "level": "N1",
+    "category": "动植物",
+    "example": {
+      "sentence": "ネズミの天敵は猫だ。",
+      "reading": "ネズミ・てんてき・ねこ",
+      "translation": "老鼠的天敌是猫。"
+    }
+  },
+  {
+    "word": "冬眠",
+    "reading": "とうみん",
+    "meaning": "冬眠",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "クマは冬眠する動物だ。",
+      "reading": "クマ・とうみん・どうぶつ",
+      "translation": "熊是冬眠的动物。"
+    }
+  },
+  {
+    "word": "巣",
+    "reading": "す",
+    "meaning": "巢",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "鳥が木の枝に巣を作った。",
+      "reading": "とり・き・えだ・す・つく",
+      "translation": "鸟在树枝上筑了巢。"
+    }
+  },
+  {
+    "word": "根",
+    "reading": "ね",
+    "meaning": "根",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "植物の根が水を吸収する。",
+      "reading": "しょくぶつ・ね・みず・きゅうしゅう",
+      "translation": "植物的根吸收水分。"
+    }
+  },
+  {
+    "word": "茎",
+    "reading": "くき",
+    "meaning": "茎",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "花の茎が折れてしまった。",
+      "reading": "はな・くき・お",
+      "translation": "花的茎折断了。"
+    }
+  },
+  {
+    "word": "種",
+    "reading": "たね",
+    "meaning": "种子",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "花の種をまいた。",
+      "reading": "はな・たね",
+      "translation": "撒了花的种子。"
+    }
+  },
+  {
+    "word": "発芽",
+    "reading": "はつが",
+    "meaning": "发芽",
+    "level": "N1",
+    "category": "动植物",
+    "example": {
+      "sentence": "種から発芽するのに一週間かかった。",
+      "reading": "たね・はつが・いっしゅうかん",
+      "translation": "从种子发芽花了一周时间。"
+    }
+  },
+  {
+    "word": "栽培",
+    "reading": "さいばい",
+    "meaning": "栽培",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "家庭菜園でトマトを栽培している。",
+      "reading": "かていさいえん・トマト・さいばい",
+      "translation": "在家庭菜园里栽培番茄。"
+    }
+  },
+  {
+    "word": "品質",
+    "reading": "ひんしつ",
+    "meaning": "品质",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "この農作物は品質が高い。",
+      "reading": "のうさくぶつ・ひんしつ・たか",
+      "translation": "这种农产品品质很高。"
+    }
+  },
+  {
+    "word": "飼育",
+    "reading": "しいく",
+    "meaning": "饲养",
+    "level": "N1",
+    "category": "动植物",
+    "example": {
+      "sentence": "動物園でパンダを飼育している。",
+      "reading": "どうぶつえん・パンダ・しいく",
+      "translation": "动物园正在饲养熊猫。"
+    }
+  },
+  {
+    "word": "野生",
+    "reading": "やせい",
+    "meaning": "野生",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "野生の動物には近づかない方がいい。",
+      "reading": "やせい・どうぶつ・ちか",
+      "translation": "最好不要靠近野生动物。"
+    }
+  },
+  {
+    "word": "群れ",
+    "reading": "むれ",
+    "meaning": "群",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "象は群れで行動する。",
+      "reading": "ぞう・むれ・こうどう",
+      "translation": "大象是群居行动的。"
+    }
+  },
+  {
+    "word": "生息",
+    "reading": "せいそく",
+    "meaning": "栖息",
+    "level": "N1",
+    "category": "动植物",
+    "example": {
+      "sentence": "この地域には多くの野鳥が生息している。",
+      "reading": "ちいき・おお・やちょう・せいそく",
+      "translation": "这个地区栖息着很多野鸟。"
+    }
+  },
+  {
+    "word": "捕食",
+    "reading": "ほしょく",
+    "meaning": "捕食",
+    "level": "N1",
+    "category": "动植物",
+    "example": {
+      "sentence": "ライオンはシマウマを捕食する。",
+      "reading": "ライオン・シマウマ・ほしょく",
+      "translation": "狮子捕食斑马。"
+    }
+  },
+  {
+    "word": "枯れる",
+    "reading": "かれる",
+    "meaning": "枯萎",
+    "level": "N2",
+    "category": "动植物",
+    "example": {
+      "sentence": "水をやり忘れて花が枯れてしまった。",
+      "reading": "みず・わす・はな・か",
+      "translation": "忘记浇水花枯萎了。"
+    }
+  },
+  {
+    "word": "心理",
+    "reading": "しんり",
+    "meaning": "心理",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "消費者の心理を分析する。",
+      "reading": "しょうひしゃ・しんり・ぶんせき",
+      "translation": "分析消费者的心理。"
+    }
+  },
+  {
+    "word": "意識",
+    "reading": "いしき",
+    "meaning": "意识",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "環境問題への意識が高まっている。",
+      "reading": "かんきょうもんだい・いしき・たか",
+      "translation": "对环境问题的意识正在提高。"
+    }
+  },
+  {
+    "word": "無意識",
+    "reading": "むいしき",
+    "meaning": "无意识",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "無意識のうちに癖が出てしまう。",
+      "reading": "むいしき・くせ・で",
+      "translation": "会在无意识中显露出习惯。"
+    }
+  },
+  {
+    "word": "自尊心",
+    "reading": "じそんしん",
+    "meaning": "自尊心",
+    "level": "N1",
+    "category": "心理学",
+    "example": {
+      "sentence": "批判されて自尊心が傷ついた。",
+      "reading": "ひはん・じそんしん・きず",
+      "translation": "因被批评自尊心受到了伤害。"
+    }
+  },
+  {
+    "word": "認知",
+    "reading": "にんち",
+    "meaning": "认知",
+    "level": "N1",
+    "category": "心理学",
+    "example": {
+      "sentence": "認知の歪みが行動に影響する。",
+      "reading": "にんち・ゆが・こうどう・えいきょう",
+      "translation": "认知的偏差会影响行动。"
+    }
+  },
+  {
+    "word": "感覚",
+    "reading": "かんかく",
+    "meaning": "感觉",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "方向感覚がいい人だ。",
+      "reading": "ほうこうかんかく・ひと",
+      "translation": "他是个方向感很好的人。"
+    }
+  },
+  {
+    "word": "知覚",
+    "reading": "ちかく",
+    "meaning": "知觉",
+    "level": "N1",
+    "category": "心理学",
+    "example": {
+      "sentence": "色の知覚には個人差がある。",
+      "reading": "いろ・ちかく・こじんさ",
+      "translation": "对颜色的知觉存在个体差异。"
+    }
+  },
+  {
+    "word": "刺激",
+    "reading": "しげき",
+    "meaning": "刺激",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "新しい環境が刺激になった。",
+      "reading": "あたら・かんきょう・しげき",
+      "translation": "新的环境成了一种刺激。"
+    }
+  },
+  {
+    "word": "反応",
+    "reading": "はんのう",
+    "meaning": "反应",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "彼の反応が意外だった。",
+      "reading": "かれ・はんのう・いがい",
+      "translation": "他的反应出乎意料。"
+    }
+  },
+  {
+    "word": "適応",
+    "reading": "てきおう",
+    "meaning": "适应",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "新しい職場に適応するのに時間がかかった。",
+      "reading": "あたら・しょくば・てきおう・じかん",
+      "translation": "适应新的职场花了一些时间。"
+    }
+  },
+  {
+    "word": "依存",
+    "reading": "いぞん",
+    "meaning": "依赖",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "スマホへの依存が問題になっている。",
+      "reading": "スマホ・いぞん・もんだい",
+      "translation": "对手机的依赖成了问题。"
+    }
+  },
+  {
+    "word": "克服",
+    "reading": "こくふく",
+    "meaning": "克服",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "苦手意識を克服したい。",
+      "reading": "にがていしき・こくふく",
+      "translation": "想克服畏难心理。"
+    }
+  },
+  {
+    "word": "抑制",
+    "reading": "よくせい",
+    "meaning": "抑制",
+    "level": "N1",
+    "category": "心理学",
+    "example": {
+      "sentence": "感情を抑制するのが苦手だ。",
+      "reading": "かんじょう・よくせい・にがて",
+      "translation": "不擅长抑制自己的感情。"
+    }
+  },
+  {
+    "word": "衝動",
+    "reading": "しょうどう",
+    "meaning": "冲动",
+    "level": "N1",
+    "category": "心理学",
+    "example": {
+      "sentence": "買い物をしたい衝動を抑えた。",
+      "reading": "か もの・しょうどう・おさ",
+      "translation": "抑制住了想购物的冲动。"
+    }
+  },
+  {
+    "word": "欲求",
+    "reading": "よっきゅう",
+    "meaning": "欲求",
+    "level": "N1",
+    "category": "心理学",
+    "example": {
+      "sentence": "承認欲求が強い人だ。",
+      "reading": "しょうにんよっきゅう・つよ・ひと",
+      "translation": "他是个渴望被认可的人。"
+    }
+  },
+  {
+    "word": "葛藤",
+    "reading": "かっとう",
+    "meaning": "纠结，矛盾",
+    "level": "N1",
+    "category": "心理学",
+    "example": {
+      "sentence": "転職するかどうか葛藤している。",
+      "reading": "てんしょく・かっとう",
+      "translation": "正在纠结要不要跳槽。"
+    }
+  },
+  {
+    "word": "潜在的",
+    "reading": "せんざいてき",
+    "meaning": "潜在的",
+    "level": "N1",
+    "category": "心理学",
+    "example": {
+      "sentence": "潜在的なリスクを見逃してはいけない。",
+      "reading": "せんざいてき・リスク・みのが",
+      "translation": "不能忽视潜在的风险。"
+    }
+  },
+  {
+    "word": "自覚",
+    "reading": "じかく",
+    "meaning": "自觉",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "自分の欠点を自覚している。",
+      "reading": "じぶん・けってん・じかく",
+      "translation": "我很清楚自己的缺点。"
+    }
+  },
+  {
+    "word": "直感",
+    "reading": "ちょっかん",
+    "meaning": "直觉",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "直感で選んだ結果、正解だった。",
+      "reading": "ちょっかん・えら・けっか・せいかい",
+      "translation": "凭直觉选择的结果证明是对的。"
+    }
+  },
+  {
+    "word": "洞察",
+    "reading": "どうさつ",
+    "meaning": "洞察",
+    "level": "N1",
+    "category": "心理学",
+    "example": {
+      "sentence": "鋭い洞察力を持っている。",
+      "reading": "するど・どうさつりょく・も",
+      "translation": "拥有敏锐的洞察力。"
+    }
+  },
+  {
+    "word": "動機",
+    "reading": "どうき",
+    "meaning": "动机",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "応募の動機を聞かれた。",
+      "reading": "おうぼ・どうき・き",
+      "translation": "被问到应聘的动机。"
+    }
+  },
+  {
+    "word": "性格",
+    "reading": "せいかく",
+    "meaning": "性格",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "彼は穏やかな性格をしている。",
+      "reading": "かれ・おだ・せいかく",
+      "translation": "他性格温和。"
+    }
+  },
+  {
+    "word": "気質",
+    "reading": "きしつ",
+    "meaning": "气质",
+    "level": "N1",
+    "category": "心理学",
+    "example": {
+      "sentence": "芸術家気質の人だと言われる。",
+      "reading": "げいじゅつかきしつ・ひと・い",
+      "translation": "被说是有艺术家气质的人。"
+    }
+  },
+  {
+    "word": "意思",
+    "reading": "いし",
+    "meaning": "意志，意愿",
+    "level": "N2",
+    "category": "心理学",
+    "example": {
+      "sentence": "はっきりと自分の意思を伝えた。",
+      "reading": "じぶん・いし・つた",
+      "translation": "明确地传达了自己的意愿。"
+    }
+  },
+  {
+    "word": "芽生える",
+    "reading": "めばえる",
+    "meaning": "萌生",
+    "level": "N1",
+    "category": "心理学",
+    "example": {
+      "sentence": "二人の間に友情が芽生えた。",
+      "reading": "ふたり・あいだ・ゆうじょう・めば",
+      "translation": "两人之间萌生了友情。"
+    }
+  },
+  {
+    "word": "外交",
+    "reading": "がいこう",
+    "meaning": "外交",
+    "level": "N2",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "両国は外交関係を強化した。",
+      "reading": "りょうこく・がいこうかんけい・きょうか",
+      "translation": "两国加强了外交关系。"
+    }
+  },
+  {
+    "word": "大使",
+    "reading": "たいし",
+    "meaning": "大使",
+    "level": "N2",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "新しい大使が着任した。",
+      "reading": "あたら・たいし・ちゃくにん",
+      "translation": "新大使已经到任。"
+    }
+  },
+  {
+    "word": "領事館",
+    "reading": "りょうじかん",
+    "meaning": "领事馆",
+    "level": "N2",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "パスポートを領事館で再発行した。",
+      "reading": "パスポート・りょうじかん・さいはっこう",
+      "translation": "在领事馆重新办理了护照。"
+    }
+  },
+  {
+    "word": "条約",
+    "reading": "じょうやく",
+    "meaning": "条约",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "両国は新しい条約を締結した。",
+      "reading": "りょうこく・あたら・じょうやく・ていけつ",
+      "translation": "两国缔结了新的条约。"
+    }
+  },
+  {
+    "word": "同盟",
+    "reading": "どうめい",
+    "meaning": "同盟",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "長年の同盟関係を維持している。",
+      "reading": "ながねん・どうめいかんけい・いじ",
+      "translation": "维持着多年的同盟关系。"
+    }
+  },
+  {
+    "word": "協定",
+    "reading": "きょうてい",
+    "meaning": "协定",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "貿易協定について合意した。",
+      "reading": "ぼうえききょうてい・ごうい",
+      "translation": "就贸易协定达成了一致。"
+    }
+  },
+  {
+    "word": "制裁",
+    "reading": "せいさい",
+    "meaning": "制裁",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "経済制裁が科された。",
+      "reading": "けいざいせいさい・か",
+      "translation": "被施加了经济制裁。"
+    }
+  },
+  {
+    "word": "紛争",
+    "reading": "ふんそう",
+    "meaning": "纷争，冲突",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "国境をめぐる紛争が続いている。",
+      "reading": "こっきょう・ふんそう・つづ",
+      "translation": "围绕国境的纷争仍在持续。"
+    }
+  },
+  {
+    "word": "停戦",
+    "reading": "ていせん",
+    "meaning": "停战",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "両国は停戦に合意した。",
+      "reading": "りょうこく・ていせん・ごうい",
+      "translation": "两国就停战达成了一致。"
+    }
+  },
+  {
+    "word": "侵略",
+    "reading": "しんりゃく",
+    "meaning": "侵略",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "他国への侵略は国際法違反だ。",
+      "reading": "たこく・しんりゃく・こくさいほういはん",
+      "translation": "侵略他国是违反国际法的。"
+    }
+  },
+  {
+    "word": "防衛",
+    "reading": "ぼうえい",
+    "meaning": "防卫",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "国の防衛について議論した。",
+      "reading": "くに・ぼうえい・ぎろん",
+      "translation": "就国家的防卫问题进行了讨论。"
+    }
+  },
+  {
+    "word": "軍事",
+    "reading": "ぐんじ",
+    "meaning": "军事",
+    "level": "N2",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "軍事費が年々増加している。",
+      "reading": "ぐんじひ・ねんねん・ぞうか",
+      "translation": "军费逐年增加。"
+    }
+  },
+  {
+    "word": "兵器",
+    "reading": "へいき",
+    "meaning": "兵器",
+    "level": "N2",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "核兵器の廃絶を訴えた。",
+      "reading": "かくへいき・はいぜつ・うった",
+      "translation": "呼吁废除核武器。"
+    }
+  },
+  {
+    "word": "軍隊",
+    "reading": "ぐんたい",
+    "meaning": "军队",
+    "level": "N2",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "軍隊を派遣することが決まった。",
+      "reading": "ぐんたい・はけん・き",
+      "translation": "决定派遣军队。"
+    }
+  },
+  {
+    "word": "平和",
+    "reading": "へいわ",
+    "meaning": "和平",
+    "level": "N2",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "世界の平和を願っている。",
+      "reading": "せかい・へいわ・ねが",
+      "translation": "祈愿世界和平。"
+    }
+  },
+  {
+    "word": "領土",
+    "reading": "りょうど",
+    "meaning": "领土",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "領土問題が長年続いている。",
+      "reading": "りょうどもんだい・ながねん・つづ",
+      "translation": "领土问题持续多年。"
+    }
+  },
+  {
+    "word": "国境",
+    "reading": "こっきょう",
+    "meaning": "国境",
+    "level": "N2",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "国境を越えて交流が進んでいる。",
+      "reading": "こっきょう・こ・こうりゅう・すす",
+      "translation": "跨越国境的交流正在推进。"
+    }
+  },
+  {
+    "word": "難民",
+    "reading": "なんみん",
+    "meaning": "难民",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "難民の受け入れが議論されている。",
+      "reading": "なんみん・う い・ぎろん",
+      "translation": "正在讨论接收难民的问题。"
+    }
+  },
+  {
+    "word": "亡命",
+    "reading": "ぼうめい",
+    "meaning": "亡命，流亡",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "政治的な理由で亡命した。",
+      "reading": "せいじてき・りゆう・ぼうめい",
+      "translation": "因政治原因流亡他国。"
+    }
+  },
+  {
+    "word": "主権",
+    "reading": "しゅけん",
+    "meaning": "主权",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "国家の主権を尊重すべきだ。",
+      "reading": "こっか・しゅけん・そんちょう",
+      "translation": "应该尊重国家的主权。"
+    }
+  },
+  {
+    "word": "首脳",
+    "reading": "しゅのう",
+    "meaning": "首脑",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "両国の首脳が会談した。",
+      "reading": "りょうこく・しゅのう・かいだん",
+      "translation": "两国首脑进行了会谈。"
+    }
+  },
+  {
+    "word": "会談",
+    "reading": "かいだん",
+    "meaning": "会谈",
+    "level": "N2",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "明日、重要な会談が行われる。",
+      "reading": "あした・じゅうよう・かいだん・おこな",
+      "translation": "明天将举行重要的会谈。"
+    }
+  },
+  {
+    "word": "批准",
+    "reading": "ひじゅん",
+    "meaning": "批准",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "条約はまだ批准されていない。",
+      "reading": "じょうやく・ひじゅん",
+      "translation": "条约尚未获得批准。"
+    }
+  },
+  {
+    "word": "制圧",
+    "reading": "せいあつ",
+    "meaning": "镇压，制压",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "反乱を制圧した。",
+      "reading": "はんらん・せいあつ",
+      "translation": "镇压了叛乱。"
+    }
+  },
+  {
+    "word": "撤退",
+    "reading": "てったい",
+    "meaning": "撤退",
+    "level": "N1",
+    "category": "外交・军事",
+    "example": {
+      "sentence": "部隊が撤退を開始した。",
+      "reading": "ぶたい・てったい・かいし",
+      "translation": "部队开始撤退。"
+    }
+  },
+  {
+    "word": "宗教",
+    "reading": "しゅうきょう",
+    "meaning": "宗教",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "宗教の自由が保障されている。",
+      "reading": "しゅうきょう・じゆう・ほしょう",
+      "translation": "宗教自由受到保障。"
+    }
+  },
+  {
+    "word": "信仰",
+    "reading": "しんこう",
+    "meaning": "信仰",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "厚い信仰を持つ人だ。",
+      "reading": "あつ・しんこう・も・ひと",
+      "translation": "他是个虔诚信仰的人。"
+    }
+  },
+  {
+    "word": "神",
+    "reading": "かみ",
+    "meaning": "神",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "神に祈りを捧げた。",
+      "reading": "かみ・いの・ささ",
+      "translation": "向神献上了祈祷。"
+    }
+  },
+  {
+    "word": "仏",
+    "reading": "ほとけ",
+    "meaning": "佛",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "仏の教えについて学んだ。",
+      "reading": "ほとけ・おし・まな",
+      "translation": "学习了佛的教诲。"
+    }
+  },
+  {
+    "word": "寺",
+    "reading": "てら",
+    "meaning": "寺庙",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "古い寺を訪れた。",
+      "reading": "ふる・てら・おとず",
+      "translation": "造访了一座古老的寺庙。"
+    }
+  },
+  {
+    "word": "神社",
+    "reading": "じんじゃ",
+    "meaning": "神社",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "初詣で神社に行った。",
+      "reading": "はつもうで・じんじゃ・い",
+      "translation": "新年参拜去了神社。"
+    }
+  },
+  {
+    "word": "祈る",
+    "reading": "いのる",
+    "meaning": "祈祷",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "家族の無事を祈った。",
+      "reading": "かぞく・ぶじ・いの",
+      "translation": "祈祷家人平安无事。"
+    }
+  },
+  {
+    "word": "儀式",
+    "reading": "ぎしき",
+    "meaning": "仪式",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "伝統的な儀式が行われた。",
+      "reading": "でんとうてき・ぎしき・おこな",
+      "translation": "举行了传统的仪式。"
+    }
+  },
+  {
+    "word": "教義",
+    "reading": "きょうぎ",
+    "meaning": "教义",
+    "level": "N1",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "この宗教の教義を学んでいる。",
+      "reading": "しゅうきょう・きょうぎ・まな",
+      "translation": "正在学习这个宗教的教义。"
+    }
+  },
+  {
+    "word": "哲学",
+    "reading": "てつがく",
+    "meaning": "哲学",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "大学で哲学を専攻した。",
+      "reading": "だいがく・てつがく・せんこう",
+      "translation": "在大学专攻了哲学。"
+    }
+  },
+  {
+    "word": "倫理",
+    "reading": "りんり",
+    "meaning": "伦理",
+    "level": "N1",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "企業の倫理観が問われている。",
+      "reading": "きぎょう・りんりかん・と",
+      "translation": "企业的伦理观正受到质疑。"
+    }
+  },
+  {
+    "word": "道徳",
+    "reading": "どうとく",
+    "meaning": "道德",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "道徳の授業で議論をした。",
+      "reading": "どうとく・じゅぎょう・ぎろん",
+      "translation": "在道德课上进行了讨论。"
+    }
+  },
+  {
+    "word": "価値観",
+    "reading": "かちかん",
+    "meaning": "价值观",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "世代によって価値観が異なる。",
+      "reading": "せだい・かちかん・こと",
+      "translation": "价值观因世代而不同。"
+    }
+  },
+  {
+    "word": "存在",
+    "reading": "そんざい",
+    "meaning": "存在",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "彼の存在は大きい。",
+      "reading": "かれ・そんざい・おお",
+      "translation": "他的存在感很强。"
+    }
+  },
+  {
+    "word": "本質",
+    "reading": "ほんしつ",
+    "meaning": "本质",
+    "level": "N1",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "問題の本質を見極める必要がある。",
+      "reading": "もんだい・ほんしつ・みきわ・ひつよう",
+      "translation": "有必要看清问题的本质。"
+    }
+  },
+  {
+    "word": "真理",
+    "reading": "しんり",
+    "meaning": "真理",
+    "level": "N1",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "真理を追求する姿勢が大切だ。",
+      "reading": "しんり・ついきゅう・しせい・たいせつ",
+      "translation": "追求真理的态度很重要。"
+    }
+  },
+  {
+    "word": "悟り",
+    "reading": "さとり",
+    "meaning": "顿悟",
+    "level": "N1",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "長い修行の末に悟りを開いたという。",
+      "reading": "なが・しゅぎょう・すえ・さと・ひら",
+      "translation": "据说他在长期修行之后开悟了。"
+    }
+  },
+  {
+    "word": "運命",
+    "reading": "うんめい",
+    "meaning": "命运",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "これも運命だと受け入れた。",
+      "reading": "うんめい・う い",
+      "translation": "接受了这也是命运的安排。"
+    }
+  },
+  {
+    "word": "因果",
+    "reading": "いんが",
+    "meaning": "因果",
+    "level": "N1",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "因果関係を明らかにする必要がある。",
+      "reading": "いんがかんけい・あき・ひつよう",
+      "translation": "有必要明确因果关系。"
+    }
+  },
+  {
+    "word": "輪廻",
+    "reading": "りんね",
+    "meaning": "轮回",
+    "level": "N1",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "仏教では輪廻の思想がある。",
+      "reading": "ぶっきょう・りんね・しそう",
+      "translation": "佛教中有轮回的思想。"
+    }
+  },
+  {
+    "word": "死後",
+    "reading": "しご",
+    "meaning": "死后",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "死後の世界について考えることがある。",
+      "reading": "しご・せかい・かんが",
+      "translation": "有时会思考死后的世界。"
+    }
+  },
+  {
+    "word": "魂",
+    "reading": "たましい",
+    "meaning": "灵魂",
+    "level": "N2",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "魂を込めて作品を作った。",
+      "reading": "たましい・こ・さくひん・つく",
+      "translation": "倾注灵魂制作了作品。"
+    }
+  },
+  {
+    "word": "供養",
+    "reading": "くよう",
+    "meaning": "供养，祭奠",
+    "level": "N1",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "先祖の供養を毎年行っている。",
+      "reading": "せんぞ・くよう・まいとし・おこな",
+      "translation": "每年都为祖先进行祭奠。"
+    }
+  },
+  {
+    "word": "崇拝",
+    "reading": "すうはい",
+    "meaning": "崇拜",
+    "level": "N1",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "多くの人にスターとして崇拝されている。",
+      "reading": "おお・ひと・スター・すうはい",
+      "translation": "被很多人当作明星崇拜。"
+    }
+  },
+  {
+    "word": "戒律",
+    "reading": "かいりつ",
+    "meaning": "戒律",
+    "level": "N1",
+    "category": "宗教・哲学",
+    "example": {
+      "sentence": "厳しい戒律を守って生活している。",
+      "reading": "きび・かいりつ・まも・せいかつ",
+      "translation": "遵守严格的戒律生活着。"
+    }
+  }
+]
