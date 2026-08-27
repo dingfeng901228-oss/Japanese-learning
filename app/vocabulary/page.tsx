@@ -99,12 +99,26 @@ export default async function VocabularyListPage({
                 : "还没有收藏，先添加一个吧"
               : `共 ${items.length} 项`}
           </p>
-          <Link
-            href="/vocabulary/new"
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
-          >
-            + 手动添加
-          </Link>
+          <div className="flex items-center gap-2">
+            {/* Per Frank #7033: he expected a button on /vocabulary to
+                reach /admin/import-vocab (which I shipped in commit
+                2af164f). Surface it next to "+手动添加" so the bulk
+                path is discoverable. Secondary visual weight — manual
+                add stays primary. */}
+            <Link
+              href="/admin/import-vocab"
+              className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+              title="批量导入词汇（JSON / 预置 200 词）"
+            >
+              📦 批量导入
+            </Link>
+            <Link
+              href="/vocabulary/new"
+              className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+            >
+              + 手动添加
+            </Link>
+          </div>
         </div>
         {browserSourcedCount !== null && browserSourcedCount > 0 && (
           <p className="text-sm text-gray-500 mt-2">
