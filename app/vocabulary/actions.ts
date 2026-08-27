@@ -43,20 +43,55 @@ export async function createVocabularyItemAction(formData: FormData) {
   const level = String(formData.get("level") ?? "").trim();
   const partOfSpeech = String(formData.get("part_of_speech") ?? "").trim();
 
-  const item = await createVocabularyItem({
-    type,
-    word,
-    reading: reading || null,
-    // Pass undefined so createVocabularyItem triggers AI enrichment when blank.
-    meaning: meaning || undefined,
-    level: level || null,
-    part_of_speech: partOfSpeech || null,
-  });
+  // Per Frank #7094 (2026-08-27): the whole flow used to be
+  // uncaught — if createVocabularyItem threw (e.g., Supabase insert
+  // failed), Next.js surfaced a generic "Application error: server-side
+  // exception" with Digest N (in Frank's case Digest: 3269631591).
+  // That tells the user nothing actionable. Wrap each step so any
+  // failure degrades gracefully to a user-visible error page instead
+  // of bubbling all the way to Next.js's 500 handler.
+  let item;
+  try {
+    item = await createVocabularyItem({
+      type,
+      word,
+      reading: reading || null,
+      // Pass undefined so createVocabularyItem triggers AI enrichment when blank.
+      meaning: meaning || undefined,
+      level: level || null,
+      part_of_speech: partOfSpeech || null,
+    });
+  } catch (err) {
+    // Log the full error so Vercel server logs (searchable by Digest
+    // or word) give the next maintainer a real stack trace to debug.
+    // We don't know the root cause without Vercel access; this is the
+    // best signal we can leave.
+    console.error("createVocabularyItemAction: createVocabularyItem failed", {
+      word,
+      type,
+      errMessage: err instanceof Error ? err.message : String(err),
+      errStack: err instanceof Error ? err.stack : undefined,
+    });
+    redirect("/vocabulary/new?error=create_failed");
+  }
 
   // Per Frank #6348: hook up the SRS queue. Without this, the new
   // vocab never lands in vocabulary_reviews and /review stays empty
   // for the user until they manually trigger a backfill.
-  await ensureReviewRecord(item.id);
+  //
+  // Also wrapped (2026-08-27 #7094): if this second call throws, the
+  // vocab IS created — failing here would lose the user's work AND
+  // surface a generic Application Error. Wrap and continue, the SRS
+  // queue can be backfilled later from /review's empty state.
+  try {
+    await ensureReviewRecord(item.id);
+  } catch (err) {
+    console.error("createVocabularyItemAction: ensureReviewRecord failed", {
+      vocabularyId: item.id,
+      word,
+      errMessage: err instanceof Error ? err.message : String(err),
+    });
+  }
 
   revalidatePath("/vocabulary");
   redirect(`/vocabulary/${item.id}`);

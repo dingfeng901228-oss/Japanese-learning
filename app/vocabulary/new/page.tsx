@@ -53,7 +53,19 @@ export default function NewVocabularyPage({
     let cancelled = false;
     searchParams.then((sp) => {
       if (cancelled) return;
-      setError(sp.error === "missing_word" ? "单词 / 词组不能为空" : "");
+      if (sp.error === "missing_word") {
+        setError("单词 / 词组不能为空");
+      } else if (sp.error === "create_failed") {
+        // Per Frank #7094 (2026-08-27): the action used to bubble a
+        // generic "Application error: server-side exception" with no
+        // actionable info. Now it redirects here with error=create_failed
+        // so the user sees something useful instead.
+        setError(
+          "保存失败，请稍后重试。如果持续失败请联系管理员。"
+        );
+      } else {
+        setError("");
+      }
     });
     return () => {
       cancelled = true;
