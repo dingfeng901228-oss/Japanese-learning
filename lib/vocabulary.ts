@@ -69,8 +69,20 @@ export type VocabularyExample = {
 };
 
 // Wrap supabase errors so callers can throw without leaking SDK details.
-function ensureData<T>(res: { data: T | null; error: { message: string } | null }, fallback: T): T {
-  if (res.error) throw new Error(res.error.message);
+// Preserves the PostgREST error code (e.g. "23505" for unique_violation)
+// on the thrown Error so callers can distinguish user-fixable errors
+// (e.g. duplicate word) from transient server failures. Previously the
+// code was dropped, so any 23505 surfaced as a generic
+// "保存失败，请稍后重试" — misleading users on duplicate adds.
+function ensureData<T>(
+  res: { data: T | null; error: { message: string; code?: string } | null },
+  fallback: T,
+): T {
+  if (res.error) {
+    const err = new Error(res.error.message) as Error & { code?: string };
+    err.code = res.error.code;
+    throw err;
+  }
   return (res.data ?? fallback) as T;
 }
 

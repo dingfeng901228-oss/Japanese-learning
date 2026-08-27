@@ -55,6 +55,14 @@ export default function NewVocabularyPage({
       if (cancelled) return;
       if (sp.error === "missing_word") {
         setError("单词 / 词组不能为空");
+      } else if (sp.error === "duplicate") {
+        // Per Frank #7103 (2026-08-28): the previous generic
+        // "保存失败，请稍后重试" message was misleading on duplicate
+        // adds. PG 23505 unique_violation from the partial unique index
+        // on (user_id, word[, reading]) in 0005_chrome_extension.sql
+        // is a user input issue, not a server failure — the word is
+        // already in this user's collection.
+        setError("该词已在你的收藏中，请勿重复添加");
       } else if (sp.error === "create_failed") {
         // Per Frank #7094 (2026-08-27): the action used to bubble a
         // generic "Application error: server-side exception" with no

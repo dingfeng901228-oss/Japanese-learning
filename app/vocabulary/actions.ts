@@ -62,6 +62,18 @@ export async function createVocabularyItemAction(formData: FormData) {
       part_of_speech: partOfSpeech || null,
     });
   } catch (err) {
+    // Per Frank #7103 (2026-08-28): distinguish user-fixable errors
+    // (duplicate word) from transient server failures.
+    //
+    // 23505 = PG unique_violation. 0005_chrome_extension.sql:83-87 adds
+    // partial unique indexes on (user_id, word[, reading]), so 收藏 a
+    // word already in the user's collection hits this branch. It's a
+    // user input issue (not a server problem), so "稍后重试 / 联系管理员"
+    // is misleading. ensureData preserves `code` on the thrown Error so
+    // we can branch on it here.
+    if ((err as { code?: string }).code === "23505") {
+      redirect("/vocabulary/new?error=duplicate");
+    }
     // Log the full error so Vercel server logs (searchable by Digest
     // or word) give the next maintainer a real stack trace to debug.
     // We don't know the root cause without Vercel access; this is the
