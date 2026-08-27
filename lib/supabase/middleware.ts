@@ -86,9 +86,21 @@ export async function updateSession(request: NextRequest) {
     }
 
     // Bounce already-signed-in users away from /login.
+    //
+    // Per Frank #7088 (2026-08-27): the redirect target was "/today" —
+    // but app/today/page.tsx was deleted in commit #6671 (UI优化.docx
+    // /today removal), so the redirect 404s. Signed-in users hitting
+    // /login saw "404 / This page could not be found." instead of
+    // being bounced to home. Fix: redirect to "/" (home page) which
+    // is always present.
+    //
+    // Note: the stale reference slipped past commit 2af164f (the
+    // admin-route middleware update) because that commit only added
+    // a new entry to PROTECTED_PREFIXES — it didn't scan for other
+    // stale pathname references. Worth a one-pass audit next time.
     if (user && (pathname === "/login" || pathname === "/signin")) {
       const url = request.nextUrl.clone();
-      url.pathname = "/today";
+      url.pathname = "/";
       url.searchParams.delete("redirectTo");
       return NextResponse.redirect(url);
     }
