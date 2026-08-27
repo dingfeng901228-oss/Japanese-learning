@@ -66,7 +66,14 @@ type ImportResult = {
 // hitting the filesystem.
 export async function importPreloadedBatchAction(formData: FormData) {
   const batch = String(formData.get("batch") ?? "").trim();
-  if (!(batch in PRELOADED_BATCH_SET)) {
+  // Per Frank #7045 (2026-08-27): I used `batch in PRELOADED_BATCH_SET`
+  // — which is BROKEN. `in` checks object property keys, NOT Set
+  // membership (a Set's own properties are `size` + prototype methods
+  // like add/has/...; the items inside are NOT properties). Result:
+  // every batch failed with "未识别" — including batch 1's button
+  // (Frank only noticed when he tried batch 2).
+  // Fix: use Set.has() which is the actual membership check.
+  if (!PRELOADED_BATCH_SET.has(batch as PreloadedBatchFilename)) {
     redirect(
       `/admin/import-vocab?error=${encodeURIComponent(
         `未识别的批次文件: ${batch}（必须从预置白名单选）`
