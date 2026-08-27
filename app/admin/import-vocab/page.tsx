@@ -2,9 +2,10 @@
 //
 // Auth-gated by lib/supabase/middleware.ts (PROTECTED_PREFIXES now
 // includes "/admin"). Two import paths:
-//   1. Pre-loaded: data/jlpt-vocab-200.json (force-added to git, since
-//      data/ is otherwise gitignored). One-click button.
-//   2. Custom: paste JSON from future batches (e.g. when Frank
+//   1. Pre-loaded: one-click button per batch from the whitelist in
+//      ./batches.ts. Each batch file lives at data/<filename>.json
+//      (force-added to git since data/ is otherwise gitignored).
+//   2. Custom: paste JSON from any future batch (e.g. when Frank
 //      produces the next 300 words in the same MD format).
 //
 // Both paths share the bulk-import server actions in ./actions.ts.
@@ -16,9 +17,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import {
-  importPreloadedAction,
+  importPreloadedBatchAction,
   importPastedAction,
 } from "./actions";
+import { PRELOADED_BATCHES } from "./batches";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -27,6 +29,7 @@ export const metadata = {
 };
 
 type SearchParams = {
+  batch?: string;
   inserted?: string;
   skipped?: string;
   failed?: string;
@@ -81,7 +84,9 @@ export default async function ImportVocabPage({
       {/* Result banner (post-import) */}
       {showResult && !showError && (
         <div className="mb-6 px-4 py-3 rounded-lg bg-green-50 border border-green-200 text-sm">
-          <p className="font-medium text-green-800">✅ 导入完成</p>
+          <p className="font-medium text-green-800">
+            ✅ 导入完成{sp.batch ? `（批次：${sp.batch}）` : ""}
+          </p>
           <p className="text-green-700 mt-1">
             新增 <strong>{sp.inserted ?? 0}</strong>，
             跳过 <strong>{sp.skipped ?? 0}</strong>（重复词，已存在）
@@ -116,33 +121,37 @@ export default async function ImportVocabPage({
         </div>
       )}
 
-      {/* ── Section 1: pre-loaded batch ─────────────────────────── */}
+      {/* ── Section 1: pre-loaded batches ───────────────────────── */}
       <section className="bg-white border border-gray-200 rounded-2xl p-8 mb-6">
         <h2 className="text-lg font-semibold mb-2">
-          JLPT N2-N1 词汇样本（200 词）
+          预置批次（一键导入）
         </h2>
-        <p className="text-sm text-gray-600 mb-1">
-          数据源：
-          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
-            data/jlpt-vocab-200.json
-          </code>
+        <p className="text-sm text-gray-600 mb-5">
+          数据源在 <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">data/</code> 下，每个批次一个 JSON 文件。
+          点按钮直接 bulk insert；重复词自动跳过，幂等。
         </p>
-        <p className="text-sm text-gray-600 mb-4">
-          包含 8 大主题（工作・职场 / 日常生活 / 人际・社交 / 情感・心理 /
-          社会・时事 / 抽象・学术 / 自然・环境 / 身体・健康），每主题 25 词，
-          N2 共 149 + N1 共 51。每条带例句 + 句中汉字读音 + 中文翻译。
-        </p>
-        <form action={importPreloadedAction}>
-          <button
-            type="submit"
-            className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
-          >
-            导入 200 词（一键）
-          </button>
-          <span className="ml-3 text-xs text-gray-500">
-            重复词会自动跳过，幂等
-          </span>
-        </form>
+        <div className="space-y-5">
+          {PRELOADED_BATCHES.map((batch, idx) => (
+            <form
+              action={importPreloadedBatchAction}
+              key={batch.filename}
+              className={idx > 0 ? "pt-5 border-t border-gray-100" : ""}
+            >
+              <input type="hidden" name="batch" value={batch.filename} />
+              <p className="font-medium mb-1">{batch.label}</p>
+              <p className="text-xs text-gray-500 mb-3">{batch.description}</p>
+              <button
+                type="submit"
+                className="px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+              >
+                导入该批次
+              </button>
+              <span className="ml-3 text-xs text-gray-500">
+                <code>data/{batch.filename}</code>
+              </span>
+            </form>
+          ))}
+        </div>
       </section>
 
       {/* ── Section 2: paste JSON ────────────────────────────────── */}

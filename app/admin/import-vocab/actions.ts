@@ -10,7 +10,9 @@
 // passes automatically — no service_role key needed.
 //
 // Triggered from app/admin/import-vocab/page.tsx:
-//   - importPreloadedAction() — reads data/jlpt-vocab-200.json
+//   - importPreloadedBatchAction(formData) — reads data/{batch}.json
+//     where {batch} is from a hidden input. Whitelisted via
+//     ./batches.ts so directory traversal is impossible.
 //   - importPastedAction(formData) — parses textarea JSON
 //
 // Both actions share `processImport()` which:
@@ -29,6 +31,10 @@ import { join } from "node:path";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import {
+  PRELOADED_BATCH_SET,
+  type PreloadedBatchFilename,
+} from "./batches";
 
 // ---------- Types ----------
 type ImportItem = {
@@ -45,6 +51,7 @@ type ImportItem = {
 };
 
 type ImportResult = {
+  batch: string; // for the result banner
   inserted: number;
   skipped: number;
   failed: number;
@@ -52,15 +59,33 @@ type ImportResult = {
 };
 
 // ---------- Server Actions ----------
-const PRELOADED_REL_PATH = join("data", "jlpt-vocab-200.json");
 
-export async function importPreloadedAction() {
-  const items = await loadPreloaded();
+// importPreloadedBatchAction: read data/{batch}.json (where {batch}
+// comes from the hidden form input). Whitelist guards directory
+// traversal — anything not in PRELOADED_BATCH_SET is rejected before
+// hitting the filesystem.
+export async function importPreloadedBatchAction(formData: FormData) {
+  const batch = String(formData.get("batch") ?? "").trim();
+  if (!(batch in PRELOADED_BATCH_SET)) {
+    redirect(
+      `/admin/import-vocab?error=${encodeURIComponent(
+        `未识别的批次文件: ${batch}（必须从预置白名单选）`
+      )}`
+    );
+  }
+  // TS narrowing — the in-check guarantees batch is in the set.
+  const filename = batch as PreloadedBatchFilename;
+
+  const items = await loadPreloaded(filename);
   if (items === null) {
-    redirect(`/admin/import-vocab?error=${encodeURIComponent("读取 data/jlpt-vocab-200.json 失败——文件可能被 .gitignore 过滤掉了，确认已 force-add")}`);
+    redirect(
+      `/admin/import-vocab?error=${encodeURIComponent(
+        `读取 data/${filename} 失败——文件可能 force-add 漏了`
+      )}`
+    );
   }
 
-  const result = await processImport(items);
+  const result = await processImport(items, filename);
   revalidatePath("/vocabulary");
   revalidatePath("/review");
   redirect(buildResultUrl(result));
@@ -83,31 +108,34 @@ export async function importPastedAction(formData: FormData) {
     redirect(`/admin/import-vocab?error=${encodeURIComponent(`JSON 解析失败：${String(err).slice(0, 200)}`)}`);
   }
 
-  const result = await processImport(items);
+  const result = await processImport(items, "<pasted>");
   revalidatePath("/vocabulary");
   revalidatePath("/review");
   redirect(buildResultUrl(result));
 }
 
 // ---------- Helpers ----------
-async function loadPreloaded(): Promise<ImportItem[] | null> {
+async function loadPreloaded(
+  filename: PreloadedBatchFilename
+): Promise<ImportItem[] | null> {
   try {
     // process.cwd() on Vercel = repo root. The JSON is force-added to
-    // git (data/ is gitignored but jlpt-vocab-200.json is the one
-    // exception).
-    const abs = join(process.cwd(), PRELOADED_REL_PATH);
+    // git (data/ is gitignored but the preloaded JSONs are exceptions,
+    // whitelisted in ./batches.ts).
+    const abs = join(process.cwd(), "data", filename);
     const text = await readFile(abs, "utf-8");
     const parsed: unknown = JSON.parse(text);
     if (!Array.isArray(parsed)) return null;
     return parsed as ImportItem[];
   } catch (err) {
-    console.error("loadPreloaded failed:", err);
+    console.error(`loadPreloaded(${filename}) failed:`, err);
     return null;
   }
 }
 
 function buildResultUrl(r: ImportResult): string {
   const params = new URLSearchParams();
+  if (r.batch) params.set("batch", r.batch);
   if (r.inserted > 0) params.set("inserted", String(r.inserted));
   if (r.skipped > 0) params.set("skipped", String(r.skipped));
   if (r.failed > 0) {
@@ -123,24 +151,27 @@ function buildResultUrl(r: ImportResult): string {
 }
 
 // processImport: shared bulk-import logic.
-async function processImport(items: ImportItem[]): Promise<ImportResult> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return {
-      inserted: 0,
-      skipped: 0,
-      failed: items.length,
-      errors: [{ word: "<auth>", reason: "未登录" }],
-    };
-  }
-
+async function processImport(
+  items: ImportItem[],
+  batch: string
+): Promise<ImportResult> {
   const result: ImportResult = {
+    batch,
     inserted: 0,
     skipped: 0,
     failed: 0,
     errors: [],
   };
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return {
+      ...result,
+      failed: items.length,
+      errors: [{ word: "<auth>", reason: "未登录" }],
+    };
+  }
 
   // ---------- 1. Filter items with required fields ----------
   const valid = items.filter((it) => {
@@ -148,8 +179,7 @@ async function processImport(items: ImportItem[]): Promise<ImportResult> {
     return Boolean(it.word && it.meaning && it.example?.sentence);
   });
   if (valid.length === 0) {
-    result.failed = items.length - valid.length;
-    return result;
+    return { ...result, failed: items.length - valid.length };
   }
 
   // ---------- 2. Skip existing words (user-scoped dedup) ----------
@@ -158,9 +188,11 @@ async function processImport(items: ImportItem[]): Promise<ImportResult> {
     .select("word")
     .eq("user_id", user.id);
   if (existErr) {
-    result.failed = valid.length;
-    result.errors.push({ word: "<query>", reason: existErr.message });
-    return result;
+    return {
+      ...result,
+      failed: valid.length,
+      errors: [{ word: "<query>", reason: existErr.message }],
+    };
   }
   const seen = new Set<string>((existingWords ?? []).map((w) => w.word));
   const toImport: ImportItem[] = [];
@@ -193,12 +225,16 @@ async function processImport(items: ImportItem[]): Promise<ImportResult> {
     .select("id, word");
 
   if (itemErr || !insertedItems) {
-    result.failed = toImport.length;
-    result.errors.push({
-      word: "<batch>",
-      reason: itemErr?.message ?? "bulk insert returned no rows",
-    });
-    return result;
+    return {
+      ...result,
+      failed: toImport.length,
+      errors: [
+        {
+          word: "<batch>",
+          reason: itemErr?.message ?? "bulk insert returned no rows",
+        },
+      ],
+    };
   }
   result.inserted = insertedItems.length;
 
