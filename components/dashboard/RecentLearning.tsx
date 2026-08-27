@@ -56,7 +56,15 @@ export async function RecentLearning() {
       {items.length === 0 ? (
         <p className="text-sm text-gray-400 py-6">
           还没有学习记录。{" "}
-          <Link href="/today" className="text-ink hover:underline">
+          {/* Per Frank #7090 (2026-08-27): the "/today" link here was
+              a stale reference after commit #6671 deleted app/today/.
+              Already fixed the same kind of stale ref in middleware
+              (commit 60f9309 for /login redirect); this is the second
+              site. "开始第一次训练" now sends the user to add their
+              first vocab — the natural first training action for a
+              new account. /vocabulary/new works fine and the empty
+              /vocabulary page already CTAs to it. */}
+          <Link href="/vocabulary/new" className="text-ink hover:underline">
             开始第一次训练
           </Link>
           。
