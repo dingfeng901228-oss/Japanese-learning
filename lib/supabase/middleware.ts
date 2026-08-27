@@ -23,6 +23,12 @@ const PROTECTED_PREFIXES = [
   "/vocabulary",
   "/review",
   "/account",
+  // Frank #7029 (2026-08-27): bulk-import UI for vocabulary. Admin
+  // tooling — gate behind login so non-logged-in visitors can't poke
+  // the import endpoint. Per-user RLS still scopes inserts to
+  // auth.uid(), so even signed-in users can only touch their own
+  // data — adding /admin here is defense-in-depth (UI only).
+  "/admin",
 ] as const;
 
 export async function updateSession(request: NextRequest) {

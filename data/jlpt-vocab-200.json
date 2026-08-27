@@ -1,0 +1,2402 @@
+[
+  {
+    "word": "契約",
+    "reading": "けいやく",
+    "meaning": "合同，契约",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "来月から新しい会社と契約することになりました。",
+      "reading": "らいげつ・かいしゃ・けいやく",
+      "translation": "从下个月开始要和新公司签合同了。"
+    }
+  },
+  {
+    "word": "承認",
+    "reading": "しょうにん",
+    "meaning": "承认，批准",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "この企画は部長の承認を得てから進めます。",
+      "reading": "きかく・ぶちょう・しょうにん・すす",
+      "translation": "这个企划要得到部长批准后才能推进。"
+    }
+  },
+  {
+    "word": "効率",
+    "reading": "こうりつ",
+    "meaning": "效率",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "作業の効率を上げるために手順を見直した。",
+      "reading": "さぎょう・こうりつ・あ・てじゅん・みなお",
+      "translation": "为了提高工作效率，重新审视了流程。"
+    }
+  },
+  {
+    "word": "担当",
+    "reading": "たんとう",
+    "meaning": "负责，主管",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "この件は私が担当することになりました。",
+      "reading": "けん・わたし・たんとう",
+      "translation": "这件事由我来负责了。"
+    }
+  },
+  {
+    "word": "交渉",
+    "reading": "こうしょう",
+    "meaning": "交涉，谈判",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "価格について取引先と交渉した。",
+      "reading": "かかく・とりひきさき・こうしょう",
+      "translation": "就价格问题和客户进行了谈判。"
+    }
+  },
+  {
+    "word": "昇進",
+    "reading": "しょうしん",
+    "meaning": "升职",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "彼は今年の春に課長に昇進した。",
+      "reading": "かれ・ことし・はる・かちょう・しょうしん",
+      "translation": "他今年春天升为科长了。"
+    }
+  },
+  {
+    "word": "退職",
+    "reading": "たいしょく",
+    "meaning": "退休，离职",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "父は来年で定年退職する予定だ。",
+      "reading": "ちち・らいねん・ていねんたいしょく・よてい",
+      "translation": "父亲预计明年退休。"
+    }
+  },
+  {
+    "word": "出張",
+    "reading": "しゅっちょう",
+    "meaning": "出差",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "来週から一週間、大阪に出張します。",
+      "reading": "らいしゅう・いっしゅうかん・おおさか・しゅっちょう",
+      "translation": "下周开始要去大阪出差一周。"
+    }
+  },
+  {
+    "word": "業績",
+    "reading": "ぎょうせき",
+    "meaning": "业绩",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "今年度の業績は前年より伸びた。",
+      "reading": "こんねんど・ぎょうせき・ぜんねん・の",
+      "translation": "本年度的业绩比去年有所增长。"
+    }
+  },
+  {
+    "word": "経営",
+    "reading": "けいえい",
+    "meaning": "经营",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "祖父はこの店を三十年経営してきた。",
+      "reading": "そふ・みせ・さんじゅうねん・けいえい",
+      "translation": "祖父经营这家店已经三十年了。"
+    }
+  },
+  {
+    "word": "責任",
+    "reading": "せきにん",
+    "meaning": "责任",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "この失敗の責任は私にあります。",
+      "reading": "しっぱい・せきにん・わたし",
+      "translation": "这次失败的责任在我。"
+    }
+  },
+  {
+    "word": "提案",
+    "reading": "ていあん",
+    "meaning": "提案，建议",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "会議で新しい企画を提案した。",
+      "reading": "かいぎ・あたら・きかく・ていあん",
+      "translation": "在会议上提出了新的企划案。"
+    }
+  },
+  {
+    "word": "報告",
+    "reading": "ほうこく",
+    "meaning": "报告",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "進捗状況を上司に報告した。",
+      "reading": "しんちょくじょうきょう・じょうし・ほうこく",
+      "translation": "向上司汇报了进展情况。"
+    }
+  },
+  {
+    "word": "評価",
+    "reading": "ひょうか",
+    "meaning": "评价",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "彼の仕事は高く評価されている。",
+      "reading": "かれ・しごと・たか・ひょうか",
+      "translation": "他的工作得到了很高的评价。"
+    }
+  },
+  {
+    "word": "配属",
+    "reading": "はいぞく",
+    "meaning": "分配（岗位）",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "新入社員は各部署に配属された。",
+      "reading": "しんにゅうしゃいん・かくぶしょ・はいぞく",
+      "translation": "新员工被分配到了各个部门。"
+    }
+  },
+  {
+    "word": "昇給",
+    "reading": "しょうきゅう",
+    "meaning": "加薪",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "来月から少し昇給することになった。",
+      "reading": "らいげつ・すこ・しょうきゅう",
+      "translation": "从下个月开始要加一点薪水了。"
+    }
+  },
+  {
+    "word": "解雇",
+    "reading": "かいこ",
+    "meaning": "解雇",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "業績不振で多くの社員が解雇された。",
+      "reading": "ぎょうせきふしん・おお・しゃいん・かいこ",
+      "translation": "因业绩不振，很多员工被解雇了。"
+    }
+  },
+  {
+    "word": "締結",
+    "reading": "ていけつ",
+    "meaning": "缔结（合同等）",
+    "level": "N1",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "両社は正式に契約を締結した。",
+      "reading": "りょうしゃ・せいしき・けいやく・ていけつ",
+      "translation": "两家公司正式缔结了合同。"
+    }
+  },
+  {
+    "word": "遂行",
+    "reading": "すいこう",
+    "meaning": "执行，完成",
+    "level": "N1",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "与えられた任務を確実に遂行する。",
+      "reading": "あた・にんむ・かくじつ・すいこう",
+      "translation": "确实地执行被赋予的任务。"
+    }
+  },
+  {
+    "word": "履行",
+    "reading": "りこう",
+    "meaning": "履行",
+    "level": "N1",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "契約内容を誠実に履行してください。",
+      "reading": "けいやくないよう・せいじつ・りこう",
+      "translation": "请诚实地履行合同内容。"
+    }
+  },
+  {
+    "word": "打診",
+    "reading": "だしん",
+    "meaning": "试探性询问",
+    "level": "N1",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "転勤の可能性について打診された。",
+      "reading": "てんきん・かのうせい・だしん",
+      "translation": "被试探性地问及了调职的可能性。"
+    }
+  },
+  {
+    "word": "就任",
+    "reading": "しゅうにん",
+    "meaning": "就任",
+    "level": "N1",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "新社長が今日就任した。",
+      "reading": "しんしゃちょう・きょう・しゅうにん",
+      "translation": "新社长今天就任了。"
+    }
+  },
+  {
+    "word": "辞任",
+    "reading": "じにん",
+    "meaning": "辞职（多用于职务）",
+    "level": "N1",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "不祥事の責任を取って辞任した。",
+      "reading": "ふしょうじ・せきにん・と・じにん",
+      "translation": "为丑闻承担责任而辞职了。"
+    }
+  },
+  {
+    "word": "兼務",
+    "reading": "けんむ",
+    "meaning": "兼任",
+    "level": "N1",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "彼は営業と広報を兼務している。",
+      "reading": "かれ・えいぎょう・こうほう・けんむ",
+      "translation": "他兼任营业和公关两职。"
+    }
+  },
+  {
+    "word": "見込み",
+    "reading": "みこみ",
+    "meaning": "预期，估计",
+    "level": "N2",
+    "category": "工作・职场",
+    "example": {
+      "sentence": "来年の売上は増加する見込みだ。",
+      "reading": "らいねん・うりあげ・ぞうか・みこ",
+      "translation": "预计明年的销售额会增加。"
+    }
+  },
+  {
+    "word": "家事",
+    "reading": "かじ",
+    "meaning": "家务",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "共働きなので家事は分担している。",
+      "reading": "ともばたら・かじ・ぶんたん",
+      "translation": "因为是双职工，所以家务是分担的。"
+    }
+  },
+  {
+    "word": "洗濯",
+    "reading": "せんたく",
+    "meaning": "洗衣服",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "雨の日は洗濯物が乾きにくい。",
+      "reading": "あめ・ひ・せんたくもの・かわ",
+      "translation": "下雨天洗的衣服不容易干。"
+    }
+  },
+  {
+    "word": "掃除",
+    "reading": "そうじ",
+    "meaning": "打扫",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "週末に部屋の掃除をした。",
+      "reading": "しゅうまつ・へや・そうじ",
+      "translation": "周末打扫了房间。"
+    }
+  },
+  {
+    "word": "支度",
+    "reading": "したく",
+    "meaning": "准备，收拾",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "もう出かける支度をしなさい。",
+      "reading": "で・したく",
+      "translation": "赶紧做好出门的准备吧。"
+    }
+  },
+  {
+    "word": "用意",
+    "reading": "ようい",
+    "meaning": "准备",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "朝ごはんの用意をしておいた。",
+      "reading": "あさ・ようい",
+      "translation": "提前准备好了早饭。"
+    }
+  },
+  {
+    "word": "節約",
+    "reading": "せつやく",
+    "meaning": "节约",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "電気代を節約するために早く寝る。",
+      "reading": "でんきだい・せつやく・はや・ね",
+      "translation": "为了节约电费而早睡。"
+    }
+  },
+  {
+    "word": "家計",
+    "reading": "かけい",
+    "meaning": "家庭经济，家用",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "最近、家計が苦しくなってきた。",
+      "reading": "さいきん・かけい・くる",
+      "translation": "最近家里经济变得紧张了。"
+    }
+  },
+  {
+    "word": "引っ越し",
+    "reading": "ひっこし",
+    "meaning": "搬家",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "来月、新しいアパートに引っ越しする。",
+      "reading": "らいげつ・あたら・ひっこし",
+      "translation": "下个月要搬到新公寓去。"
+    }
+  },
+  {
+    "word": "近所",
+    "reading": "きんじょ",
+    "meaning": "附近，邻居",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "近所の人にお菓子をいただいた。",
+      "reading": "きんじょ・ひと・かし",
+      "translation": "从邻居那里得到了点心。"
+    }
+  },
+  {
+    "word": "賃貸",
+    "reading": "ちんたい",
+    "meaning": "租赁",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "今のマンションは賃貸で借りている。",
+      "reading": "いま・ちんたい・か",
+      "translation": "现在住的公寓是租的。"
+    }
+  },
+  {
+    "word": "家主",
+    "reading": "やぬし",
+    "meaning": "房东",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "家主に修理を頼んだ。",
+      "reading": "やぬし・しゅうり・たの",
+      "translation": "拜托房东进行了维修。"
+    }
+  },
+  {
+    "word": "修理",
+    "reading": "しゅうり",
+    "meaning": "修理",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "壊れた自転車を修理に出した。",
+      "reading": "こわ・じてんしゃ・しゅうり・だ",
+      "translation": "把坏掉的自行车送去修理了。"
+    }
+  },
+  {
+    "word": "故障",
+    "reading": "こしょう",
+    "meaning": "故障",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "冷蔵庫が故障してしまった。",
+      "reading": "れいぞうこ・こしょう",
+      "translation": "冰箱出故障了。"
+    }
+  },
+  {
+    "word": "停電",
+    "reading": "ていでん",
+    "meaning": "停电",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "台風で一晩中停電していた。",
+      "reading": "たいふう・ひとばんじゅう・ていでん",
+      "translation": "因台风停电了一整晚。"
+    }
+  },
+  {
+    "word": "断水",
+    "reading": "だんすい",
+    "meaning": "停水",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "工事のため午前中断水します。",
+      "reading": "こうじ・ごぜんちゅう・だんすい",
+      "translation": "因施工，上午将停水。"
+    }
+  },
+  {
+    "word": "家賃",
+    "reading": "やちん",
+    "meaning": "房租",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "この辺りは家賃が高い。",
+      "reading": "あた・やちん・たか",
+      "translation": "这一带房租很贵。"
+    }
+  },
+  {
+    "word": "光熱費",
+    "reading": "こうねつひ",
+    "meaning": "水电燃气费",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "冬は光熱費がかさむ。",
+      "reading": "ふゆ・こうねつひ",
+      "translation": "冬天水电燃气费会增多。"
+    }
+  },
+  {
+    "word": "生活費",
+    "reading": "せいかつひ",
+    "meaning": "生活费",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "一人暮らしの生活費を見直した。",
+      "reading": "ひとりぐ・せいかつひ・みなお",
+      "translation": "重新审视了一个人生活的生活费。"
+    }
+  },
+  {
+    "word": "日課",
+    "reading": "にっか",
+    "meaning": "每日必做的事",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "朝の散歩が私の日課だ。",
+      "reading": "あさ・さんぽ・わたし・にっか",
+      "translation": "早晨散步是我每天的功课。"
+    }
+  },
+  {
+    "word": "習慣",
+    "reading": "しゅうかん",
+    "meaning": "习惯",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "早寝早起きの習慣をつけたい。",
+      "reading": "はやねはやお・しゅうかん",
+      "translation": "想养成早睡早起的习惯。"
+    }
+  },
+  {
+    "word": "世話",
+    "reading": "せわ",
+    "meaning": "照顾",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "子供の世話で毎日忙しい。",
+      "reading": "こども・せわ・まいにち・いそが",
+      "translation": "因为照顾孩子每天都很忙。"
+    }
+  },
+  {
+    "word": "面倒",
+    "reading": "めんどう",
+    "meaning": "麻烦，费事",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "手続きが面倒で後回しにした。",
+      "reading": "てつづ・めんどう・あとまわ",
+      "translation": "因为手续麻烦而拖延了。"
+    }
+  },
+  {
+    "word": "手間",
+    "reading": "てま",
+    "meaning": "工夫，功夫",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "この料理は手間がかかる。",
+      "reading": "りょうり・てま",
+      "translation": "这道菜很费功夫。"
+    }
+  },
+  {
+    "word": "支障",
+    "reading": "ししょう",
+    "meaning": "妨碍，故障",
+    "level": "N1",
+    "category": "日常生活",
+    "example": {
+      "sentence": "体調不良で仕事に支障が出た。",
+      "reading": "たいちょうふりょう・しごと・ししょう・で",
+      "translation": "因身体不适对工作造成了妨碍。"
+    }
+  },
+  {
+    "word": "心がける",
+    "reading": "こころがける",
+    "meaning": "留心，注意",
+    "level": "N2",
+    "category": "日常生活",
+    "example": {
+      "sentence": "健康に心がけて生活している。",
+      "reading": "けんこう・こころ・せいかつ",
+      "translation": "留心健康地生活着。"
+    }
+  },
+  {
+    "word": "挨拶",
+    "reading": "あいさつ",
+    "meaning": "问候，寒暄",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "近所の人に会ったら挨拶をする。",
+      "reading": "きんじょ・ひと・あ・あいさつ",
+      "translation": "遇到邻居就打招呼。"
+    }
+  },
+  {
+    "word": "礼儀",
+    "reading": "れいぎ",
+    "meaning": "礼仪",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "礼儀正しい若者だと感心した。",
+      "reading": "れいぎただ・わかもの・かんしん",
+      "translation": "对礼貌得体的年轻人感到钦佩。"
+    }
+  },
+  {
+    "word": "誤解",
+    "reading": "ごかい",
+    "meaning": "误解",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "私の言い方が誤解を招いたようだ。",
+      "reading": "わたし・い・かた・ごかい・まね",
+      "translation": "我的说法似乎引起了误解。"
+    }
+  },
+  {
+    "word": "遠慮",
+    "reading": "えんりょ",
+    "meaning": "客气，顾虑",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "どうぞ遠慮なく食べてください。",
+      "reading": "た",
+      "translation": "请不要客气，尽管吃。"
+    }
+  },
+  {
+    "word": "気遣い",
+    "reading": "きづかい",
+    "meaning": "关照，费心",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "温かい気遣いに感謝しています。",
+      "reading": "あたた・きづか・かんしゃ",
+      "translation": "对您温暖的关照表示感谢。"
+    }
+  },
+  {
+    "word": "付き合い",
+    "reading": "つきあい",
+    "meaning": "交往",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "長い付き合いの友人がいる。",
+      "reading": "なが・つ あ・ゆうじん",
+      "translation": "有交往很久的朋友。"
+    }
+  },
+  {
+    "word": "仲間",
+    "reading": "なかま",
+    "meaning": "伙伴",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "学生時代の仲間と再会した。",
+      "reading": "がくせいじだい・なかま・さいかい",
+      "translation": "和学生时代的伙伴重逢了。"
+    }
+  },
+  {
+    "word": "信頼",
+    "reading": "しんらい",
+    "meaning": "信赖",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "彼はチームから厚い信頼を得ている。",
+      "reading": "かれ・あつ・しんらい・え",
+      "translation": "他得到了团队深厚的信赖。"
+    }
+  },
+  {
+    "word": "裏切り",
+    "reading": "うらぎり",
+    "meaning": "背叛",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "親友の裏切りにショックを受けた。",
+      "reading": "しんゆう・うらぎ・う",
+      "translation": "因挚友的背叛而受到打击。"
+    }
+  },
+  {
+    "word": "絆",
+    "reading": "きずな",
+    "meaning": "羁绊，纽带",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "家族の絆を大切にしている。",
+      "reading": "かぞく・きずな・たいせつ",
+      "translation": "珍视家人间的羁绊。"
+    }
+  },
+  {
+    "word": "疎遠",
+    "reading": "そえん",
+    "meaning": "疏远",
+    "level": "N1",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "卒業してから彼とは疎遠になった。",
+      "reading": "そつぎょう・かれ・そえん",
+      "translation": "毕业后和他变得疏远了。"
+    }
+  },
+  {
+    "word": "親密",
+    "reading": "しんみつ",
+    "meaning": "亲密",
+    "level": "N1",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "二人は親密な関係になった。",
+      "reading": "ふたり・しんみつ・かんけい",
+      "translation": "两人成了亲密的关系。"
+    }
+  },
+  {
+    "word": "対立",
+    "reading": "たいりつ",
+    "meaning": "对立",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "意見の対立で会議が長引いた。",
+      "reading": "いけん・たいりつ・かいぎ・ながび",
+      "translation": "因意见对立会议延长了。"
+    }
+  },
+  {
+    "word": "協力",
+    "reading": "きょうりょく",
+    "meaning": "合作",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "地域の人々が協力して祭りを開いた。",
+      "reading": "ちいき・ひとびと・きょうりょく・まつ・ひら",
+      "translation": "当地居民合作举办了祭典。"
+    }
+  },
+  {
+    "word": "衝突",
+    "reading": "しょうとつ",
+    "meaning": "冲突",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "意見の衝突が絶えなかった。",
+      "reading": "いけん・しょうとつ・た",
+      "translation": "意见冲突不断。"
+    }
+  },
+  {
+    "word": "妥協",
+    "reading": "だきょう",
+    "meaning": "妥协",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "お互いに妥協して合意した。",
+      "reading": "たが・だきょう・ごうい",
+      "translation": "双方互相妥协达成了一致。"
+    }
+  },
+  {
+    "word": "譲歩",
+    "reading": "じょうほ",
+    "meaning": "让步",
+    "level": "N1",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "交渉で少し譲歩することにした。",
+      "reading": "こうしょう・すこ・じょうほ",
+      "translation": "在谈判中决定稍作让步。"
+    }
+  },
+  {
+    "word": "説得",
+    "reading": "せっとく",
+    "meaning": "说服",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "反対する両親を説得した。",
+      "reading": "はんたい・りょうしん・せっとく",
+      "translation": "说服了反对的父母。"
+    }
+  },
+  {
+    "word": "弁解",
+    "reading": "べんかい",
+    "meaning": "辩解",
+    "level": "N1",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "これ以上弁解する必要はない。",
+      "reading": "いじょう・べんかい・ひつよう",
+      "translation": "没必要再进行辩解了。"
+    }
+  },
+  {
+    "word": "皮肉",
+    "reading": "ひにく",
+    "meaning": "讽刺",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "彼の言葉には皮肉が込められていた。",
+      "reading": "かれ・ことば・ひにく・こ",
+      "translation": "他的话里带有讽刺意味。"
+    }
+  },
+  {
+    "word": "世間体",
+    "reading": "せけんてい",
+    "meaning": "面子，世俗眼光",
+    "level": "N1",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "世間体を気にしすぎるのは疲れる。",
+      "reading": "せけんてい・き・つか",
+      "translation": "过分在意世俗眼光会很累。"
+    }
+  },
+  {
+    "word": "気配り",
+    "reading": "きくばり",
+    "meaning": "体贴入微",
+    "level": "N2",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "細やかな気配りができる人だ。",
+      "reading": "こま・きくば・ひと",
+      "translation": "是个能做到细致体贴的人。"
+    }
+  },
+  {
+    "word": "円滑",
+    "reading": "えんかつ",
+    "meaning": "圆滑，顺利",
+    "level": "N1",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "円滑にコミュニケーションを取る。",
+      "reading": "えんかつ・と",
+      "translation": "顺畅地进行沟通。"
+    }
+  },
+  {
+    "word": "打ち解ける",
+    "reading": "うちとける",
+    "meaning": "融洽起来",
+    "level": "N1",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "数回会ううちに打ち解けてきた。",
+      "reading": "すうかい・あ・うちと",
+      "translation": "见了几次面后逐渐融洽起来了。"
+    }
+  },
+  {
+    "word": "馴れ馴れしい",
+    "reading": "なれなれしい",
+    "meaning": "过分亲昵",
+    "level": "N1",
+    "category": "人际・社交",
+    "example": {
+      "sentence": "初対面なのに馴れ馴れしい態度だった。",
+      "reading": "しょたいめん・なれなれ・たいど",
+      "translation": "明明是初次见面却态度过分亲昵。"
+    }
+  },
+  {
+    "word": "焦り",
+    "reading": "あせり",
+    "meaning": "焦躁",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "締め切りが近づき焦りを感じた。",
+      "reading": "し・き・ちか・あせ・かん",
+      "translation": "随着截止日期临近感到焦躁。"
+    }
+  },
+  {
+    "word": "不安",
+    "reading": "ふあん",
+    "meaning": "不安",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "将来に不安を抱えている。",
+      "reading": "しょうらい・ふあん・かか",
+      "translation": "对未来抱有不安。"
+    }
+  },
+  {
+    "word": "緊張",
+    "reading": "きんちょう",
+    "meaning": "紧张",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "面接前はいつも緊張する。",
+      "reading": "めんせつまえ・きんちょう",
+      "translation": "面试前总是很紧张。"
+    }
+  },
+  {
+    "word": "落ち着く",
+    "reading": "おちつく",
+    "meaning": "冷静下来",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "深呼吸をして気持ちを落ち着けた。",
+      "reading": "しんこきゅう・きも・お つ",
+      "translation": "做了个深呼吸让心情平静下来。"
+    }
+  },
+  {
+    "word": "悩み",
+    "reading": "なやみ",
+    "meaning": "烦恼",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "誰にも言えない悩みがある。",
+      "reading": "だれ・い・なや",
+      "translation": "有谁都不能说的烦恼。"
+    }
+  },
+  {
+    "word": "満足",
+    "reading": "まんぞく",
+    "meaning": "满足",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "今の生活に満足している。",
+      "reading": "いま・せいかつ・まんぞく",
+      "translation": "对现在的生活感到满足。"
+    }
+  },
+  {
+    "word": "後悔",
+    "reading": "こうかい",
+    "meaning": "后悔",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "あの時の決断を後悔している。",
+      "reading": "とき・けつだん・こうかい",
+      "translation": "对当时的决定感到后悔。"
+    }
+  },
+  {
+    "word": "期待",
+    "reading": "きたい",
+    "meaning": "期待",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "新しい生活に期待している。",
+      "reading": "あたら・せいかつ・きたい",
+      "translation": "对新生活充满期待。"
+    }
+  },
+  {
+    "word": "失望",
+    "reading": "しつぼう",
+    "meaning": "失望",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "結果に失望を隠せなかった。",
+      "reading": "けっか・しつぼう・かく",
+      "translation": "无法掩饰对结果的失望。"
+    }
+  },
+  {
+    "word": "感激",
+    "reading": "かんげき",
+    "meaning": "感激，感动",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "思いがけない贈り物に感激した。",
+      "reading": "おも・おく もの・かんげき",
+      "translation": "对意想不到的礼物感到感激。"
+    }
+  },
+  {
+    "word": "動揺",
+    "reading": "どうよう",
+    "meaning": "动摇",
+    "level": "N1",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "突然の知らせに動揺を隠せなかった。",
+      "reading": "とつぜん・し・どうよう・かく",
+      "translation": "对突然的消息无法掩饰动摇的心情。"
+    }
+  },
+  {
+    "word": "憂鬱",
+    "reading": "ゆううつ",
+    "meaning": "忧郁",
+    "level": "N1",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "雨の日は憂鬱な気分になる。",
+      "reading": "あめ・ひ・ゆううつ・きぶん",
+      "translation": "下雨天心情会变得忧郁。"
+    }
+  },
+  {
+    "word": "苛立ち",
+    "reading": "いらだち",
+    "meaning": "烦躁",
+    "level": "N1",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "渋滞に苛立ちを感じた。",
+      "reading": "じゅうたい・いらだ・かん",
+      "translation": "对堵车感到烦躁。"
+    }
+  },
+  {
+    "word": "虚しい",
+    "reading": "むなしい",
+    "meaning": "空虚",
+    "level": "N1",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "一人で過ごす休日は虚しい。",
+      "reading": "ひとり・す・きゅうじつ・むな",
+      "translation": "一个人度过的假日很空虚。"
+    }
+  },
+  {
+    "word": "切ない",
+    "reading": "せつない",
+    "meaning": "悲伤，难受",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "別れの場面はいつも切ない。",
+      "reading": "わか・ばめん・せつ",
+      "translation": "离别的场面总是让人难受。"
+    }
+  },
+  {
+    "word": "羨む",
+    "reading": "うらやむ",
+    "meaning": "羡慕",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "友人の成功を羨んでしまった。",
+      "reading": "ゆうじん・せいこう・うらや",
+      "translation": "不由得羡慕起朋友的成功。"
+    }
+  },
+  {
+    "word": "妬む",
+    "reading": "ねたむ",
+    "meaning": "嫉妒",
+    "level": "N1",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "他人を妬んでも何も生まれない。",
+      "reading": "たにん・ねた・なに・う",
+      "translation": "即使嫉妒他人也不会有任何结果。"
+    }
+  },
+  {
+    "word": "執着",
+    "reading": "しゅうちゃく",
+    "meaning": "执着",
+    "level": "N1",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "過去の失敗に執着しすぎだ。",
+      "reading": "かこ・しっぱい・しゅうちゃく",
+      "translation": "对过去的失败太过执着了。"
+    }
+  },
+  {
+    "word": "諦める",
+    "reading": "あきらめる",
+    "meaning": "放弃",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "簡単に夢を諦めたくない。",
+      "reading": "かんたん・ゆめ・あきら",
+      "translation": "不想轻易放弃梦想。"
+    }
+  },
+  {
+    "word": "我慢",
+    "reading": "がまん",
+    "meaning": "忍耐",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "痛みを我慢して病院に行った。",
+      "reading": "いた・がまん・びょういん・い",
+      "translation": "忍着疼痛去了医院。"
+    }
+  },
+  {
+    "word": "意欲",
+    "reading": "いよく",
+    "meaning": "干劲，热情",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "新しい仕事への意欲が湧いてきた。",
+      "reading": "あたら・しごと・いよく・わ",
+      "translation": "对新工作涌起了干劲。"
+    }
+  },
+  {
+    "word": "達成感",
+    "reading": "たっせいかん",
+    "meaning": "成就感",
+    "level": "N2",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "目標を終えて達成感を味わった。",
+      "reading": "もくひょう・お・たっせいかん・あじ",
+      "translation": "完成目标后品尝到了成就感。"
+    }
+  },
+  {
+    "word": "罪悪感",
+    "reading": "ざいあくかん",
+    "meaning": "罪恶感",
+    "level": "N1",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "嘘をついたことに罪悪感を覚えた。",
+      "reading": "うそ・ざいあくかん・おぼ",
+      "translation": "对撒谎这件事感到了罪恶感。"
+    }
+  },
+  {
+    "word": "劣等感",
+    "reading": "れっとうかん",
+    "meaning": "自卑感",
+    "level": "N1",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "兄と比べられ劣等感を抱いていた。",
+      "reading": "あに・くら・れっとうかん・いだ",
+      "translation": "因被拿来和哥哥比较而怀有自卑感。"
+    }
+  },
+  {
+    "word": "安堵",
+    "reading": "あんど",
+    "meaning": "安心",
+    "level": "N1",
+    "category": "情感・心理",
+    "example": {
+      "sentence": "無事に到着したと聞いて安堵した。",
+      "reading": "ぶじ・とうちゃく・き・あんど",
+      "translation": "听说平安到达后感到安心。"
+    }
+  },
+  {
+    "word": "政策",
+    "reading": "せいさく",
+    "meaning": "政策",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "政府は新しい政策を発表した。",
+      "reading": "せいふ・あたら・せいさく・はっぴょう",
+      "translation": "政府发表了新政策。"
+    }
+  },
+  {
+    "word": "制度",
+    "reading": "せいど",
+    "meaning": "制度",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "この制度は来年から変わる。",
+      "reading": "せいど・らいねん・か",
+      "translation": "这项制度从明年开始改变。"
+    }
+  },
+  {
+    "word": "格差",
+    "reading": "かくさ",
+    "meaning": "差距",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "地域による格差が問題になっている。",
+      "reading": "ちいき・かくさ・もんだい",
+      "translation": "地区间的差距成了问题。"
+    }
+  },
+  {
+    "word": "少子化",
+    "reading": "しょうしか",
+    "meaning": "少子化",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "少子化対策が急がれている。",
+      "reading": "しょうしか・たいさく・いそ",
+      "translation": "少子化对策亟待推进。"
+    }
+  },
+  {
+    "word": "高齢化",
+    "reading": "こうれいか",
+    "meaning": "老龄化",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "日本は急速に高齢化が進んでいる。",
+      "reading": "にほん・きゅうそく・こうれいか・すす",
+      "translation": "日本正在急速走向老龄化。"
+    }
+  },
+  {
+    "word": "財政",
+    "reading": "ざいせい",
+    "meaning": "财政",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "市の財政が厳しい状況にある。",
+      "reading": "し・ざいせい・きび・じょうきょう",
+      "translation": "市的财政处于严峻状况。"
+    }
+  },
+  {
+    "word": "税金",
+    "reading": "ぜいきん",
+    "meaning": "税金",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "来年から税金が上がるらしい。",
+      "reading": "らいねん・ぜいきん・あ",
+      "translation": "听说从明年开始税金要上涨。"
+    }
+  },
+  {
+    "word": "選挙",
+    "reading": "せんきょ",
+    "meaning": "选举",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "来月、市長選挙が行われる。",
+      "reading": "らいげつ・しちょうせんきょ・おこな",
+      "translation": "下个月将举行市长选举。"
+    }
+  },
+  {
+    "word": "世論",
+    "reading": "よろん",
+    "meaning": "舆论",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "世論の反発を招いた。",
+      "reading": "よろん・はんぱつ・まね",
+      "translation": "招致了舆论的反对。"
+    }
+  },
+  {
+    "word": "規制",
+    "reading": "きせい",
+    "meaning": "规制，限制",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "新しい規制が施行された。",
+      "reading": "あたら・きせい・しこう",
+      "translation": "新的规制开始施行了。"
+    }
+  },
+  {
+    "word": "撤廃",
+    "reading": "てっぱい",
+    "meaning": "废除",
+    "level": "N1",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "古い規則が撤廃された。",
+      "reading": "ふる・きそく・てっぱい",
+      "translation": "旧规则被废除了。"
+    }
+  },
+  {
+    "word": "施行",
+    "reading": "しこう",
+    "meaning": "施行",
+    "level": "N1",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "この法律は来月施行される。",
+      "reading": "ほうりつ・らいげつ・しこう",
+      "translation": "这项法律将于下月施行。"
+    }
+  },
+  {
+    "word": "普及",
+    "reading": "ふきゅう",
+    "meaning": "普及",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "スマートフォンが急速に普及した。",
+      "reading": "きゅうそく・ふきゅう",
+      "translation": "智能手机迅速普及了。"
+    }
+  },
+  {
+    "word": "深刻",
+    "reading": "しんこく",
+    "meaning": "深刻，严重",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "水不足が深刻な問題になっている。",
+      "reading": "みずぶそく・しんこく・もんだい",
+      "translation": "缺水已成为严重的问题。"
+    }
+  },
+  {
+    "word": "貧困",
+    "reading": "ひんこん",
+    "meaning": "贫困",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "貧困層への支援が求められている。",
+      "reading": "ひんこんそう・しえん・もと",
+      "translation": "需要对贫困阶层提供支援。"
+    }
+  },
+  {
+    "word": "犯罪",
+    "reading": "はんざい",
+    "meaning": "犯罪",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "この地域は犯罪率が低い。",
+      "reading": "ちいき・はんざいりつ・ひく",
+      "translation": "这个地区的犯罪率很低。"
+    }
+  },
+  {
+    "word": "治安",
+    "reading": "ちあん",
+    "meaning": "治安",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "夜になると治安が悪くなる地区だ。",
+      "reading": "よる・ちあん・わる・ちく",
+      "translation": "是个一到夜里治安就会变差的地区。"
+    }
+  },
+  {
+    "word": "差別",
+    "reading": "さべつ",
+    "meaning": "歧视",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "あらゆる差別に反対する。",
+      "reading": "さべつ・はんたい",
+      "translation": "反对一切歧视。"
+    }
+  },
+  {
+    "word": "偏見",
+    "reading": "へんけん",
+    "meaning": "偏见",
+    "level": "N1",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "偏見を持たずに接するべきだ。",
+      "reading": "へんけん・も・せっ",
+      "translation": "应该不带偏见地对待。"
+    }
+  },
+  {
+    "word": "人権",
+    "reading": "じんけん",
+    "meaning": "人权",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "人権を守る運動に参加した。",
+      "reading": "じんけん・まも・うんどう・さんか",
+      "translation": "参加了维护人权的运动。"
+    }
+  },
+  {
+    "word": "温暖化",
+    "reading": "おんだんか",
+    "meaning": "暖化",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "地球温暖化の影響が各地で見られる。",
+      "reading": "ちきゅうおんだんか・えいきょう・かくち・み",
+      "translation": "地球暖化的影响在各地都能看到。"
+    }
+  },
+  {
+    "word": "資源",
+    "reading": "しげん",
+    "meaning": "资源",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "日本は資源が少ない国だ。",
+      "reading": "にほん・しげん・すく・くに",
+      "translation": "日本是资源匮乏的国家。"
+    }
+  },
+  {
+    "word": "経済成長",
+    "reading": "けいざいせいちょう",
+    "meaning": "经济增长",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "今年の経済成長率は鈍化した。",
+      "reading": "ことし・けいざいせいちょうりつ・どんか",
+      "translation": "今年的经济增长率放缓了。"
+    }
+  },
+  {
+    "word": "景気",
+    "reading": "けいき",
+    "meaning": "景气，经济形势",
+    "level": "N2",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "景気が回復してきたようだ。",
+      "reading": "けいき・かいふく",
+      "translation": "经济形势似乎已经恢复了。"
+    }
+  },
+  {
+    "word": "是正",
+    "reading": "ぜせい",
+    "meaning": "纠正，改正",
+    "level": "N1",
+    "category": "社会・时事",
+    "example": {
+      "sentence": "不公平な制度を是正すべきだ。",
+      "reading": "ふこうへい・せいど・ぜせい",
+      "translation": "应该纠正不公平的制度。"
+    }
+  },
+  {
+    "word": "概念",
+    "reading": "がいねん",
+    "meaning": "概念",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "この概念は理解するのが難しい。",
+      "reading": "がいねん・りかい・むずか",
+      "translation": "这个概念理解起来很难。"
+    }
+  },
+  {
+    "word": "傾向",
+    "reading": "けいこう",
+    "meaning": "倾向",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "若者はネットで情報を得る傾向がある。",
+      "reading": "わかもの・じょうほう・え・けいこう",
+      "translation": "年轻人有通过网络获取信息的倾向。"
+    }
+  },
+  {
+    "word": "要素",
+    "reading": "ようそ",
+    "meaning": "要素",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "成功にはいくつかの要素が必要だ。",
+      "reading": "せいこう・ようそ・ひつよう",
+      "translation": "成功需要几个要素。"
+    }
+  },
+  {
+    "word": "根拠",
+    "reading": "こんきょ",
+    "meaning": "根据",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "その主張には根拠がない。",
+      "reading": "しゅちょう・こんきょ",
+      "translation": "那个主张没有根据。"
+    }
+  },
+  {
+    "word": "前提",
+    "reading": "ぜんてい",
+    "meaning": "前提",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "健康であることを前提に計画を立てた。",
+      "reading": "けんこう・ぜんてい・けいかく・た",
+      "translation": "以身体健康为前提制定了计划。"
+    }
+  },
+  {
+    "word": "矛盾",
+    "reading": "むじゅん",
+    "meaning": "矛盾",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "彼の話には矛盾がある。",
+      "reading": "かれ・はなし・むじゅん",
+      "translation": "他的话里有矛盾之处。"
+    }
+  },
+  {
+    "word": "抽象的",
+    "reading": "ちゅうしょうてき",
+    "meaning": "抽象的",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "説明が抽象的でわかりにくい。",
+      "reading": "せつめい・ちゅうしょうてき",
+      "translation": "说明太抽象，难以理解。"
+    }
+  },
+  {
+    "word": "具体的",
+    "reading": "ぐたいてき",
+    "meaning": "具体的",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "もっと具体的な例を挙げてください。",
+      "reading": "ぐたいてき・れい・あ",
+      "translation": "请举出更具体的例子。"
+    }
+  },
+  {
+    "word": "論理",
+    "reading": "ろんり",
+    "meaning": "逻辑",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "彼の論理は筋が通っている。",
+      "reading": "かれ・ろんり・すじ・とお",
+      "translation": "他的逻辑说得通。"
+    }
+  },
+  {
+    "word": "客観的",
+    "reading": "きゃっかんてき",
+    "meaning": "客观的",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "客観的な視点で判断すべきだ。",
+      "reading": "きゃっかんてき・してん・はんだん",
+      "translation": "应该以客观的视角来判断。"
+    }
+  },
+  {
+    "word": "主観的",
+    "reading": "しゅかんてき",
+    "meaning": "主观的",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "それは主観的な意見にすぎない。",
+      "reading": "しゅかんてき・いけん",
+      "translation": "那不过是主观的意见罢了。"
+    }
+  },
+  {
+    "word": "妥当",
+    "reading": "だとう",
+    "meaning": "妥当",
+    "level": "N1",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "この結論は妥当だと思う。",
+      "reading": "けつろん・だとう・おも",
+      "translation": "我认为这个结论是妥当的。"
+    }
+  },
+  {
+    "word": "一貫",
+    "reading": "いっかん",
+    "meaning": "一贯",
+    "level": "N1",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "彼の態度は一貫している。",
+      "reading": "かれ・たいど・いっかん",
+      "translation": "他的态度是一贯的。"
+    }
+  },
+  {
+    "word": "顕著",
+    "reading": "けんちょ",
+    "meaning": "显著",
+    "level": "N1",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "効果は顕著に表れた。",
+      "reading": "こうか・けんちょ・あらわ",
+      "translation": "效果显著地体现出来了。"
+    }
+  },
+  {
+    "word": "曖昧",
+    "reading": "あいまい",
+    "meaning": "暧昧，模糊",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "曖昧な返事はやめてほしい。",
+      "reading": "あいまい・へんじ",
+      "translation": "希望不要给出暧昧的回答。"
+    }
+  },
+  {
+    "word": "明瞭",
+    "reading": "めいりょう",
+    "meaning": "明了",
+    "level": "N1",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "もっと明瞭に説明してください。",
+      "reading": "めいりょう・せつめい",
+      "translation": "请更明确地说明一下。"
+    }
+  },
+  {
+    "word": "普遍的",
+    "reading": "ふへんてき",
+    "meaning": "普遍的",
+    "level": "N1",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "これは普遍的な現象だ。",
+      "reading": "ふへんてき・げんしょう",
+      "translation": "这是普遍的现象。"
+    }
+  },
+  {
+    "word": "相対的",
+    "reading": "そうたいてき",
+    "meaning": "相对的",
+    "level": "N1",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "幸福は相対的なものだ。",
+      "reading": "こうふく・そうたいてき",
+      "translation": "幸福是相对的东西。"
+    }
+  },
+  {
+    "word": "絶対的",
+    "reading": "ぜったいてき",
+    "meaning": "绝对的",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "絶対的な正解はない。",
+      "reading": "ぜったいてき・せいかい",
+      "translation": "不存在绝对的正确答案。"
+    }
+  },
+  {
+    "word": "仮説",
+    "reading": "かせつ",
+    "meaning": "假说",
+    "level": "N1",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "この仮説を検証する必要がある。",
+      "reading": "かせつ・けんしょう・ひつよう",
+      "translation": "有必要验证这个假说。"
+    }
+  },
+  {
+    "word": "検証",
+    "reading": "けんしょう",
+    "meaning": "验证",
+    "level": "N1",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "データをもとに仮説を検証した。",
+      "reading": "もと・かせつ・けんしょう",
+      "translation": "基于数据验证了假说。"
+    }
+  },
+  {
+    "word": "分析",
+    "reading": "ぶんせき",
+    "meaning": "分析",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "市場の動向を分析している。",
+      "reading": "しじょう・どうこう・ぶんせき",
+      "translation": "正在分析市场动向。"
+    }
+  },
+  {
+    "word": "推測",
+    "reading": "すいそく",
+    "meaning": "推测",
+    "level": "N2",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "原因を推測するしかない。",
+      "reading": "げんいん・すいそく",
+      "translation": "只能推测原因了。"
+    }
+  },
+  {
+    "word": "帰納",
+    "reading": "きのう",
+    "meaning": "归纳",
+    "level": "N1",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "個々の事例から帰納して結論を出す。",
+      "reading": "ここ・じれい・きのう・けつろん・だ",
+      "translation": "从个别事例归纳出结论。"
+    }
+  },
+  {
+    "word": "演繹",
+    "reading": "えんえき",
+    "meaning": "演绎",
+    "level": "N1",
+    "category": "抽象・学术/逻辑",
+    "example": {
+      "sentence": "理論を演繹して応用する。",
+      "reading": "りろん・えんえき・おうよう",
+      "translation": "将理论进行演绎并加以应用。"
+    }
+  },
+  {
+    "word": "気候",
+    "reading": "きこう",
+    "meaning": "气候",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "この地域は温暖な気候だ。",
+      "reading": "ちいき・おんだん・きこう",
+      "translation": "这个地区气候温暖。"
+    }
+  },
+  {
+    "word": "湿度",
+    "reading": "しつど",
+    "meaning": "湿度",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "夏は湿度が高くて蒸し暑い。",
+      "reading": "なつ・しつど・たか・む あつ",
+      "translation": "夏天湿度高，闷热。"
+    }
+  },
+  {
+    "word": "台風",
+    "reading": "たいふう",
+    "meaning": "台风",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "台風が接近している。",
+      "reading": "たいふう・せっきん",
+      "translation": "台风正在逼近。"
+    }
+  },
+  {
+    "word": "洪水",
+    "reading": "こうずい",
+    "meaning": "洪水",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "大雨で洪水が発生した。",
+      "reading": "おおあめ・こうずい・はっせい",
+      "translation": "因大雨发生了洪水。"
+    }
+  },
+  {
+    "word": "干ばつ",
+    "reading": "かんばつ",
+    "meaning": "干旱",
+    "level": "N1",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "今年は深刻な干ばつに見舞われた。",
+      "reading": "ことし・しんこく・かんばつ・みま",
+      "translation": "今年遭遇了严重的干旱。"
+    }
+  },
+  {
+    "word": "地震",
+    "reading": "じしん",
+    "meaning": "地震",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "昨夜、大きな地震があった。",
+      "reading": "さくや・おお・じしん",
+      "translation": "昨晚发生了大地震。"
+    }
+  },
+  {
+    "word": "噴火",
+    "reading": "ふんか",
+    "meaning": "火山喷发",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "火山が突然噴火した。",
+      "reading": "かざん・とつぜん・ふんか",
+      "translation": "火山突然喷发了。"
+    }
+  },
+  {
+    "word": "生態系",
+    "reading": "せいたいけい",
+    "meaning": "生态系统",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "開発が生態系に影響を与える。",
+      "reading": "かいはつ・せいたいけい・えいきょう・あた",
+      "translation": "开发会对生态系统产生影响。"
+    }
+  },
+  {
+    "word": "絶滅",
+    "reading": "ぜつめつ",
+    "meaning": "灭绝",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "この動物は絶滅の危機にある。",
+      "reading": "どうぶつ・ぜつめつ・きき",
+      "translation": "这种动物正处于灭绝的危机中。"
+    }
+  },
+  {
+    "word": "保護",
+    "reading": "ほご",
+    "meaning": "保护",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "野生動物を保護する活動に参加した。",
+      "reading": "やせいどうぶつ・ほご・かつどう・さんか",
+      "translation": "参加了保护野生动物的活动。"
+    }
+  },
+  {
+    "word": "森林伐採",
+    "reading": "しんりんばっさい",
+    "meaning": "森林砍伐",
+    "level": "N1",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "森林伐採が環境に悪影響を及ぼす。",
+      "reading": "しんりんばっさい・かんきょう・あくえいきょう・およ",
+      "translation": "森林砍伐会对环境造成不良影响。"
+    }
+  },
+  {
+    "word": "汚染",
+    "reading": "おせん",
+    "meaning": "污染",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "大気汚染が深刻化している。",
+      "reading": "たいきおせん・しんこくか",
+      "translation": "大气污染正在恶化。"
+    }
+  },
+  {
+    "word": "大気",
+    "reading": "たいき",
+    "meaning": "大气",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "大気の状態が不安定だ。",
+      "reading": "たいき・じょうたい・ふあんてい",
+      "translation": "大气状态不稳定。"
+    }
+  },
+  {
+    "word": "季節",
+    "reading": "きせつ",
+    "meaning": "季节",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "日本には四つの季節がある。",
+      "reading": "にほん・よっ・きせつ",
+      "translation": "日本有四个季节。"
+    }
+  },
+  {
+    "word": "梅雨",
+    "reading": "つゆ",
+    "meaning": "梅雨",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "そろそろ梅雨に入る頃だ。",
+      "reading": "つゆ・はい・ころ",
+      "translation": "差不多要进入梅雨季了。"
+    }
+  },
+  {
+    "word": "紅葉",
+    "reading": "こうよう",
+    "meaning": "红叶",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "秋になると山が紅葉で彩られる。",
+      "reading": "あき・やま・こうよう・いろど",
+      "translation": "一到秋天，山就被红叶染上了色彩。"
+    }
+  },
+  {
+    "word": "花粉症",
+    "reading": "かふんしょう",
+    "meaning": "花粉症",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "春は花粉症で目がかゆい。",
+      "reading": "はる・かふんしょう・め",
+      "translation": "春天因花粉症眼睛发痒。"
+    }
+  },
+  {
+    "word": "猛暑",
+    "reading": "もうしょ",
+    "meaning": "酷暑",
+    "level": "N1",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "今年の夏は猛暑が続いている。",
+      "reading": "ことし・なつ・もうしょ・つづ",
+      "translation": "今年夏天持续酷暑。"
+    }
+  },
+  {
+    "word": "冷え込む",
+    "reading": "ひえこむ",
+    "meaning": "骤冷",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "明日の朝は冷え込むそうだ。",
+      "reading": "あした・あさ・ひ こ",
+      "translation": "听说明天早上会骤然变冷。"
+    }
+  },
+  {
+    "word": "潤う",
+    "reading": "うるおう",
+    "meaning": "滋润",
+    "level": "N1",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "恵みの雨で大地が潤った。",
+      "reading": "めぐ・あめ・だいち・うるお",
+      "translation": "恵雨滋润了大地。"
+    }
+  },
+  {
+    "word": "干上がる",
+    "reading": "ひあがる",
+    "meaning": "干涸",
+    "level": "N1",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "日照りで川が干上がってしまった。",
+      "reading": "ひで・かわ・ひあ",
+      "translation": "因久旱河流干涸了。"
+    }
+  },
+  {
+    "word": "荒れる",
+    "reading": "あれる",
+    "meaning": "（天气）恶劣，荒废",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "海は今夜、大きく荒れるらしい。",
+      "reading": "うみ・こんや・おお・あ",
+      "translation": "据说今晚海面会变得很汹涌。"
+    }
+  },
+  {
+    "word": "自然災害",
+    "reading": "しぜんさいがい",
+    "meaning": "自然灾害",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "自然災害への備えが重要だ。",
+      "reading": "しぜんさいがい・そな・じゅうよう",
+      "translation": "对自然灾害的防备很重要。"
+    }
+  },
+  {
+    "word": "復旧",
+    "reading": "ふっきゅう",
+    "meaning": "灾后恢复",
+    "level": "N1",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "停電はまもなく復旧する見込みだ。",
+      "reading": "ていでん・ふっきゅう・みこ",
+      "translation": "预计停电很快就会恢复。"
+    }
+  },
+  {
+    "word": "避難",
+    "reading": "ひなん",
+    "meaning": "避难",
+    "level": "N2",
+    "category": "自然・环境・季节",
+    "example": {
+      "sentence": "住民は高台に避難した。",
+      "reading": "じゅうみん・たかだい・ひなん",
+      "translation": "居民们疏散到了高地。"
+    }
+  },
+  {
+    "word": "症状",
+    "reading": "しょうじょう",
+    "meaning": "症状",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "風邪の症状が出てきた。",
+      "reading": "かぜ・しょうじょう・で",
+      "translation": "出现了感冒的症状。"
+    }
+  },
+  {
+    "word": "診断",
+    "reading": "しんだん",
+    "meaning": "诊断",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "医者に診断してもらった。",
+      "reading": "いしゃ・しんだん",
+      "translation": "请医生做了诊断。"
+    }
+  },
+  {
+    "word": "治療",
+    "reading": "ちりょう",
+    "meaning": "治疗",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "早めの治療が大切だ。",
+      "reading": "はや・ちりょう・たいせつ",
+      "translation": "及早治疗很重要。"
+    }
+  },
+  {
+    "word": "手術",
+    "reading": "しゅじゅつ",
+    "meaning": "手术",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "来週、手術を受けることになった。",
+      "reading": "らいしゅう・しゅじゅつ・う",
+      "translation": "决定下周做手术。"
+    }
+  },
+  {
+    "word": "副作用",
+    "reading": "ふくさよう",
+    "meaning": "副作用",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "この薬には副作用がある。",
+      "reading": "くすり・ふくさよう",
+      "translation": "这种药有副作用。"
+    }
+  },
+  {
+    "word": "免疫",
+    "reading": "めんえき",
+    "meaning": "免疫",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "免疫力を高める食事を心がけている。",
+      "reading": "めんえきりょく・たか・しょくじ・こころ",
+      "translation": "留心吃能提高免疫力的食物。"
+    }
+  },
+  {
+    "word": "体調",
+    "reading": "たいちょう",
+    "meaning": "身体状况",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "最近、体調がよくない。",
+      "reading": "さいきん・たいちょう",
+      "translation": "最近身体状况不太好。"
+    }
+  },
+  {
+    "word": "疲労",
+    "reading": "ひろう",
+    "meaning": "疲劳",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "疲労がたまっているようだ。",
+      "reading": "ひろう",
+      "translation": "似乎积累了很多疲劳。"
+    }
+  },
+  {
+    "word": "慢性",
+    "reading": "まんせい",
+    "meaning": "慢性",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "慢性的な肩こりに悩んでいる。",
+      "reading": "まんせいてき・かた・なや",
+      "translation": "为慢性肩膀酸痛而烦恼。"
+    }
+  },
+  {
+    "word": "急性",
+    "reading": "きゅうせい",
+    "meaning": "急性",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "急性の腹痛で病院に運ばれた。",
+      "reading": "きゅうせい・ふくつう・びょういん・はこ",
+      "translation": "因急性腹痛被送往医院。"
+    }
+  },
+  {
+    "word": "感染",
+    "reading": "かんせん",
+    "meaning": "感染",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "ウイルスに感染してしまった。",
+      "reading": "かんせん",
+      "translation": "被病毒感染了。"
+    }
+  },
+  {
+    "word": "予防",
+    "reading": "よぼう",
+    "meaning": "预防",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "手洗いはウイルス予防に効果的だ。",
+      "reading": "てあら・よぼう・こうかてき",
+      "translation": "洗手对预防病毒很有效。"
+    }
+  },
+  {
+    "word": "栄養",
+    "reading": "えいよう",
+    "meaning": "营养",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "バランスの良い栄養を摂ることが大切だ。",
+      "reading": "よ・えいよう・と・たいせつ",
+      "translation": "摄取均衡的营养很重要。"
+    }
+  },
+  {
+    "word": "摂取",
+    "reading": "せっしゅ",
+    "meaning": "摄取",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "塩分の摂取を控えている。",
+      "reading": "えんぶん・せっしゅ・ひか",
+      "translation": "正在控制盐分的摄取。"
+    }
+  },
+  {
+    "word": "消化",
+    "reading": "しょうか",
+    "meaning": "消化",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "この食べ物は消化がいい。",
+      "reading": "た もの・しょうか",
+      "translation": "这种食物容易消化。"
+    }
+  },
+  {
+    "word": "血圧",
+    "reading": "けつあつ",
+    "meaning": "血压",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "祖母は血圧が高い。",
+      "reading": "そぼ・けつあつ・たか",
+      "translation": "祖母血压高。"
+    }
+  },
+  {
+    "word": "脈拍",
+    "reading": "みゃくはく",
+    "meaning": "脉搏",
+    "level": "N1",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "脈拍を測って体調を確認する。",
+      "reading": "みゃくはく・はか・たいちょう・かくにん",
+      "translation": "通过测脉搏来确认身体状况。"
+    }
+  },
+  {
+    "word": "麻酔",
+    "reading": "ますい",
+    "meaning": "麻醉",
+    "level": "N1",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "手術は全身麻酔で行われた。",
+      "reading": "しゅじゅつ・ぜんしんますい・おこな",
+      "translation": "手术是在全身麻醉下进行的。"
+    }
+  },
+  {
+    "word": "処方",
+    "reading": "しょほう",
+    "meaning": "开处方",
+    "level": "N1",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "医者に薬を処方してもらった。",
+      "reading": "いしゃ・くすり・しょほう",
+      "translation": "请医生开了药。"
+    }
+  },
+  {
+    "word": "回復",
+    "reading": "かいふく",
+    "meaning": "恢复",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "体力が徐々に回復してきた。",
+      "reading": "たいりょく・じょじょ・かいふく",
+      "translation": "体力逐渐恢复了。"
+    }
+  },
+  {
+    "word": "悪化",
+    "reading": "あっか",
+    "meaning": "恶化",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "病状が悪化しないよう注意する。",
+      "reading": "びょうじょう・あっか・ちゅうい",
+      "translation": "注意不让病情恶化。"
+    }
+  },
+  {
+    "word": "持病",
+    "reading": "じびょう",
+    "meaning": "老毛病，宿疾",
+    "level": "N1",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "祖父には持病がある。",
+      "reading": "そふ・じびょう",
+      "translation": "祖父有老毛病。"
+    }
+  },
+  {
+    "word": "体力",
+    "reading": "たいりょく",
+    "meaning": "体力",
+    "level": "N2",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "運動をして体力をつけたい。",
+      "reading": "うんどう・たいりょく",
+      "translation": "想通过运动来增强体力。"
+    }
+  },
+  {
+    "word": "不眠",
+    "reading": "ふみん",
+    "meaning": "失眠",
+    "level": "N1",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "ストレスで不眠が続いている。",
+      "reading": "ふみん・つづ",
+      "translation": "因压力持续失眠。"
+    }
+  },
+  {
+    "word": "過労",
+    "reading": "かろう",
+    "meaning": "过劳",
+    "level": "N1",
+    "category": "身体・健康・医疗",
+    "example": {
+      "sentence": "過労で倒れてしまった。",
+      "reading": "かろう・たお",
+      "translation": "因过劳而病倒了。"
+    }
+  }
+]

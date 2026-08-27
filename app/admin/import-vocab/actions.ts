@@ -1,0 +1,290 @@
+"use server";
+
+// Bulk import vocabulary from a JSON batch into the current user's
+// vocabulary_items + vocabulary_examples + vocabulary_tags +
+// vocabulary_reviews tables.
+//
+// Designed for the JLPT N2-N1 sample (200 words) and reusable for
+// future batches (Frank's full library will be 4000+ words). Uses
+// Frank's existing OAuth session (auth.uid() = user.id), so RLS
+// passes automatically — no service_role key needed.
+//
+// Triggered from app/admin/import-vocab/page.tsx:
+//   - importPreloadedAction() — reads data/jlpt-vocab-200.json
+//   - importPastedAction(formData) — parses textarea JSON
+//
+// Both actions share `processImport()` which:
+//   1. SELECT existing words to dedup (skip-on-conflict)
+//   2. Bulk INSERT vocabulary_items → returns ids
+//   3. Bulk INSERT vocabulary_examples (1 per vocab, is_primary=true)
+//   4. Bulk INSERT vocabulary_tags (1 per vocab, the category)
+//   5. Bulk INSERT vocabulary_reviews (next_review_at=now, mastery=0)
+//
+// Total DB roundtrips: ~5 per batch (vs N×4 for per-item inserts).
+// 200 words = ~5 queries; 4000 words = same 5 queries (chunked only
+// if Supabase 1MB body limit is hit, ~2000 rows per chunk).
+
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
+
+// ---------- Types ----------
+type ImportItem = {
+  word: string;
+  reading: string | null;
+  meaning: string;
+  level: string; // "N1" | "N2" — empty string if parser couldn't normalize
+  category: string;
+  example: {
+    sentence: string;
+    reading: string | null;
+    translation: string | null;
+  };
+};
+
+type ImportResult = {
+  inserted: number;
+  skipped: number;
+  failed: number;
+  errors: Array<{ word: string; reason: string }>;
+};
+
+// ---------- Server Actions ----------
+const PRELOADED_REL_PATH = join("data", "jlpt-vocab-200.json");
+
+export async function importPreloadedAction() {
+  const items = await loadPreloaded();
+  if (items === null) {
+    redirect(`/admin/import-vocab?error=${encodeURIComponent("读取 data/jlpt-vocab-200.json 失败——文件可能被 .gitignore 过滤掉了，确认已 force-add")}`);
+  }
+
+  const result = await processImport(items);
+  revalidatePath("/vocabulary");
+  revalidatePath("/review");
+  redirect(buildResultUrl(result));
+}
+
+export async function importPastedAction(formData: FormData) {
+  const raw = String(formData.get("json") ?? "").trim();
+  if (!raw) {
+    redirect(`/admin/import-vocab?error=${encodeURIComponent("JSON 内容不能为空")}`);
+  }
+
+  let items: ImportItem[];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      throw new Error("expected JSON array, got " + typeof parsed);
+    }
+    items = parsed as ImportItem[];
+  } catch (err) {
+    redirect(`/admin/import-vocab?error=${encodeURIComponent(`JSON 解析失败：${String(err).slice(0, 200)}`)}`);
+  }
+
+  const result = await processImport(items);
+  revalidatePath("/vocabulary");
+  revalidatePath("/review");
+  redirect(buildResultUrl(result));
+}
+
+// ---------- Helpers ----------
+async function loadPreloaded(): Promise<ImportItem[] | null> {
+  try {
+    // process.cwd() on Vercel = repo root. The JSON is force-added to
+    // git (data/ is gitignored but jlpt-vocab-200.json is the one
+    // exception).
+    const abs = join(process.cwd(), PRELOADED_REL_PATH);
+    const text = await readFile(abs, "utf-8");
+    const parsed: unknown = JSON.parse(text);
+    if (!Array.isArray(parsed)) return null;
+    return parsed as ImportItem[];
+  } catch (err) {
+    console.error("loadPreloaded failed:", err);
+    return null;
+  }
+}
+
+function buildResultUrl(r: ImportResult): string {
+  const params = new URLSearchParams();
+  if (r.inserted > 0) params.set("inserted", String(r.inserted));
+  if (r.skipped > 0) params.set("skipped", String(r.skipped));
+  if (r.failed > 0) {
+    params.set("failed", String(r.failed));
+    if (r.errors.length > 0) {
+      params.set(
+        "firstError",
+        r.errors[0].word + " — " + r.errors[0].reason.slice(0, 100)
+      );
+    }
+  }
+  return `/admin/import-vocab?${params.toString()}`;
+}
+
+// processImport: shared bulk-import logic.
+async function processImport(items: ImportItem[]): Promise<ImportResult> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return {
+      inserted: 0,
+      skipped: 0,
+      failed: items.length,
+      errors: [{ word: "<auth>", reason: "未登录" }],
+    };
+  }
+
+  const result: ImportResult = {
+    inserted: 0,
+    skipped: 0,
+    failed: 0,
+    errors: [],
+  };
+
+  // ---------- 1. Filter items with required fields ----------
+  const valid = items.filter((it) => {
+    if (!it || typeof it !== "object") return false;
+    return Boolean(it.word && it.meaning && it.example?.sentence);
+  });
+  if (valid.length === 0) {
+    result.failed = items.length - valid.length;
+    return result;
+  }
+
+  // ---------- 2. Skip existing words (user-scoped dedup) ----------
+  const { data: existingWords, error: existErr } = await supabase
+    .from("vocabulary_items")
+    .select("word")
+    .eq("user_id", user.id);
+  if (existErr) {
+    result.failed = valid.length;
+    result.errors.push({ word: "<query>", reason: existErr.message });
+    return result;
+  }
+  const seen = new Set<string>((existingWords ?? []).map((w) => w.word));
+  const toImport: ImportItem[] = [];
+  for (const it of valid) {
+    if (seen.has(it.word)) {
+      result.skipped++;
+      continue;
+    }
+    // Within-batch dedup too — same word twice in one batch counts as 1.
+    seen.add(it.word);
+    toImport.push(it);
+  }
+  if (toImport.length === 0) return result;
+
+  // ---------- 3. Bulk INSERT vocabulary_items (returns ids) ----------
+  const itemRows = toImport.map((it) => ({
+    user_id: user.id,
+    type: "word" as const,
+    word: it.word,
+    reading: it.reading || null,
+    meaning: it.meaning,
+    language: "ja",
+    part_of_speech: null,
+    level: it.level || null,
+  }));
+
+  const { data: insertedItems, error: itemErr } = await supabase
+    .from("vocabulary_items")
+    .insert(itemRows)
+    .select("id, word");
+
+  if (itemErr || !insertedItems) {
+    result.failed = toImport.length;
+    result.errors.push({
+      word: "<batch>",
+      reason: itemErr?.message ?? "bulk insert returned no rows",
+    });
+    return result;
+  }
+  result.inserted = insertedItems.length;
+
+  // Map: word → { id } for the follow-up inserts.
+  const idByWord = new Map<string, string>();
+  for (const row of insertedItems) {
+    idByWord.set(row.word, row.id);
+  }
+
+  // ---------- 4. Bulk INSERT vocabulary_examples (1 per vocab) ----------
+  const exampleRows = toImport
+    .map((it) => {
+      const id = idByWord.get(it.word);
+      if (!id) return null;
+      return {
+        vocabulary_id: id,
+        sentence: it.example.sentence,
+        translation: it.example.translation || null,
+        reading: it.example.reading || null,
+        is_primary: true,
+        generated_by_ai: false,
+        user_edited: true,
+      };
+    })
+    .filter((r): r is NonNullable<typeof r> => r !== null);
+
+  if (exampleRows.length > 0) {
+    const { error: exErr } = await supabase
+      .from("vocabulary_examples")
+      .insert(exampleRows);
+    if (exErr) {
+      console.error("[import-vocab] bulk examples failed:", exErr);
+      // Vocab created ok — examples are recoverable. Don't bump failed.
+    }
+  }
+
+  // ---------- 5. Bulk INSERT vocabulary_tags (category per vocab) ----------
+  const tagRows = toImport
+    .filter((it) => it.category && idByWord.has(it.word))
+    .map((it) => ({
+      user_id: user.id,
+      vocabulary_id: idByWord.get(it.word)!,
+      tag: it.category,
+    }));
+
+  if (tagRows.length > 0) {
+    const { error: tagErr } = await supabase
+      .from("vocabulary_tags")
+      .insert(tagRows);
+    if (tagErr) {
+      console.error("[import-vocab] bulk tags failed:", tagErr);
+    }
+  }
+
+  // ---------- 6. Bulk INSERT vocabulary_reviews (one per vocab, due now) ----------
+  // Per Frank #6348 + #6663: every new vocab needs a review row so it
+  // shows up in /review. next_review_at=now → due immediately for
+  // first-pass study. Skip if a row already exists (idempotent re-run).
+  const reviewVocabIds = insertedItems.map((r) => r.id);
+  const { data: existingReviews } = await supabase
+    .from("vocabulary_reviews")
+    .select("vocabulary_id")
+    .eq("user_id", user.id)
+    .in("vocabulary_id", reviewVocabIds);
+  const existingReviewSet = new Set(
+    (existingReviews ?? []).map((r) => r.vocabulary_id)
+  );
+  const reviewRows = insertedItems
+    .filter((r) => !existingReviewSet.has(r.id))
+    .map((r) => ({
+      user_id: user.id,
+      vocabulary_id: r.id,
+      next_review_at: new Date().toISOString(),
+      interval_days: 0,
+      ease_factor: 2.5,
+      mastery: 0,
+    }));
+
+  if (reviewRows.length > 0) {
+    const { error: revErr } = await supabase
+      .from("vocabulary_reviews")
+      .insert(reviewRows);
+    if (revErr) {
+      console.error("[import-vocab] bulk reviews failed:", revErr);
+    }
+  }
+
+  return result;
+}
