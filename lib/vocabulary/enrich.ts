@@ -45,7 +45,7 @@ const SYSTEM_PROMPT = `You are a Japanese language learning assistant. Given a J
 
 {
   "reading": "<hiragana reading, no romaji, no kanji — or null if not applicable (e.g., already-kana text, kanji compound without standard reading)>",
-  "meaning": "<concise Chinese meaning (Simplified Chinese). 1-12 chars ideal, no quotes, no trailing period>",
+  "meaning": "<at least 2 distinct Chinese meanings separated by 「，」 (full-width comma). Examples: \"高兴，愉快\" or \"方法，手段，办法\". List DIFFERENT senses / usages / contexts (not just synonyms). Each sense 1-8 chars ideal, total 1-30 chars. No quotes, no trailing period>",
   "level": "<one of: N5, N4, N3, N2, N1, or null if not classifiable>",
   "part_of_speech": "<Chinese name, e.g. 名词 / 动词 / 形容词 / 副词 / 助词 / 词组 / 句型 / 表达 — or null>"
 }
@@ -55,7 +55,8 @@ Rules:
 - The reading field is helpful for kanji-heavy vocabulary; use null if the input has no kanji (e.g., already-hiragana-only text).
 - For grammar patterns (e.g., 「〜ようにする」) and sentence templates, part_of_speech should be "句型" or "表达".
 - For multi-word phrases, reading is the full kana reading of the whole phrase.
-- If unsure about any field, use null rather than guessing. JLPT level and part_of_speech are the fields most often null.`;
+- If unsure about any field, use null rather than guessing. JLPT level and part_of_speech are the fields most often null.
+- The meaning field MUST contain at least 2 senses separated by 「，」 (per Frank #7166 — a single-meaning answer is too one-sided for learning). If a word only has one sense, list the most common usage context + a close paraphrase (e.g., 嬉しい → "高兴的，愉快的") to fulfill the 2-minimum requirement.`;
 
 export async function enrichVocabulary(
   word: string,
