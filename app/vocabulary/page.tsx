@@ -77,6 +77,16 @@ export default async function VocabularyListPage({
   // "我有多少词汇来自浏览器阅读？"). One cheap count query — no rows
   // shipped (head: true).
   const supabase = await createClient();
+  // Per Frank #7163 (2026-08-28): the header "共 N 项" used items.length,
+  // but PostgREST's default max_rows is 1000, so listVocabularyItems caps
+  // the array at 1000 even when the DB has more. Adding new words past
+  // 1000 makes the count stay stuck at "共 1000 项". Fix: a separate
+  // count: "exact" query returns the true total regardless of the 1000-row
+  // cap. RLS scopes this to the current user — no explicit user_id
+  // filter needed (same pattern as browserSourcedCount below).
+  const { count: totalCount } = await supabase
+    .from("vocabulary_items")
+    .select("id", { count: "exact", head: true });
   const { count: browserSourcedCount } = await supabase
     .from("vocabulary_items")
     .select("id", { count: "exact", head: true })
@@ -93,11 +103,13 @@ export default async function VocabularyListPage({
         <div className="flex items-center justify-between gap-3 mb-4">
           <h1 className="text-3xl font-bold">我的收藏</h1>
           <p className="text-gray-600">
-            {items.length === 0
-              ? q || type
+            {totalCount === 0
+              ? q || type || level
                 ? "没有匹配的收藏"
                 : "还没有收藏，先添加一个吧"
-              : `共 ${items.length} 项`}
+              : q || type || level
+                ? `共 ${totalCount} 项（匹配 ${items.length} 项）`
+                : `共 ${totalCount} 项`}
           </p>
           <div className="flex items-center gap-2">
             {/* Per Frank #7033: he expected a button on /vocabulary to
