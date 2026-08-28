@@ -228,7 +228,7 @@ export default function RealShadowClient({
   const [grade, setGrade] = useState<ShadowGrade | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [showTranslation, setShowTranslation] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(true);
   const [editableTranscript, setEditableTranscript] = useState("");
   const [isRegrading, setIsRegrading] = useState(false);
   const [isTranscriptEdited, setIsTranscriptEdited] = useState(false);
@@ -390,7 +390,7 @@ export default function RealShadowClient({
     setGrade(null);
     setError(null);
     setRecordingTime(0);
-    setShowTranslation(false);
+    setShowTranslation(true);
     setEditableTranscript("");
     setIsTranscriptEdited(false);
     setJumpInput("");
@@ -767,6 +767,32 @@ export default function RealShadowClient({
       </div>
 
       <section className="border border-gray-200 rounded-2xl p-6 mb-6 bg-white">
+        {/* Per Frank #7173 (2026-08-28): translation toggle moved to top
+            of article as a checkbox (default checked). Translation now
+            rendered interleaved below each Japanese sentence — was a
+            stacked block at the bottom. Replaces #6338's "hide by
+            default to force learner to think" — Frank explicitly
+            reversed that preference. */}
+        {hasZh && (
+          <div className="mb-4 flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="realShadow-show-translation"
+              checked={showTranslation}
+              onChange={(e) =>
+                setShowTranslation(e.target.checked)
+              }
+              className="w-4 h-4 accent-gray-900 cursor-pointer"
+            />
+            <label
+              htmlFor="realShadow-show-translation"
+              className="text-sm text-gray-700 cursor-pointer select-none"
+            >
+              � 显示翻译
+            </label>
+          </div>
+        )}
+
         <div className="text-xs text-gray-500 mb-4 flex items-center justify-between">
           <span>
             {cur.id} · {cur.prefix}
@@ -775,51 +801,36 @@ export default function RealShadowClient({
           {heard && <span className="text-green-600">✓ 听过了</span>}
         </div>
 
-        {/* Japanese text — sentence by sentence, smaller font */}
+        {/* Japanese text — sentence by sentence, smaller font.
+            Per Frank #7173: when showTranslation is on, each Japanese
+            sentence is immediately followed by its Chinese translation
+            (interleaved), not stacked in a separate block at the bottom. */}
         <div className="mb-5" lang="ja">
           {hasJaHtml ? (
             jaSentences.map((sentence, i) => (
-              <p
-                key={i}
-                ref={(el) => {
-                  sentenceRefs.current[i] = el;
-                }}
-                className={`text-base sm:text-lg font-medium leading-relaxed text-left py-1 px-2 break-words rounded transition-colors scroll-mt-32 ${
-                  i === currentSentenceIdx ? "bg-yellow-100 text-gray-900" : ""
-                }`}
-                dangerouslySetInnerHTML={{ __html: sentence }}
-              />
+              <div key={i}>
+                <p
+                  ref={(el) => {
+                    sentenceRefs.current[i] = el;
+                  }}
+                  className={`text-base sm:text-lg font-medium leading-relaxed text-left py-1 px-2 break-words rounded transition-colors scroll-mt-32 ${
+                    i === currentSentenceIdx
+                      ? "bg-yellow-100 text-gray-900"
+                      : ""
+                  }`}
+                  dangerouslySetInnerHTML={{ __html: sentence }}
+                />
+                {showTranslation && hasZh && zhSentences[i] && (
+                  <p className="text-sm text-gray-600 leading-relaxed py-1 px-2 text-left">
+                    {zhSentences[i]}
+                  </p>
+                )}
+              </div>
             ))
           ) : (
             <p className="text-base text-gray-400 italic text-center">
               (文字加载中…)
             </p>
-          )}
-        </div>
-
-        {/* Translation — line by line */}
-        <div className="flex flex-col items-center justify-center mb-6 min-h-[2.5rem]">
-          {showTranslation && hasZh && zhSentences.length > 0 && (
-            <div className="w-full max-w-xl space-y-1 mb-3">
-              {zhSentences.map((sentence, i) => (
-                <p
-                  key={i}
-                  className="text-sm text-gray-600 text-left leading-relaxed"
-                >
-                  {sentence}
-                </p>
-              ))}
-            </div>
-          )}
-          {hasZh && (
-            <button
-              type="button"
-              onClick={() => setShowTranslation((v) => !v)}
-              aria-pressed={showTranslation}
-              className="text-xs px-3 py-1 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
-            >
-              {showTranslation ? "🌐 隐藏翻译" : "🌐 显示翻译"}
-            </button>
           )}
         </div>
 
