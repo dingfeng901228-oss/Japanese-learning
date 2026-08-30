@@ -370,3 +370,98 @@ export async function recordVocabLearningTime(
     state: row.new_state as "IDLE" | "COMPLETED",
   };
 }
+
+// ==========================================================================
+// Pagination for /vocabulary list page (Frank #7347, 2026-08-30).
+//
+// "Too many vocabularies" — added ?page=N to the list URL with a
+// 20-per-page default. listVocabularyItems (no page) is kept unchanged
+// for /vocabulary/[id], which still needs the FULL ordered list to
+// compute prev / next neighbours.
+//
+// Differences from listVocabularyItems:
+//   - .select("*", { count: "exact" }) → returns total count of the
+//     FILTERED set, independent of .range() (which is what we need for
+//     totalPages math). This also subsumes Frank #7163's separate
+//     `count: "exact"` workaround for the PostgREST 1000-row cap —
+//     no standalone totalCount query needed by the caller.
+//   - .range(from, to) → LIMIT / OFFSET pagination, 20 rows default.
+// ==========================================================================
+
+export type ListVocabularyResult = {
+  items: VocabularyItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};
+
+export type ListVocabularyPagedOpts = ListVocabularyOpts & {
+  page?: number;
+  pageSize?: number;
+};
+
+export async function listVocabularyItemsPaged(
+  opts: ListVocabularyPagedOpts = {}
+): Promise<ListVocabularyResult> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    const pageSize = Math.max(1, opts.pageSize ?? 20);
+    return { items: [], total: 0, page: 1, pageSize, totalPages: 0 };
+  }
+
+  const pageSize = Math.max(1, opts.pageSize ?? 20);
+  const page = Math.max(1, opts.page ?? 1);
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  let query = supabase
+    .from("vocabulary_items")
+    .select("*", { count: "exact" })
+    .eq("user_id", user.id);
+
+  if (opts.type) {
+    query = query.eq("type", opts.type);
+  }
+
+  if (opts.level) {
+    query = query.eq("level", opts.level);
+  }
+
+  const q = opts.search?.trim();
+  if (q) {
+    // Escape single quotes for the .or() filter to avoid breaking PostgREST.
+    const safe = q.replace(/'/g, "''");
+    query = query.or(
+      `word.ilike.%${safe}%,reading.ilike.%${safe}%,meaning.ilike.%${safe}%`
+    );
+  }
+
+  if (opts.sort === "oldest") {
+    query = query.order("created_at", { ascending: true });
+  } else if (opts.sort === "word") {
+    query = query.order("word", { ascending: true });
+  } else {
+    query = query.order("created_at", { ascending: false });
+  }
+
+  // range() does the LIMIT / OFFSET. count: "exact" (set on .select
+  // above) returns the count of ALL rows matching the WHERE filters
+  // BEFORE range() — that's `total`, which we use for totalPages math.
+  const result = await query.range(from, to);
+  if (result.error) {
+    // Per Frank #7103: preserve PostgREST `code` so the caller can
+    // distinguish user-fixable errors (e.g. 23505) from transient
+    // server failures.
+    const err = new Error(result.error.message) as Error & { code?: string };
+    err.code = result.error.code;
+    throw err;
+  }
+
+  const items = (result.data ?? []) as VocabularyItem[];
+  const total = result.count ?? 0;
+  const totalPages = total === 0 ? 0 : Math.ceil(total / pageSize);
+
+  return { items, total, page, pageSize, totalPages };
+}

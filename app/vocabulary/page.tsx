@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import {
-  listVocabularyItems,
+  listVocabularyItemsPaged,
   type VocabularyType,
   type VocabularySort,
 } from "@/lib/vocabulary";
@@ -17,6 +17,7 @@ type SearchParams = {
   type?: string;
   level?: string;
   sort?: string;
+  page?: string;
 };
 
 const JLPT_LEVELS = ["N5", "N4", "N3", "N2", "N1"] as const;
@@ -40,6 +41,28 @@ function asLevel(
 function asSort(v: string | undefined): VocabularySort {
   if (v === "oldest" || v === "word") return v;
   return "newest";
+}
+
+// Per Frank #7347 (2026-08-30): /vocabulary pagination.
+function asPage(v: string | undefined): number {
+  if (!v) return 1;
+  const n = parseInt(v, 10);
+  if (!Number.isFinite(n) || n < 1) return 1;
+  return n;
+}
+
+// Build /vocabulary?… href preserving all current filters + new page.
+// Used by prev / next nav so paging never drops a filter (e.g. q +
+// type + level follow the user across ?page= changes).
+function buildHref(params: Record<string, unknown>): string {
+  const qs = Object.entries(params)
+    .filter(([, val]) => val !== undefined && val !== "")
+    .map(
+      ([k, val]) =>
+        `${encodeURIComponent(k)}=${encodeURIComponent(String(val))}`
+    )
+    .join("&");
+  return qs ? `/vocabulary?${qs}` : "/vocabulary";
 }
 
 const TYPE_LABEL: Record<VocabularyType, string> = {
@@ -66,27 +89,28 @@ export default async function VocabularyListPage({
   const level = asLevel(sp.level);
   const sort = asSort(sp.sort);
 
-  const items = await listVocabularyItems({
+  // Per Frank #7347 (2026-08-30): paginate via ?page=N, default 20/page.
+  // listVocabularyItemsPaged's `count: "exact"` returns the TRUE total
+  // regardless of the 1000-row PostgREST cap — subsumes Frank #7163's
+  // separate count workaround (no standalone `totalCount` query needed).
+  const {
+    items,
+    total,
+    totalPages,
+    page: currentPage,
+  } = await listVocabularyItemsPaged({
     search: q || undefined,
     type,
     level,
     sort,
+    page: asPage(sp.page),
   });
 
   // Chrome extension source stat (per docs/0821requirements.docx §28
   // "我有多少词汇来自浏览器阅读？"). One cheap count query — no rows
-  // shipped (head: true).
+  // shipped. Independent of pagination (paged result only covers the
+  // current page window; this stat stays across the whole collection).
   const supabase = await createClient();
-  // Per Frank #7163 (2026-08-28): the header "共 N 项" used items.length,
-  // but PostgREST's default max_rows is 1000, so listVocabularyItems caps
-  // the array at 1000 even when the DB has more. Adding new words past
-  // 1000 makes the count stay stuck at "共 1000 项". Fix: a separate
-  // count: "exact" query returns the true total regardless of the 1000-row
-  // cap. RLS scopes this to the current user — no explicit user_id
-  // filter needed (same pattern as browserSourcedCount below).
-  const { count: totalCount } = await supabase
-    .from("vocabulary_items")
-    .select("id", { count: "exact", head: true });
   const { count: browserSourcedCount } = await supabase
     .from("vocabulary_items")
     .select("id", { count: "exact", head: true })
@@ -103,13 +127,13 @@ export default async function VocabularyListPage({
         <div className="flex items-center justify-between gap-3 mb-4">
           <h1 className="text-3xl font-bold">我的收藏</h1>
           <p className="text-gray-600">
-            {totalCount === 0
+            {total === 0
               ? q || type || level
                 ? "没有匹配的收藏"
                 : "还没有收藏，先添加一个吧"
               : q || type || level
-                ? `共 ${totalCount} 项（匹配 ${items.length} 项）`
-                : `共 ${totalCount} 项`}
+                ? `共 ${total} 项（匹配 ${items.length} 项）`
+                : `共 ${total} 项`}
           </p>
           <div className="flex items-center gap-2">
             {/* Per Frank #7033: he expected a button on /vocabulary to
@@ -207,7 +231,8 @@ export default async function VocabularyListPage({
           </Link>
         </div>
       ) : (
-        <ul className="grid gap-3">
+        <>
+          <ul className="grid gap-3">
           {items.map((item) => (
             <li key={item.id}>
               <Link
@@ -266,7 +291,58 @@ export default async function VocabularyListPage({
               </Link>
             </li>
           ))}
-        </ul>
+          </ul>
+
+          {/* Per Frank #7347 (2026-08-30): pagination nav.
+              Prev / Next + "第 X / Y 页 · 共 N 个". page changes
+              preserve all current filters via buildHref(). */}
+          {totalPages > 1 && (
+            <nav
+              className="mt-8 flex items-center justify-center gap-3 text-sm"
+              aria-label="分页"
+            >
+              {currentPage > 1 ? (
+                <Link
+                  href={buildHref({
+                    q,
+                    type,
+                    level,
+                    sort,
+                    page: currentPage - 1,
+                  })}
+                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  ← 上一页
+                </Link>
+              ) : (
+                <span className="px-3 py-1.5 border border-gray-200 rounded-lg text-gray-300 cursor-not-allowed">
+                  ← 上一页
+                </span>
+              )}
+              <span className="text-gray-600 tabular-nums">
+                第 {currentPage} / {totalPages} 页 · 共 {total} 个
+              </span>
+              {currentPage < totalPages ? (
+                <Link
+                  href={buildHref({
+                    q,
+                    type,
+                    level,
+                    sort,
+                    page: currentPage + 1,
+                  })}
+                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  下一页 →
+                </Link>
+              ) : (
+                <span className="px-3 py-1.5 border border-gray-200 rounded-lg text-gray-300 cursor-not-allowed">
+                  下一页 →
+                </span>
+              )}
+            </nav>
+          )}
+        </>
       )}
     </main>
   );
