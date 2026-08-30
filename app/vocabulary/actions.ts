@@ -12,7 +12,10 @@ import {
   createVocabularyItem,
   deleteVocabularyItem,
   getPrimaryExample,
+  getVocabLearningState,
   getVocabularyItem,
+  recordVocabLearningTime,
+  type VocabLearningState,
   type VocabularyType,
 } from "@/lib/vocabulary";
 import { generateExample } from "@/lib/vocabulary/examples";
@@ -271,4 +274,34 @@ export async function updateExampleAction(formData: FormData) {
 
   revalidatePath(`/vocabulary/${vocabularyId}`);
   redirect(`/vocabulary/${vocabularyId}`);
+}
+
+// ==========================================================================
+// Per-vocab learning time tracking per docs/0830需求.md
+// (Frank #7274 / #7276, 2026-08-30).
+//
+// Wraps the typed helpers in lib/vocabulary.ts. The atomic increment
+// + 5000ms cap + daily-reset branch lives in migration 0006's
+// `increment_vocab_learning_time` RPC — these actions are thin
+// pass-throughs so the client hook can use the standard Next.js
+// server-action wiring (no manual POST to /api/* for the normal
+// flush path; sendBeacon handles tab-close separately).
+//
+// No revalidatePath: the hook is reactive, the page is not affected
+// by which "today's" counter is in flight.
+// ==========================================================================
+
+export async function getVocabLearningStateAction(
+  vocabId: string,
+  todayDate: string
+): Promise<VocabLearningState> {
+  return await getVocabLearningState(vocabId, todayDate);
+}
+
+export async function recordVocabLearningTimeAction(
+  vocabId: string,
+  deltaMs: number,
+  todayDate: string
+): Promise<{ learningTimeMs: number; state: "IDLE" | "COMPLETED" }> {
+  return await recordVocabLearningTime(vocabId, deltaMs, todayDate);
 }

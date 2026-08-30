@@ -269,3 +269,104 @@ export async function getPrimaryExample(
     null
   );
 }
+
+// ==========================================================================
+// Per-vocab learning time tracking
+// (docs/0830需求.md + Frank #7274/#7276, 2026-08-30).
+//
+// A: 5s/word cap (replacing #6704's 10s/visit) for /vocabulary/[id].
+// B: per-vocab independent (replacing #6696's cross-item cumulative).
+// C: DAILY reset baseline — counter rolls over at user's local midnight.
+// D: /review unchanged (still uses useSessionTimer with 10s cap).
+//
+// The atomic increment lives in the migration 0006 RPC
+// `increment_vocab_learning_time` (FOR UPDATE row lock + LEAST cap +
+// daily-reset branch). This module is the typed wrapper that the
+// server actions and the API route call.
+// ==========================================================================
+
+export type VocabLearningState = {
+  learningTimeMs: number;
+  lastViewedAt: string | null;
+  state: "IDLE" | "COMPLETED";
+};
+
+export async function getVocabLearningState(
+  vocabId: string,
+  todayDate: string
+): Promise<VocabLearningState> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { learningTimeMs: 0, lastViewedAt: null, state: "IDLE" };
+  }
+
+  const { data, error } = await supabase
+    .from("vocabulary_items")
+    .select("learning_time_ms, learning_date, learning_last_viewed_at")
+    .eq("id", vocabId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) return { learningTimeMs: 0, lastViewedAt: null, state: "IDLE" };
+
+  // Daily reset (per Frank #7276 C): if stored date != client-supplied
+  // today, treat the counter as 0 — the cap is "5s per word per day",
+  // not "5s per word ever". The client passes its local-today so a
+  // JST user's "today" feels right even though the server is in UTC
+  // (matches lib/today-stats.todayKey() pattern for daily_rollups).
+  const isToday = data.learning_date === todayDate;
+  const ms = isToday ? (data.learning_time_ms ?? 0) : 0;
+
+  return {
+    learningTimeMs: ms,
+    lastViewedAt: data.learning_last_viewed_at,
+    state: ms >= 5000 ? "COMPLETED" : "IDLE",
+  };
+}
+
+export async function recordVocabLearningTime(
+  vocabId: string,
+  deltaMs: number,
+  todayDate: string
+): Promise<{ learningTimeMs: number; state: "IDLE" | "COMPLETED" }> {
+  if (deltaMs <= 0) {
+    // No-op, return current state (avoids an RPC round-trip for
+    // zero-duration flushes — see use-vocab-learning-timer MIN_FLUSH_DELTA_MS).
+    const cur = await getVocabLearningState(vocabId, todayDate);
+    return { learningTimeMs: cur.learningTimeMs, state: cur.state };
+  }
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  // Atomic increment via RPC — daily reset + 5000ms cap + ownership
+  // check all enforced server-side (per docs/0830需求.md §十三).
+  // FOR UPDATE row lock inside the RPC prevents two parallel flushes
+  // from same user (e.g., two tabs of /vocabulary/A) from racing past
+  // the 5000ms cap before either commits.
+  const { data, error } = await supabase.rpc(
+    "increment_vocab_learning_time",
+    {
+      p_vocab_id: vocabId,
+      p_delta_ms: Math.floor(deltaMs),
+      p_user_id: user.id,
+      p_date: todayDate,
+    }
+  );
+
+  if (error) throw new Error(error.message);
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    throw new Error("increment_vocab_learning_time RPC returned no data");
+  }
+
+  const row = data[0] as {
+    new_learning_time_ms: number;
+    new_state: string;
+  };
+  return {
+    learningTimeMs: row.new_learning_time_ms,
+    state: row.new_state as "IDLE" | "COMPLETED",
+  };
+}

@@ -27,7 +27,7 @@ import {
 } from "@/lib/vocabulary";
 import { SpeakButton } from "@/components/SpeakButton";
 import { WordCardSwipeable } from "./WordCardSwipeable";
-import { VocabSessionTimer } from "@/components/vocabulary/VocabSessionTimer";
+import { VocabLearningProgress } from "@/components/vocabulary/VocabLearningProgress";
 import { VocabAutoSpeak } from "@/components/vocabulary/VocabAutoSpeak";
 import { SpeakableClick } from "@/components/vocabulary/SpeakableClick";
 import {
@@ -112,12 +112,13 @@ export default async function VocabularyDetailPage({
                 「自动发音」toggle。on 时进入页面 / 翻下个词自动读
                 单词。状态 localStorage 跨 session 保留。 */}
             <VocabAutoSpeak word={item.word} />
-            {/* Per Frank #6671 (UI优化.docx § 12): vocab 详情页加
-                5s/word 计时器。segmentKey=item.id — user 翻下个词时
-                useSessionTimer 自动重置 segment，计时器重新走 5s。
-                "vocab" bucket 跟 /review 共用（UI优化.docx § 9），所
-                以这里的时间和复习页时间都进 词汇 daily_rollups。 */}
-            <VocabSessionTimer vocabId={item.id} />
+            {/* Per Frank #7274 / #7276 (2026-08-30, docs/0830需求.md):
+                per-vocab 5s/word cap with daily reset baseline. Replaces
+                the old VocabSessionTimer (which was 10s cross-item
+                cumulative per #6696 / #6704). Still feeds the dashboard
+                "vocab" daily_rollups bucket via accumulateMinutes() so
+                /vocabulary + /review time aggregates together. */}
+            <VocabLearningProgress vocabId={item.id} />
             <Link
               href="/vocabulary/new"
               className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
