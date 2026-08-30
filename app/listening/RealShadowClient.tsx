@@ -788,7 +788,7 @@ export default function RealShadowClient({
               htmlFor="realShadow-show-translation"
               className="text-sm text-gray-700 cursor-pointer select-none"
             >
-              � 显示翻译
+              显示翻译
             </label>
           </div>
         )}
