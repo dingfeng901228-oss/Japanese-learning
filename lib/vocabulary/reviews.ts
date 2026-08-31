@@ -378,3 +378,45 @@ export async function userHasVocabWithExamples(): Promise<boolean> {
   if (error) return false;
   return (count ?? 0) > 0;
 }
+
+// ==========================================================================
+// Per Frank #7397 (2026-08-31, docs/vocabuly0831.md §十一 + §十三):
+// detail page shows "复习次数" + "最近复习" alongside the new
+// learning_count + last_learned_at (migration 0007). Two SEPARATE
+// counters — reviews count SRS fill-in completions, learning counts
+// formal /vocabulary/learn session entries (decoupled per Q3).
+//
+// reviewCount = number of vocabulary_reviews rows for this vocab.
+// lastReviewedAt = most recent reviewed_at timestamp (DESC, limit 1).
+//
+// Both queries are scoped by auth.uid() via RLS + explicit user_id
+// filter (belt-and-suspenders, matching the lib/vocabulary.ts pattern).
+// ==========================================================================
+export async function getVocabReviewStats(
+  vocabId: string,
+): Promise<{ reviewCount: number; lastReviewedAt: string | null }> {
+  const empty = { reviewCount: 0, lastReviewedAt: null };
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return empty;
+
+  const { count: reviewCount } = await supabase
+    .from("vocabulary_reviews")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .eq("vocabulary_id", vocabId);
+
+  const { data: lastReviewRow } = await supabase
+    .from("vocabulary_reviews")
+    .select("reviewed_at")
+    .eq("user_id", user.id)
+    .eq("vocabulary_id", vocabId)
+    .order("reviewed_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return {
+    reviewCount: reviewCount ?? 0,
+    lastReviewedAt: lastReviewRow?.reviewed_at ?? null,
+  };
+}

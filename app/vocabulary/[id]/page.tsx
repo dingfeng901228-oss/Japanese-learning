@@ -25,6 +25,7 @@ import {
   listVocabularyItems,
   type VocabularyType,
 } from "@/lib/vocabulary";
+import { getVocabReviewStats } from "@/lib/vocabulary/reviews";
 import { SpeakButton } from "@/components/SpeakButton";
 import { WordCardSwipeable } from "./WordCardSwipeable";
 import { VocabLearningProgress } from "@/components/vocabulary/VocabLearningProgress";
@@ -73,6 +74,11 @@ export default async function VocabularyDetailPage({
   const item = await getVocabularyItem(id);
   if (!item) notFound();
   const example = await getPrimaryExample(id);
+  // Per Frank #7397 (2026-08-31, docs/vocabuly0831.md §十一 + §十三):
+  // "复习次数" + "最近复习" alongside learning_count + last_learned_at.
+  // Separate counters — reviews count SRS fill-ins, learning counts
+  // /vocabulary/learn session entries (decoupled per Q3).
+  const reviewStats = await getVocabReviewStats(id);
 
   // Phase 7+ (#6334): fetch the full list to compute prev/next neighbours.
   // Default sort matches the /vocabulary list page (newest first) so the
@@ -467,6 +473,53 @@ export default async function VocabularyDetailPage({
         )}
       </section>
       </WordCardSwipeable>
+
+      {/* Per Frank #7397 (2026-08-31, docs/vocabuly0831.md §十 +
+          §十一 + §十三): 学习记录 section on the detail page.
+          Displays:
+            学习次数   = vocabulary_items.learning_count (from migration 0007)
+            复习次数   = count of vocabulary_reviews rows
+            最近学习   = vocabulary_items.last_learned_at
+            最近复习   = vocabulary_reviews.reviewed_at (most recent)
+          PLUS the [开始学习 →] CTA that links to /vocabulary/learn
+          with ?id=this (does NOT increment count itself — LearnSession
+          client component owns that, per Q1-(b)). Decoupled from
+          mastery / reviewCount / 5s/word/DAY timer — these are
+          display-only. */}
+      <section className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          学习记录
+        </h2>
+        <div className="grid grid-cols-[1fr_auto] gap-y-2 text-sm mb-5">
+          <span className="text-gray-600">学习次数</span>
+          <span className="text-gray-900 tabular-nums">
+            {item.learning_count} 次
+          </span>
+
+          <span className="text-gray-600">复习次数</span>
+          <span className="text-gray-900 tabular-nums">
+            {reviewStats.reviewCount} 次
+          </span>
+
+          <span className="text-gray-600">最近学习</span>
+          <span className="text-gray-900">
+            {item.last_learned_at ? formatDateTime(item.last_learned_at) : "—"}
+          </span>
+
+          <span className="text-gray-600">最近复习</span>
+          <span className="text-gray-900">
+            {reviewStats.lastReviewedAt
+              ? formatDateTime(reviewStats.lastReviewedAt)
+              : "—"}
+          </span>
+        </div>
+        <Link
+          href={`/vocabulary/learn?id=${id}`}
+          className="block text-center px-5 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+        >
+          开始学习 →
+        </Link>
+      </section>
 
       {/* Phase 7+ (#6334): prev / next word preview. Click either card to
          jump to that word's detail page — no need to go back to the
