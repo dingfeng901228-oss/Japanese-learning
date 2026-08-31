@@ -9,6 +9,7 @@ import {
   type VocabularySort,
 } from "@/lib/vocabulary";
 import { createClient } from "@/lib/supabase/server";
+import { PageInput } from "./PageInput";
 
 export const dynamic = "force-dynamic";
 
@@ -295,7 +296,14 @@ export default async function VocabularyListPage({
 
           {/* Per Frank #7347 (2026-08-30): pagination nav.
               Prev / Next + "第 X / Y 页 · 共 N 个". page changes
-              preserve all current filters via buildHref(). */}
+              preserve all current filters via buildHref().
+
+              Per Frank #7397 (2026-08-31, docs/vocabuly0831.md §一):
+              "第 X / Y 页" replaced by <PageInput> — Enter / blur
+              navigates to the typed page directly; < 1 → 1,
+              > totalPages → totalPages, !Number → restore. PageInput
+              mutates only `page` in the URL, so q / type / level /
+              sort follow through to the new page. */}
           {totalPages > 1 && (
             <nav
               className="mt-8 flex items-center justify-center gap-3 text-sm"
@@ -319,9 +327,8 @@ export default async function VocabularyListPage({
                   ← 上一页
                 </span>
               )}
-              <span className="text-gray-600 tabular-nums">
-                第 {currentPage} / {totalPages} 页 · 共 {total} 个
-              </span>
+              <PageInput currentPage={currentPage} totalPages={totalPages} />
+              <span className="text-gray-500">· 共 {total} 个</span>
               {currentPage < totalPages ? (
                 <Link
                   href={buildHref({
