@@ -296,8 +296,9 @@ export default async function VocabularyListPage({
                     </p>
                   )}
                 <Link
-                  href={buildLearnHref({ q, type, level, sort })}
+                  href={`/vocabulary/${userLearningState.lastLearningVocabulary.id}`}
                   className="inline-block px-5 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+                  title="跳转到上次学习的详情页（详情页 = 学习）"
                 >
                   继续学习 →
                 </Link>
@@ -315,7 +316,7 @@ export default async function VocabularyListPage({
                   </p>
                 </div>
                 <Link
-                  href={buildLearnHref({ q, type, level, sort })}
+                  href="/vocabulary"
                   className="px-5 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors text-sm font-medium whitespace-nowrap"
                 >
                   重新开始

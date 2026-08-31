@@ -99,9 +99,14 @@ test.describe("Vocab learning mode (Frank #7397 smoke test)", () => {
 
   // ────────────────────────────────────────────────────────────────────
   // ③ Last position resume (Q5-α: ignore current filter, jump to saved)
+  //
+  // Per Frank #7458 (2026-08-31): opening detail page IS studying. So
+  // [继续学习] → /vocabulary/[id] of last vocab (not /vocabulary/learn
+  // queue walker, which no longer increments). Detail page mount
+  // triggers the +1 via LearningTracker.
   // ────────────────────────────────────────────────────────────────────
 
-  test("③ Resume — clicking 继续学习 jumps to saved vocab (no filter)", async ({ page }) => {
+  test("③ Resume — clicking 继续学习 opens last vocab's detail page", async ({ page }) => {
     await page.goto("/vocabulary");
     const continueLink = page.getByRole("link", { name: /继续学习/ }).first();
     test.skip(
@@ -109,16 +114,22 @@ test.describe("Vocab learning mode (Frank #7397 smoke test)", () => {
       "No continue card",
     );
     await continueLink.click();
-    await expect(page).toHaveURL(/\/vocabulary\/learn/);
-    // The learn session should render (not redirect back).
-    await expect(page.getByRole("button", { name: /下一个|完成今日/ })).toBeVisible();
+    // Per #7458: lands on /vocabulary/[uuid], NOT /vocabulary/learn.
+    await expect(page).toHaveURL(/\/vocabulary\/[a-f0-9-]+/);
+    // Detail page renders 学习记录 section (the canonical learning surface).
+    await expect(
+      page.getByRole("heading", { name: "学习记录" }),
+    ).toBeVisible();
   });
 
   // ────────────────────────────────────────────────────────────────────
-  // ④ Detail page UI (commit 32119ff)
+  // ④ Detail page UI (commit 32119ff + #7458 update)
+  //
+  // Per Frank #7458: [开始学习] CTA removed (opening page = studying).
+  // The detail page now owns the +1 trigger via LearningTracker.
   // ────────────────────────────────────────────────────────────────────
 
-  test("④ Detail page — 学习记录 section + 开始学习 CTA", async ({ page }) => {
+  test("④ Detail page — 学习记录 section (no 开始学习 CTA)", async ({ page }) => {
     await page.goto("/vocabulary");
     // Pick the first vocab card link. UUIDs always contain hyphens, so
     // `[href*="-"]` filters out other /vocabulary/* paths (/new).
@@ -141,18 +152,26 @@ test.describe("Vocab learning mode (Frank #7397 smoke test)", () => {
     await expect(page.getByText("复习次数")).toBeVisible();
     await expect(page.getByText("最近学习")).toBeVisible();
     await expect(page.getByText("最近复习")).toBeVisible();
-    // 开始学习 CTA → /vocabulary/learn?id=<this>
+    // Per Frank #7458: [开始学习 →] CTA removed. The page mount itself
+    // is the learning event (via LearningTracker client component).
     await expect(
       page.getByRole("link", { name: /开始学习/ }),
-    ).toBeVisible();
+    ).toHaveCount(0);
   });
 
   // ────────────────────────────────────────────────────────────────────
-  // ⑤ Idempotency — F5 refresh on /vocabulary/learn does NOT +1
-  // (sessionStorage token persists across reload → server RPC PK catches)
+  // ⑤ Idempotency — F5 refresh on /vocabulary/[id] does NOT +1
+  //
+  // Per Frank #7458 (2026-08-31): detail page mount = studying event.
+  // sessionStorage[`vocab_learn_${vocabId}`] = UUID, persists across
+  // reload → server RPC PK (user_id, session_token) catches duplicates.
+  //
+  // (The smoke test previously verified this on /vocabulary/learn.
+  // After #7458, the count trigger lives on /vocabulary/[id]. Same
+  // idempotency mechanism — sessionStorage + RPC PK — just moved.)
   // ────────────────────────────────────────────────────────────────────
 
-  test("⑤ Idempotency — refresh on /vocabulary/learn does not double-count", async ({
+  test("⑤ Idempotency — refresh on /vocabulary/[id] does not double-count", async ({
     page,
   }) => {
     await page.goto("/vocabulary");
@@ -164,23 +183,30 @@ test.describe("Vocab learning mode (Frank #7397 smoke test)", () => {
       "No vocab items",
     );
     await firstLink.click();
-    const vocabId = page.url().split("/").pop()!;
+    await expect(page).toHaveURL(/\/vocabulary\/[a-f0-9-]+/);
 
-    await page.goto(`/vocabulary/learn?id=${vocabId}`);
-
-    // LearnSession mounts → startLearningSession RPC → displays "学习次数 N 次".
-    // The text takes a moment to appear (RPC round-trip + state set).
-    const learningCountText = page.locator("text=/学习次数 \\d+ 次/");
-    await learningCountText.waitFor({ state: "visible", timeout: 15_000 });
+    // LearningTracker mounts → startLearningSession RPC → vocab_items
+    // row gets learning_count += 1. The "学习次数 N 次" text appears
+    // after the RPC round-trip + revalidation.
+    //
+    // Note: we read the learning_count from the server-rendered detail
+    // page (via the 学习次数 row in 学习记录), not from a separate
+    // text in the URL bar like /vocabulary/learn used to show.
+    const learningCountRow = page.locator(
+      'section:has(h2:text("学习记录")) >> text=/^\\d+ 次$/',
+    );
+    await learningCountRow.first().waitFor({ state: "visible", timeout: 15_000 });
     const before = Number(
-      (await learningCountText.innerText()).match(/\d+/)![0],
+      (await learningCountRow.first().innerText()).match(/\d+/)![0],
     );
 
     // F5 — same URL, same tab → sessionStorage persists → same token → no +1.
     await page.reload();
-    await learningCountText.waitFor({ state: "visible", timeout: 15_000 });
+    await learningCountRow
+      .first()
+      .waitFor({ state: "visible", timeout: 15_000 });
     const afterReload = Number(
-      (await learningCountText.innerText()).match(/\d+/)![0],
+      (await learningCountRow.first().innerText()).match(/\d+/)![0],
     );
 
     expect(afterReload, "F5 should NOT increment learningCount").toBe(before);

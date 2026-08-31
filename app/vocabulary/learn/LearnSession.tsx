@@ -34,6 +34,11 @@ import {
   setDailyLearningStatusAction,
 } from "@/app/vocabulary/actions";
 import { SpeakButton } from "@/components/SpeakButton";
+// Note: startLearningSessionAction is intentionally still imported even
+// though LearnSession no longer calls it directly. The detail page
+// (app/vocabulary/[id]/LearningTracker.tsx) owns the +1 trigger per
+// Frank #7458 (2026-08-31). Import remains in case we want to
+// restore per-session counting in the future.
 
 type Props = {
   queue: VocabularyItem[];
@@ -86,54 +91,22 @@ export function LearnSession({
 }: Props) {
   const router = useRouter();
   const [index, setIndex] = useState(startIndex);
-  const [learningCount, setLearningCount] = useState<number | null>(null);
   const [isFinishing, setIsFinishing] = useState(false);
 
   const current = queue[index];
-  const filterKey = filterKeyOf(filterContext);
   const isLast = index >= queue.length - 1;
 
-  // Start a new learning session when the current vocab mounts.
-  // Re-runs when filter context changes (user navigated away + back
-  // with different filters) — but in practice the queue is the same
-  // and only index changes, which still triggers this effect because
-  // current?.id is in the dep array.
-  useEffect(() => {
-    if (!current) return;
-    const token = getOrCreateSessionToken(current.id);
-    if (!token) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const result = await startLearningSessionAction({
-          vocabId: current.id,
-          sessionToken: token,
-          filterContext,
-        });
-        if (!cancelled) {
-          setLearningCount(result.learningCount);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          console.error("LearnSession: start failed", {
-            vocabId: current.id,
-            err,
-          });
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-    // We intentionally only re-fire when the vocab id or the filter
-    // context SHAPE changes. Re-firing on every parent render (which
-    // would happen if `current` (queue[index]) or `filterContext`
-    // (parent object literal) were in deps) would re-call the RPC with
-    // the SAME session token from sessionStorage — idempotent so it's
-    // a no-op server-side, but adds latency to every render and
-    // clutters the server log.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current?.id, filterKey]);
+  // Per Frank #7458 (2026-08-31, docs/vocabuly0831.md follow-up):
+  // "打开单词详情页即视为在学习" — the detail page IS the canonical
+  // learning surface. LearnSession no longer increments learningCount
+  // on mount; that trigger moved to app/vocabulary/[id]/LearningTracker.
+  // This page is now a queue walker (next button moves you to the
+  // next vocab's detail page, which DOES increment).
+  //
+  // The sessionStorage token pattern is removed because nothing here
+  // calls start_learning_session anymore. Filter context is still
+  // accepted as a prop for potential future use (e.g., logging which
+  // filter the user was walking through), but currently unused.
 
   const finish = useCallback(async () => {
     if (isFinishing) return;
@@ -197,11 +170,9 @@ export function LearnSession({
         )}
         <p className="text-xl text-gray-800 mb-6">{current.meaning}</p>
 
-        {learningCount !== null && (
-          <p className="text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
-            学习次数 {learningCount} 次
-          </p>
-        )}
+        {/* 学习次数 display moved off this page — the detail page
+            LearningTracker owns the count (per Frank #7458). Queue
+            walker is now a pure navigation helper. */}
       </article>
 
       <button

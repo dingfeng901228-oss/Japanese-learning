@@ -26,6 +26,7 @@ import {
   type VocabularyType,
 } from "@/lib/vocabulary";
 import { getVocabReviewStats } from "@/lib/vocabulary/reviews";
+import { LearningTracker } from "./LearningTracker";
 import { SpeakButton } from "@/components/SpeakButton";
 import { WordCardSwipeable } from "./WordCardSwipeable";
 import { VocabLearningProgress } from "@/components/vocabulary/VocabLearningProgress";
@@ -98,6 +99,13 @@ export default async function VocabularyDetailPage({
 
   return (
     <main className="min-h-screen px-6 py-12 max-w-2xl mx-auto">
+      {/* Per Frank #7458 (2026-08-31): opening the detail page IS the
+          learning event — LearningTracker bumps learningCount on mount
+          via the same idempotent sessionStorage + RPC PK pattern as
+          /vocabulary/learn. The [开始学习 →] CTA that used to link
+          to /vocabulary/learn was removed (no longer needed — the
+          mount itself is the "start" event). */}
+      <LearningTracker vocabId={item.id} />
       <header className="mb-8">
         {/* Per Frank #6576: put "+手动添加" on the same row as
             "← 返回收藏列表", at the far right. Using flex justify-between
@@ -490,7 +498,7 @@ export default async function VocabularyDetailPage({
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
           学习记录
         </h2>
-        <div className="grid grid-cols-[1fr_auto] gap-y-2 text-sm mb-5">
+        <div className="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
           <span className="text-gray-600">学习次数</span>
           <span className="text-gray-900 tabular-nums">
             {item.learning_count} 次
@@ -513,12 +521,6 @@ export default async function VocabularyDetailPage({
               : "—"}
           </span>
         </div>
-        <Link
-          href={`/vocabulary/learn?id=${id}`}
-          className="block text-center px-5 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
-        >
-          开始学习 →
-        </Link>
       </section>
 
       {/* Phase 7+ (#6334): prev / next word preview. Click either card to
