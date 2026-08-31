@@ -33,6 +33,13 @@ export type VocabularyItem = {
   source_domain: string | null;
   source_favicon: string | null;
   source_added_at: string | null;
+  // Per Frank #7397 (2026-08-31, docs/vocabuly0831.md §十 + §十一 +
+  // §十二): learningCount = "number of formal learning sessions the
+  // user has entered via /vocabulary/learn". DECOUPLED from mastery,
+  // reviewCount, and the 5s/word/DAY timer (see migration 0007 for
+  // invariant comments). Updated by start_learning_session RPC.
+  learning_count: number;
+  last_learned_at: string | null;
 };
 
 export type NewVocabularyItem = {

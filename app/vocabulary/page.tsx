@@ -10,6 +10,7 @@ import {
 } from "@/lib/vocabulary";
 import { createClient } from "@/lib/supabase/server";
 import { PageInput } from "./PageInput";
+import { getUserLearningState } from "@/lib/vocabulary/learn";
 
 export const dynamic = "force-dynamic";
 
@@ -79,6 +80,52 @@ function formatDate(iso: string): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+// Per Frank #7397 (2026-08-31, docs/vocabuly0831.md §十四 + §二十三):
+// "上次学习：昨天 21:32" style relative-time label on the
+// "继续学习" card. Server timestamps are UTC, user is JST, so the
+// absolute date fallback shifts +9h to display in JST. The diff itself
+// is timezone-independent (absolute timestamps cancel out).
+function formatRelativeTime(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHour = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHour / 24);
+
+  if (diffMin < 1) return "刚刚";
+  if (diffMin < 60) return `${diffMin} 分钟前`;
+  if (diffHour < 24) return `${diffHour} 小时前`;
+  if (diffDay < 7) return `${diffDay} 天前`;
+
+  const d = new Date(iso);
+  const jst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${jst.getUTCFullYear()}-${pad(jst.getUTCMonth() + 1)}-${pad(jst.getUTCDate())} ${pad(jst.getUTCHours())}:${pad(jst.getUTCMinutes())}`;
+}
+
+// Build /vocabulary/learn href carrying the current list-page filters
+// as ?filter_type=...&filter_level=...&filter_sort=...&filter_query=...
+// params. /vocabulary/learn reads these to call start_learning_session
+// with the right filter_context — which user_learning_state then
+// stores, powering the next visit's "原学习类型" display (per
+// Frank #7397 Q5-α). When no filters are set, the href is the bare
+// /vocabulary/learn path — the RPC's COALESCE clause preserves the
+// previously-stored filter in that case (so a [继续学习] click does
+// NOT clobber the existing "原 filter" label).
+function buildLearnHref(fc: {
+  q: string;
+  type?: VocabularyType;
+  level?: string;
+  sort: string;
+}): string {
+  const params = new URLSearchParams();
+  if (fc.q) params.set("filter_query", fc.q);
+  if (fc.type) params.set("filter_type", fc.type);
+  if (fc.level) params.set("filter_level", fc.level);
+  if (fc.sort && fc.sort !== "newest") params.set("filter_sort", fc.sort);
+  const qs = params.toString();
+  return qs ? `/vocabulary/learn?${qs}` : "/vocabulary/learn";
+}
+
 export default async function VocabularyListPage({
   searchParams,
 }: {
@@ -116,6 +163,11 @@ export default async function VocabularyListPage({
     .from("vocabulary_items")
     .select("id", { count: "exact", head: true })
     .eq("source", "chrome-extension");
+
+  // Per Frank #7397 (2026-08-31, docs/vocabuly0831.md §十四 +
+  // §二十三): drives the "继续学习" card and the "今日学习已完成"
+  // banner. The empty-state branch (no vocab) skips both anyway.
+  const userLearningState = await getUserLearningState();
 
   return (
     <main className="min-h-screen px-6 py-12 max-w-3xl mx-auto">
@@ -170,6 +222,108 @@ export default async function VocabularyListPage({
           users can generate missing examples per-word via the
           "生成例句" button on each detail page (see
           regenerateExampleAction in app/vocabulary/actions.ts). */}
+
+      {/* Per Frank #7397 (2026-08-31, docs/vocabuly0831.md §十四 +
+          §十五 + §二十三): "继续学习" card + "今日学习已完成 ✓"
+          banner. Only rendered when the user has at least one vocab
+          (otherwise the empty state below takes over). Ignores the
+          current page filter (Q5-α); the original filter context is
+          displayed inline so the user understands where they were
+          studying last. The [继续学习 →] / [重新开始] button is a
+          plain Link — the LearnSession client component handles the
+          session-start RPC + redirect when it mounts. */}
+      {total > 0 &&
+        (userLearningState.lastLearningVocabulary ||
+          userLearningState.dailyStatus === "completed") && (
+          <section className="mb-6 space-y-3">
+            {userLearningState.lastLearningVocabulary && (
+              <div className="bg-white border border-gray-200 rounded-2xl p-5">
+                <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">
+                  继续学习
+                </p>
+                <div className="flex items-baseline gap-2 flex-wrap mb-1">
+                  <span className="text-sm text-gray-500">上次学到：</span>
+                  <strong className="text-lg text-gray-900">
+                    {userLearningState.lastLearningVocabulary.word}
+                  </strong>
+                </div>
+                <p className="text-xs text-gray-500 mb-2">
+                  {TYPE_LABEL[
+                    userLearningState.lastLearningVocabulary
+                      .type as VocabularyType
+                  ] ??
+                    userLearningState.lastLearningVocabulary.type}
+                  {userLearningState.lastLearningVocabulary.level && (
+                    <>
+                      {" · "}
+                      {userLearningState.lastLearningVocabulary.level}
+                    </>
+                  )}
+                  {userLearningState.lastLearningAt && (
+                    <>
+                      {" · 上次学习："}
+                      {formatRelativeTime(userLearningState.lastLearningAt)}
+                    </>
+                  )}
+                </p>
+                {userLearningState.filterContext &&
+                  (userLearningState.filterContext.type ||
+                    userLearningState.filterContext.level ||
+                    userLearningState.filterContext.sort ||
+                    userLearningState.filterContext.query) && (
+                    <p className="text-xs text-gray-500 mb-3">
+                      原学习类型：
+                      {[
+                        userLearningState.filterContext.type
+                          ? (TYPE_LABEL[
+                              userLearningState.filterContext
+                                .type as VocabularyType
+                            ] ??
+                              userLearningState.filterContext.type)
+                          : null,
+                        userLearningState.filterContext.level,
+                        userLearningState.filterContext.sort === "oldest"
+                          ? "最早收藏"
+                          : userLearningState.filterContext.sort === "word"
+                            ? "按 A-Z"
+                            : null,
+                        userLearningState.filterContext.query
+                          ? `搜索 "${userLearningState.filterContext.query}"`
+                          : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                  )}
+                <Link
+                  href={buildLearnHref({ q, type, level, sort })}
+                  className="inline-block px-5 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+                >
+                  继续学习 →
+                </Link>
+              </div>
+            )}
+
+            {userLearningState.dailyStatus === "completed" && (
+              <div className="bg-green-50 border border-green-200 rounded-2xl p-5 flex items-center justify-between gap-3 flex-wrap">
+                <div>
+                  <p className="text-base text-green-900 font-medium">
+                    今日学习已完成 ✓
+                  </p>
+                  <p className="text-xs text-green-700 mt-1">
+                    想再走一遍？随时可以开启新一段。
+                  </p>
+                </div>
+                <Link
+                  href={buildLearnHref({ q, type, level, sort })}
+                  className="px-5 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors text-sm font-medium whitespace-nowrap"
+                >
+                  重新开始
+                </Link>
+              </div>
+            )}
+          </section>
+        )}
 
       <form method="get" className="mb-8 flex gap-2 flex-wrap">
         <input

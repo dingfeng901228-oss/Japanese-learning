@@ -20,6 +20,14 @@ import {
 } from "@/lib/vocabulary";
 import { generateExample } from "@/lib/vocabulary/examples";
 import { ensureReviewRecord } from "@/lib/vocabulary/reviews";
+import {
+  getUserLearningState as getUserLearningStateHelper,
+  startLearningSession as startLearningSessionHelper,
+  setDailyLearningStatus as setDailyLearningStatusHelper,
+  type LearningState,
+  type LearningFilterContext,
+  type StartLearningSessionResult,
+} from "@/lib/vocabulary/learn";
 
 const JLPT_LEVELS = new Set(["N5", "N4", "N3", "N2", "N1"]);
 function normalizeLevel(raw: string): string {
@@ -305,3 +313,44 @@ export async function recordVocabLearningTimeAction(
 ): Promise<{ learningTimeMs: number; state: "IDLE" | "COMPLETED" }> {
   return await recordVocabLearningTime(vocabId, deltaMs, todayDate);
 }
+
+// ==========================================================================
+// Formal learning session (docs/vocabuly0831.md, Frank #7397, 2026-08-31).
+//
+// Per Q1-(b): /vocabulary/learn is the dedicated "formal learning"
+// surface. Entering it increments vocabulary_items.learning_count via
+// the start_learning_session RPC. /vocabulary/[id] (detail page) does
+// NOT touch learning_count — viewing a vocab is not "learning" it.
+//
+// All three actions are thin pass-throughs to lib/vocabulary/learn.ts
+// (the typed wrappers around the 0007 RPCs). The page-level + client
+// components call these from server actions and useTransition /
+// router.push; no manual POST to /api/* needed.
+//
+// No revalidatePath on startLearningSession: the next mount of
+// LearnSession picks up the fresh learningCount via the action's
+// return value, and the list page re-fetches getUserLearningState on
+// its own server render.
+// ==========================================================================
+
+export async function getUserLearningStateAction(): Promise<LearningState> {
+  return await getUserLearningStateHelper();
+}
+
+export async function startLearningSessionAction(
+  opts: StartLearningSessionActionOpts,
+): Promise<StartLearningSessionResult> {
+  return await startLearningSessionHelper(opts);
+}
+
+export async function setDailyLearningStatusAction(
+  status: "active" | "completed",
+): Promise<void> {
+  return await setDailyLearningStatusHelper(status);
+}
+
+export type StartLearningSessionActionOpts = {
+  vocabId: string;
+  sessionToken: string;
+  filterContext?: LearningFilterContext;
+};
