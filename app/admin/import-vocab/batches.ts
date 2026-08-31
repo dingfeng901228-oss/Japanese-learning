@@ -50,6 +50,27 @@ export const PRELOADED_BATCHES = [
     description:
       "职场敬语实战 / 旅游・出行进阶 / 网络用语 / 四字熟语 / 故事・寓言常用词 / 家电・家居 / 求职・面试专用词 / 保险・风险管理 (N2:107 + N1:93)",
   },
+  // Per Frank #7461 (2026-08-31): 第七/八/九 批 200 词。
+  // Parse source: F:\WebSite\Japanese-learning\docs\JLPT_N2-N1_词汇样本_*批200词.md
+  // Generator: node scripts/parse-jlpt-vocab-md.mjs <md> data/jlpt-vocab-200-batchN.json
+  {
+    filename: "jlpt-vocab-200-batch7.json",
+    label: "JLPT N2-N1 第七批 200 词",
+    description:
+      "医疗保健进阶 / 农业・渔业 / 司法・警察 / 地方自治与社区生活 / 惯用表达进阶（身体部位类，25词） / 时间・数量表达进阶 / 天气预报常用语 / 动作副词・拟态语进阶 (N2:106 + N1:94)",
+  },
+  {
+    filename: "jlpt-vocab-200-batch8.json",
+    label: "JLPT N2-N1 第八批 200 词",
+    description:
+      "制造业・工程技术 / 宗教节日与年中行事 / 色彩・视觉表达 / 味觉・嗅觉・触觉表达 / 数学・统计常用词 / 外来语常见词 / 书信・邮件・公文用语 / 办公软件与文档处理 (N2:139 + N1:61)",
+  },
+  {
+    filename: "jlpt-vocab-200-batch9.json",
+    label: "JLPT N2-N1 第九批 200 词",
+    description:
+      "健身・运动进阶 / 感官形容・拟态语补充 / 二字汉语进阶 / 时事・政治二级词 / 企业・组织架构 / 婚丧嫁娶仪式细节 / 方言・口语表达 / 灾害应急预案专用词 (N2:121 + N1:79)",
+  },
 ] as const;
 
 export type PreloadedBatchFilename = (typeof PRELOADED_BATCHES)[number]["filename"];

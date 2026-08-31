@@ -1,0 +1,2402 @@
+[
+  {
+    "word": "製造",
+    "reading": "せいぞう",
+    "meaning": "制造",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "この工場では自動車部品を製造している。",
+      "reading": "こうじょう・じどうしゃぶひん・せいぞう",
+      "translation": "这家工厂正在制造汽车零件。"
+    }
+  },
+  {
+    "word": "生産",
+    "reading": "せいさん",
+    "meaning": "生产",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "来月から生産量を増やす予定だ。",
+      "reading": "らいげつ・せいさんりょう・ふ・よてい",
+      "translation": "预计从下月开始增加产量。"
+    }
+  },
+  {
+    "word": "工場",
+    "reading": "こうじょう",
+    "meaning": "工厂",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "新しい工場が来年稼働する。",
+      "reading": "あたら・こうじょう・らいねん・かどう",
+      "translation": "新工厂将于明年投入运转。"
+    }
+  },
+  {
+    "word": "ライン",
+    "reading": null,
+    "meaning": "生产线",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "生産ラインを増設した。",
+      "reading": "せいさん・ぞうせつ",
+      "translation": "增设了生产线。"
+    }
+  },
+  {
+    "word": "部品",
+    "reading": "ぶひん",
+    "meaning": "零件",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "故障した部品を交換した。",
+      "reading": "こしょう・ぶひん・こうかん",
+      "translation": "更换了故障的零件。"
+    }
+  },
+  {
+    "word": "組み立て",
+    "reading": "くみたて",
+    "meaning": "组装",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "家具の組み立てに一時間かかった。",
+      "reading": "かぐ・くみたて・いちじかん",
+      "translation": "组装家具花了一个小时。"
+    }
+  },
+  {
+    "word": "加工",
+    "reading": "かこう",
+    "meaning": "加工",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "原材料を加工して製品にする。",
+      "reading": "げんざいりょう・かこう・せいひん",
+      "translation": "将原材料加工成产品。"
+    }
+  },
+  {
+    "word": "検査",
+    "reading": "けんさ",
+    "meaning": "检查",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "出荷前に品質検査を行う。",
+      "reading": "しゅっかまえ・ひんしつけんさ・おこな",
+      "translation": "出货前进行品质检查。"
+    }
+  },
+  {
+    "word": "不良品",
+    "reading": "ふりょうひん",
+    "meaning": "次品",
+    "level": "N1",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "不良品の割合を減らしたい。",
+      "reading": "ふりょうひん・わりあい・へ",
+      "translation": "想降低次品的比例。"
+    }
+  },
+  {
+    "word": "品質管理",
+    "reading": "ひんしつかんり",
+    "meaning": "品质管理",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "品質管理の部署に配属された。",
+      "reading": "ひんしつかんり・ぶしょ・はいぞく",
+      "translation": "被分配到了品质管理部门。"
+    }
+  },
+  {
+    "word": "工程",
+    "reading": "こうてい",
+    "meaning": "工序",
+    "level": "N1",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "この工程を短縮できないか検討している。",
+      "reading": "こうてい・たんしゅく・けんとう",
+      "translation": "正在研究能否缩短这道工序。"
+    }
+  },
+  {
+    "word": "稼働",
+    "reading": "かどう",
+    "meaning": "运转",
+    "level": "N1",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "新しい機械が正常に稼働している。",
+      "reading": "あたら・きかい・せいじょう・かどう",
+      "translation": "新机器正在正常运转。"
+    }
+  },
+  {
+    "word": "設備",
+    "reading": "せつび",
+    "meaning": "设备",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "老朽化した設備を更新する。",
+      "reading": "ろうきゅうか・せつび・こうしん",
+      "translation": "更新老化的设备。"
+    }
+  },
+  {
+    "word": "機械",
+    "reading": "きかい",
+    "meaning": "机械",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "機械のメンテナンスを定期的に行う。",
+      "reading": "きかい・メンテナンス・ていきてき・おこな",
+      "translation": "定期对机械进行维护保养。"
+    }
+  },
+  {
+    "word": "精密",
+    "reading": "せいみつ",
+    "meaning": "精密",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "精密な作業には集中力が必要だ。",
+      "reading": "せいみつ・さぎょう・しゅうちゅうりょく・ひつよう",
+      "translation": "精密的作业需要专注力。"
+    }
+  },
+  {
+    "word": "溶接",
+    "reading": "ようせつ",
+    "meaning": "焊接",
+    "level": "N1",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "金属を溶接して部品を作る。",
+      "reading": "きんぞく・ようせつ・ぶひん・つく",
+      "translation": "通过焊接金属制作零件。"
+    }
+  },
+  {
+    "word": "切削",
+    "reading": "せっさく",
+    "meaning": "切削",
+    "level": "N1",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "金属を切削して形を作る。",
+      "reading": "きんぞく・せっさく・かたち・つく",
+      "translation": "通过切削金属来塑形。"
+    }
+  },
+  {
+    "word": "図面",
+    "reading": "ずめん",
+    "meaning": "图纸",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "設計図面を確認してから作業を始めた。",
+      "reading": "せっけいずめん・かくにん・さぎょう・はじ",
+      "translation": "确认设计图纸后开始了作业。"
+    }
+  },
+  {
+    "word": "試作",
+    "reading": "しさく",
+    "meaning": "试制",
+    "level": "N1",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "新製品の試作品ができた。",
+      "reading": "しんせいひん・しさくひん",
+      "translation": "新产品的试制品做出来了。"
+    }
+  },
+  {
+    "word": "量産",
+    "reading": "りょうさん",
+    "meaning": "量产",
+    "level": "N1",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "来年から量産に入る予定だ。",
+      "reading": "らいねん・りょうさん・はい・よてい",
+      "translation": "预计从明年开始量产。"
+    }
+  },
+  {
+    "word": "技術者",
+    "reading": "ぎじゅつしゃ",
+    "meaning": "技术人员",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "優秀な技術者が集まっている会社だ。",
+      "reading": "ゆうしゅう・ぎじゅつしゃ・あつ・かいしゃ",
+      "translation": "这是一家聚集了优秀技术人员的公司。"
+    }
+  },
+  {
+    "word": "工学",
+    "reading": "こうがく",
+    "meaning": "工学",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "大学で機械工学を学んだ。",
+      "reading": "だいがく・きかいこうがく・まな",
+      "translation": "在大学学习了机械工学。"
+    }
+  },
+  {
+    "word": "ロボット",
+    "reading": null,
+    "meaning": "机器人",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "工場でロボットが作業をしている。",
+      "reading": "こうじょう・さぎょう",
+      "translation": "工厂里机器人正在作业。"
+    }
+  },
+  {
+    "word": "オートメーション",
+    "reading": null,
+    "meaning": "自动化",
+    "level": "N1",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "生産のオートメーション化を進めている。",
+      "reading": "せいさん・か・すす",
+      "translation": "正在推进生产的自动化。"
+    }
+  },
+  {
+    "word": "生産性",
+    "reading": "せいさんせい",
+    "meaning": "生产率",
+    "level": "N2",
+    "category": "制造业・工程技术",
+    "example": {
+      "sentence": "新しい設備で生産性が向上した。",
+      "reading": "あたら・せつび・せいさんせい・こうじょう",
+      "translation": "新设备使生产率得到了提高。"
+    }
+  },
+  {
+    "word": "年中行事",
+    "reading": "ねんじゅうぎょうじ",
+    "meaning": "年度例行活动",
+    "level": "N1",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "この地域には独自の年中行事がある。",
+      "reading": "ちいき・どくじ・ねんじゅうぎょうじ",
+      "translation": "这个地区有独特的年度例行活动。"
+    }
+  },
+  {
+    "word": "正月",
+    "reading": "しょうがつ",
+    "meaning": "正月，新年",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "正月は家族で集まって過ごす。",
+      "reading": "しょうがつ・かぞく・あつ・す",
+      "translation": "正月会和家人聚在一起度过。"
+    }
+  },
+  {
+    "word": "元日",
+    "reading": "がんじつ",
+    "meaning": "元旦",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "元日の朝は初日の出を見に行った。",
+      "reading": "がんじつ・あさ・はつひので・み・い",
+      "translation": "元旦早晨去看了新年第一次日出。"
+    }
+  },
+  {
+    "word": "初詣",
+    "reading": "はつもうで",
+    "meaning": "新年首次参拜",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "毎年、神社に初詣に行く。",
+      "reading": "まいとし・じんじゃ・はつもうで・い",
+      "translation": "每年都会去神社进行新年参拜。"
+    }
+  },
+  {
+    "word": "節分",
+    "reading": "せつぶん",
+    "meaning": "节分",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "節分に豆まきをした。",
+      "reading": "せつぶん・まめ",
+      "translation": "节分时进行了撒豆驱鬼。"
+    }
+  },
+  {
+    "word": "雛祭り",
+    "reading": "ひなまつり",
+    "meaning": "女儿节",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "雛祭りに雛人形を飾った。",
+      "reading": "ひなまつり・ひなにんぎょう・かざ",
+      "translation": "女儿节摆放了雏人偶。"
+    }
+  },
+  {
+    "word": "端午の節句",
+    "reading": "たんごのせっく",
+    "meaning": "端午节句",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "端午の節句に鯉のぼりを上げた。",
+      "reading": "たんごのせっく・こい・あ",
+      "translation": "端午节句时挂起了鲤鱼旗。"
+    }
+  },
+  {
+    "word": "七夕",
+    "reading": "たなばた",
+    "meaning": "七夕",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "七夕に短冊に願い事を書いた。",
+      "reading": "たなばた・たんざく・ねが ごと・か",
+      "translation": "七夕时在诗签上写了愿望。"
+    }
+  },
+  {
+    "word": "お盆",
+    "reading": "おぼん",
+    "meaning": "盂兰盆节",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "お盆には実家に帰省する。",
+      "reading": "おぼん・じっか・きせい",
+      "translation": "盂兰盆节时会回老家探亲。"
+    }
+  },
+  {
+    "word": "花火大会",
+    "reading": "はなびたいかい",
+    "meaning": "烟火大会",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "夏の花火大会が楽しみだ。",
+      "reading": "なつ・はなびたいかい・たの",
+      "translation": "期待着夏天的烟火大会。"
+    }
+  },
+  {
+    "word": "七五三",
+    "reading": "しちごさん",
+    "meaning": "七五三节",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "娘の七五三のお祝いをした。",
+      "reading": "むすめ・しちごさん・いわ",
+      "translation": "为女儿庆祝了七五三节。"
+    }
+  },
+  {
+    "word": "成人式",
+    "reading": "せいじんしき",
+    "meaning": "成人式",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "来年、成人式を迎える。",
+      "reading": "らいねん・せいじんしき・むか",
+      "translation": "明年将迎来成人式。"
+    }
+  },
+  {
+    "word": "お彼岸",
+    "reading": "おひがん",
+    "meaning": "彼岸（春秋分祭祖）",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "お彼岸にお墓参りをした。",
+      "reading": "おひがん・はかまい",
+      "translation": "彼岸时去扫了墓。"
+    }
+  },
+  {
+    "word": "除夜の鐘",
+    "reading": "じょやのかね",
+    "meaning": "除夕钟声",
+    "level": "N1",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "大晦日に除夜の鐘を聞いた。",
+      "reading": "おおみそか・じょやのかね・き",
+      "translation": "除夕夜听到了除夕钟声。"
+    }
+  },
+  {
+    "word": "大晦日",
+    "reading": "おおみそか",
+    "meaning": "除夕",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "大晦日は家族と紅白を見た。",
+      "reading": "おおみそか・かぞく・こうはく・み",
+      "translation": "除夕和家人一起看了红白歌会。"
+    }
+  },
+  {
+    "word": "祝日",
+    "reading": "しゅくじつ",
+    "meaning": "法定节假日",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "来週は祝日で休みだ。",
+      "reading": "らいしゅう・しゅくじつ・やす",
+      "translation": "下周有法定假日休息。"
+    }
+  },
+  {
+    "word": "祭日",
+    "reading": "さいじつ",
+    "meaning": "祭日",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "祭日には神社で祭りが行われる。",
+      "reading": "さいじつ・じんじゃ・まつ・おこな",
+      "translation": "祭日会在神社举行祭典。"
+    }
+  },
+  {
+    "word": "神事",
+    "reading": "しんじ",
+    "meaning": "神事，祭神仪式",
+    "level": "N1",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "この神社では毎年神事が行われる。",
+      "reading": "じんじゃ・まいとし・しんじ・おこな",
+      "translation": "这座神社每年都会举行祭神仪式。"
+    }
+  },
+  {
+    "word": "参拝",
+    "reading": "さんぱい",
+    "meaning": "参拜",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "早朝に参拝を済ませた。",
+      "reading": "そうちょう・さんぱい・す",
+      "translation": "清晨就完成了参拜。"
+    }
+  },
+  {
+    "word": "お守り",
+    "reading": "おまもり",
+    "meaning": "护身符",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "合格祈願のお守りを買った。",
+      "reading": "ごうかくきがん・おまも・か",
+      "translation": "买了祈求考试合格的护身符。"
+    }
+  },
+  {
+    "word": "おみくじ",
+    "reading": null,
+    "meaning": "抽签占卜",
+    "level": "N2",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "おみくじで大吉を引いた。",
+      "reading": "だいきち・ひ",
+      "translation": "抽到了抽签占卜中的大吉。"
+    }
+  },
+  {
+    "word": "厄年",
+    "reading": "やくどし",
+    "meaning": "本命年，厄年",
+    "level": "N1",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "今年は厄年なので厄払いに行った。",
+      "reading": "ことし・やくどし・やくばら・い",
+      "translation": "因今年是厄年所以去做了驱厄仪式。"
+    }
+  },
+  {
+    "word": "縁起",
+    "reading": "えんぎ",
+    "meaning": "吉凶预兆",
+    "level": "N1",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "縁起の良い数字とされている。",
+      "reading": "えんぎ・よ・すうじ",
+      "translation": "这被认为是吉利的数字。"
+    }
+  },
+  {
+    "word": "風習",
+    "reading": "ふうしゅう",
+    "meaning": "风俗习惯",
+    "level": "N1",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "地方によって風習が異なる。",
+      "reading": "ちほう・ふうしゅう・こと",
+      "translation": "风俗习惯因地区而异。"
+    }
+  },
+  {
+    "word": "慣わし",
+    "reading": "ならわし",
+    "meaning": "习俗",
+    "level": "N1",
+    "category": "宗教节日与年中行事",
+    "example": {
+      "sentence": "昔からの慣わしを大切にしている。",
+      "reading": "むかし・ならわし・たいせつ",
+      "translation": "珍视自古以来的习俗。"
+    }
+  },
+  {
+    "word": "色彩",
+    "reading": "しきさい",
+    "meaning": "色彩",
+    "level": "N1",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "この絵は色彩が豊かだ。",
+      "reading": "え・しきさい・ゆた",
+      "translation": "这幅画色彩很丰富。"
+    }
+  },
+  {
+    "word": "鮮やか",
+    "reading": "あざやか",
+    "meaning": "鲜艳",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "鮮やかな色の花が咲いている。",
+      "reading": "あざ・いろ・はな・さ",
+      "translation": "鲜艳颜色的花朵盛开着。"
+    }
+  },
+  {
+    "word": "淡い",
+    "reading": "あわい",
+    "meaning": "淡的",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "淡いピンク色が好きだ。",
+      "reading": "あわ・いろ・す",
+      "translation": "喜欢淡淡的粉红色。"
+    }
+  },
+  {
+    "word": "濃い",
+    "reading": "こい",
+    "meaning": "浓的",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "濃い緑色のカーテンを選んだ。",
+      "reading": "こ・みどりいろ・えら",
+      "translation": "选择了深绿色的窗帘。"
+    }
+  },
+  {
+    "word": "くすんだ",
+    "reading": null,
+    "meaning": "暗淡的",
+    "level": "N1",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "くすんだ色合いが落ち着いた印象を与える。",
+      "reading": "いろあ・お つ・いんしょう・あた",
+      "translation": "暗淡的色调给人沉稳的印象。"
+    }
+  },
+  {
+    "word": "透明",
+    "reading": "とうめい",
+    "meaning": "透明",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "透明なガラスの容器を使った。",
+      "reading": "とうめい・ガラス・ようき・つか",
+      "translation": "使用了透明的玻璃容器。"
+    }
+  },
+  {
+    "word": "不透明",
+    "reading": "ふとうめい",
+    "meaning": "不透明",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "今後の見通しは不透明だ。",
+      "reading": "こんご・みとお・ふとうめい",
+      "translation": "今后的前景不明朗。"
+    }
+  },
+  {
+    "word": "色合い",
+    "reading": "いろあい",
+    "meaning": "色调",
+    "level": "N1",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "秋らしい色合いの服を選んだ。",
+      "reading": "あき・いろあ・ふく・えら",
+      "translation": "选择了具有秋日感的色调的衣服。"
+    }
+  },
+  {
+    "word": "色調",
+    "reading": "しきちょう",
+    "meaning": "色调",
+    "level": "N1",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "全体的に暖かい色調でまとめた。",
+      "reading": "ぜんたいてき・あたた・しきちょう",
+      "translation": "整体上用暖色调进行了统一。"
+    }
+  },
+  {
+    "word": "明暗",
+    "reading": "めいあん",
+    "meaning": "明暗",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "写真の明暗をうまく調整した。",
+      "reading": "しゃしん・めいあん・ちょうせい",
+      "translation": "巧妙地调整了照片的明暗。"
+    }
+  },
+  {
+    "word": "コントラスト",
+    "reading": null,
+    "meaning": "对比度",
+    "level": "N1",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "コントラストを強くして印象的な写真にした。",
+      "reading": "つよ・いんしょうてき・しゃしん",
+      "translation": "加强了对比度使照片更有冲击力。"
+    }
+  },
+  {
+    "word": "光沢",
+    "reading": "こうたく",
+    "meaning": "光泽",
+    "level": "N1",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "この布は美しい光沢がある。",
+      "reading": "ぬの・うつく・こうたく",
+      "translation": "这块布料有着美丽的光泽。"
+    }
+  },
+  {
+    "word": "輝く",
+    "reading": "かがやく",
+    "meaning": "闪耀",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "星が夜空に輝いている。",
+      "reading": "ほし・よぞら・かがや",
+      "translation": "星星在夜空中闪耀着。"
+    }
+  },
+  {
+    "word": "眩しい",
+    "reading": "まぶしい",
+    "meaning": "刺眼",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "太陽の光が眩しかった。",
+      "reading": "たいよう・ひかり・まぶ",
+      "translation": "太阳的光很刺眼。"
+    }
+  },
+  {
+    "word": "薄暗い",
+    "reading": "うすぐらい",
+    "meaning": "昏暗",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "薄暗い部屋で本を読んでいた。",
+      "reading": "うすぐら・へや・ほん・よ",
+      "translation": "在昏暗的房间里读着书。"
+    }
+  },
+  {
+    "word": "真っ暗",
+    "reading": "まっくら",
+    "meaning": "漆黑",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "停電で部屋が真っ暗になった。",
+      "reading": "ていでん・へや・まっくら",
+      "translation": "因停电房间变得漆黑一片。"
+    }
+  },
+  {
+    "word": "視覚",
+    "reading": "しかく",
+    "meaning": "视觉",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "視覚に訴えるデザインを考えた。",
+      "reading": "しかく・うった・デザイン・かんが",
+      "translation": "设计了诉诸视觉冲击力的方案。"
+    }
+  },
+  {
+    "word": "視野",
+    "reading": "しや",
+    "meaning": "视野",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "海外に行って視野が広がった。",
+      "reading": "かいがい・い・しや・ひろ",
+      "translation": "去了海外后视野变得开阔了。"
+    }
+  },
+  {
+    "word": "見た目",
+    "reading": "みため",
+    "meaning": "外观",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "見た目より味が大事だと思う。",
+      "reading": "みため・あじ・だいじ・おも",
+      "translation": "我认为比起外观味道更重要。"
+    }
+  },
+  {
+    "word": "印象的",
+    "reading": "いんしょうてき",
+    "meaning": "印象深刻的",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "印象的な結末の映画だった。",
+      "reading": "いんしょうてき・けつまつ・えいが",
+      "translation": "这是一部结局令人印象深刻的电影。"
+    }
+  },
+  {
+    "word": "色褪せる",
+    "reading": "いろあせる",
+    "meaning": "褪色",
+    "level": "N1",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "日光で色褪せてしまった。",
+      "reading": "にっこう・いろあ",
+      "translation": "因日光照射而褪色了。"
+    }
+  },
+  {
+    "word": "染まる",
+    "reading": "そまる",
+    "meaning": "染上颜色",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "空が夕焼けに染まっている。",
+      "reading": "そら・ゆうや・そ",
+      "translation": "天空被夕阳染红了。"
+    }
+  },
+  {
+    "word": "彩る",
+    "reading": "いろどる",
+    "meaning": "装点，点缀",
+    "level": "N1",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "紅葉が山々を彩っている。",
+      "reading": "こうよう・やまやま・いろど",
+      "translation": "红叶点缀着群山。"
+    }
+  },
+  {
+    "word": "モノクロ",
+    "reading": null,
+    "meaning": "黑白（单色）",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "モノクロ写真には独特の味わいがある。",
+      "reading": "しゃしん・どくとく・あじ",
+      "translation": "黑白照片有着独特的韵味。"
+    }
+  },
+  {
+    "word": "カラフル",
+    "reading": null,
+    "meaning": "五彩缤纷",
+    "level": "N2",
+    "category": "色彩・视觉表达",
+    "example": {
+      "sentence": "カラフルな傘が並んでいる。",
+      "reading": "かさ・なら",
+      "translation": "五彩缤纷的伞排列在一起。"
+    }
+  },
+  {
+    "word": "味わう",
+    "reading": "あじわう",
+    "meaning": "品尝",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "旬の食材をじっくり味わった。",
+      "reading": "しゅん・しょくざい・あじ",
+      "translation": "细细品尝了应季食材。"
+    }
+  },
+  {
+    "word": "甘い",
+    "reading": "あまい",
+    "meaning": "甜",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "このケーキはとても甘い。",
+      "reading": "ケーキ・あま",
+      "translation": "这个蛋糕非常甜。"
+    }
+  },
+  {
+    "word": "苦い",
+    "reading": "にがい",
+    "meaning": "苦",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "コーヒーが苦くて飲みにくい。",
+      "reading": "コーヒー・にが・の",
+      "translation": "咖啡太苦不太好喝。"
+    }
+  },
+  {
+    "word": "酸っぱい",
+    "reading": "すっぱい",
+    "meaning": "酸",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "このレモンはとても酸っぱい。",
+      "reading": "レモン・すっ",
+      "translation": "这个柠檬非常酸。"
+    }
+  },
+  {
+    "word": "辛い",
+    "reading": "からい",
+    "meaning": "辣",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "辛い料理が好きだ。",
+      "reading": "から・りょうり・す",
+      "translation": "喜欢辣的料理。"
+    }
+  },
+  {
+    "word": "渋い",
+    "reading": "しぶい",
+    "meaning": "涩",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "渋いお茶を飲んで目が覚めた。",
+      "reading": "しぶ・ちゃ・の・め・さ",
+      "translation": "喝了涩味的茶后清醒了过来。"
+    }
+  },
+  {
+    "word": "塩辛い",
+    "reading": "しおからい",
+    "meaning": "咸",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "このスープは少し塩辛い。",
+      "reading": "スープ・すこ・しおから",
+      "translation": "这个汤有点咸。"
+    }
+  },
+  {
+    "word": "まろやか",
+    "reading": null,
+    "meaning": "醇厚，圆润（味道）",
+    "level": "N1",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "まろやかな味わいのワインだ。",
+      "reading": "あじ",
+      "translation": "这是一款味道醇厚的葡萄酒。"
+    }
+  },
+  {
+    "word": "芳醇",
+    "reading": "ほうじゅん",
+    "meaning": "芳醇",
+    "level": "N1",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "芳醇な香りが広がる。",
+      "reading": "ほうじゅん・かお・ひろ",
+      "translation": "芳醇的香气弥漫开来。"
+    }
+  },
+  {
+    "word": "香り",
+    "reading": "かおり",
+    "meaning": "香气",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "コーヒーの香りが漂ってきた。",
+      "reading": "コーヒー・かお・ただよ",
+      "translation": "飘来了咖啡的香气。"
+    }
+  },
+  {
+    "word": "匂い",
+    "reading": "におい",
+    "meaning": "气味",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "この花はいい匂いがする。",
+      "reading": "はな・にお",
+      "translation": "这种花散发着好闻的气味。"
+    }
+  },
+  {
+    "word": "悪臭",
+    "reading": "あくしゅう",
+    "meaning": "恶臭",
+    "level": "N1",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "ゴミから悪臭が漂っている。",
+      "reading": "ゴミ・あくしゅう・ただよ",
+      "translation": "垃圾散发出恶臭。"
+    }
+  },
+  {
+    "word": "芳香",
+    "reading": "ほうこう",
+    "meaning": "芳香",
+    "level": "N1",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "芳香剤を部屋に置いた。",
+      "reading": "ほうこうざい・へや・お",
+      "translation": "在房间里放了芳香剂。"
+    }
+  },
+  {
+    "word": "嗅覚",
+    "reading": "きゅうかく",
+    "meaning": "嗅觉",
+    "level": "N1",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "犬は嗅覚が非常に鋭い。",
+      "reading": "いぬ・きゅうかく・ひじょう・するど",
+      "translation": "狗的嗅觉非常敏锐。"
+    }
+  },
+  {
+    "word": "触感",
+    "reading": "しょっかん",
+    "meaning": "触感",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "この生地は柔らかい触感だ。",
+      "reading": "きじ・やわ・しょっかん",
+      "translation": "这种布料触感柔软。"
+    }
+  },
+  {
+    "word": "なめらか",
+    "reading": null,
+    "meaning": "光滑",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "なめらかな肌触りが特徴だ。",
+      "reading": "はだざわ・とくちょう",
+      "translation": "光滑的触感是其特点。"
+    }
+  },
+  {
+    "word": "ざらざら",
+    "reading": null,
+    "meaning": "粗糙（拟态）",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "この紙はざらざらしている。",
+      "reading": "かみ",
+      "translation": "这张纸摸起来很粗糙。"
+    }
+  },
+  {
+    "word": "ふわふわ",
+    "reading": null,
+    "meaning": "蓬松柔软",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "ふわふわのクッションが気持ちいい。",
+      "reading": "クッション・きも",
+      "translation": "蓬松柔软的坐垫感觉很舒服。"
+    }
+  },
+  {
+    "word": "べたべた",
+    "reading": null,
+    "meaning": "黏糊糊",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "手が汗でべたべたする。",
+      "reading": "て・あせ",
+      "translation": "手因出汗而黏糊糊的。"
+    }
+  },
+  {
+    "word": "ひんやり",
+    "reading": null,
+    "meaning": "凉丝丝",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "朝の空気がひんやりしていた。",
+      "reading": "あさ・くうき",
+      "translation": "早晨的空气凉丝丝的。"
+    }
+  },
+  {
+    "word": "ぬくもり",
+    "reading": null,
+    "meaning": "温暖（触感/心理）",
+    "level": "N1",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "手のぬくもりが伝わってきた。",
+      "reading": "て・つた",
+      "translation": "手的温暖传递了过来。"
+    }
+  },
+  {
+    "word": "かたい",
+    "reading": null,
+    "meaning": "硬",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "このパンは少しかたい。",
+      "reading": "パン・すこ",
+      "translation": "这个面包有点硬。"
+    }
+  },
+  {
+    "word": "やわらかい",
+    "reading": null,
+    "meaning": "软",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "やわらかいベッドで眠った。",
+      "reading": "ベッド・ねむ",
+      "translation": "在柔软的床上睡了觉。"
+    }
+  },
+  {
+    "word": "ぬるぬる",
+    "reading": null,
+    "meaning": "滑腻",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "石がぬるぬるして滑りやすい。",
+      "reading": "いし・すべ",
+      "translation": "石头滑腻腻的容易打滑。"
+    }
+  },
+  {
+    "word": "さらさら",
+    "reading": null,
+    "meaning": "干爽，顺滑",
+    "level": "N2",
+    "category": "味觉・嗅觉・触觉表达",
+    "example": {
+      "sentence": "シャンプーの後、髪がさらさらになった。",
+      "reading": "シャンプー・あと・かみ",
+      "translation": "洗发之后头发变得顺滑了。"
+    }
+  },
+  {
+    "word": "数式",
+    "reading": "すうしき",
+    "meaning": "数学式",
+    "level": "N2",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "この数式の意味がわからない。",
+      "reading": "すうしき・いみ",
+      "translation": "不明白这个数学式的含义。"
+    }
+  },
+  {
+    "word": "計算",
+    "reading": "けいさん",
+    "meaning": "计算",
+    "level": "N2",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "暗算で計算した。",
+      "reading": "あんざん・けいさん",
+      "translation": "用心算进行了计算。"
+    }
+  },
+  {
+    "word": "割合",
+    "reading": "わりあい",
+    "meaning": "比例",
+    "level": "N2",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "男女の割合はほぼ半々だ。",
+      "reading": "だんじょ・わりあい・はんはん",
+      "translation": "男女的比例几乎是各占一半。"
+    }
+  },
+  {
+    "word": "比率",
+    "reading": "ひりつ",
+    "meaning": "比率",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "合格者の比率が高い試験だ。",
+      "reading": "ごうかくしゃ・ひりつ・たか・しけん",
+      "translation": "这是合格者比率较高的考试。"
+    }
+  },
+  {
+    "word": "平均",
+    "reading": "へいきん",
+    "meaning": "平均",
+    "level": "N2",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "平均年齢は三十歳だ。",
+      "reading": "へいきんねんれい・さんじゅっさい",
+      "translation": "平均年龄是三十岁。"
+    }
+  },
+  {
+    "word": "中央値",
+    "reading": "ちゅうおうち",
+    "meaning": "中位数",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "平均値より中央値の方が参考になる場合がある。",
+      "reading": "へいきんち・ちゅうおうち・ほう・さんこう・ばあい",
+      "translation": "有时中位数比平均值更有参考价值。"
+    }
+  },
+  {
+    "word": "標準偏差",
+    "reading": "ひょうじゅんへんさ",
+    "meaning": "标准差",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "標準偏差を求める計算式を学んだ。",
+      "reading": "ひょうじゅんへんさ・もと・けいさんしき・まな",
+      "translation": "学习了求标准差的计算公式。"
+    }
+  },
+  {
+    "word": "データ",
+    "reading": null,
+    "meaning": "数据",
+    "level": "N2",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "大量のデータを分析している。",
+      "reading": "たいりょう・ぶんせき",
+      "translation": "正在分析大量的数据。"
+    }
+  },
+  {
+    "word": "統計",
+    "reading": "とうけい",
+    "meaning": "统计",
+    "level": "N2",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "統計によると人口は減少している。",
+      "reading": "とうけい・じんこう・げんしょう",
+      "translation": "据统计人口正在减少。"
+    }
+  },
+  {
+    "word": "母集団",
+    "reading": "ぼしゅうだん",
+    "meaning": "总体",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "調査の母集団を明確にする必要がある。",
+      "reading": "ちょうさ・ぼしゅうだん・めいかく・ひつよう",
+      "translation": "有必要明确调查的总体范围。"
+    }
+  },
+  {
+    "word": "標本",
+    "reading": "ひょうほん",
+    "meaning": "样本",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "無作為に標本を抽出した。",
+      "reading": "むさくい・ひょうほん・ちゅうしゅつ",
+      "translation": "随机抽取了样本。"
+    }
+  },
+  {
+    "word": "変数",
+    "reading": "へんすう",
+    "meaning": "变量",
+    "level": "N2",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "この式には二つの変数がある。",
+      "reading": "しき・ふた・へんすう",
+      "translation": "这个式子里有两个变量。"
+    }
+  },
+  {
+    "word": "関数",
+    "reading": "かんすう",
+    "meaning": "函数",
+    "level": "N2",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "エクセルの関数を使って計算した。",
+      "reading": "エクセル・かんすう・つか・けいさん",
+      "translation": "使用Excel的函数进行了计算。"
+    }
+  },
+  {
+    "word": "グラフ",
+    "reading": null,
+    "meaning": "图表",
+    "level": "N2",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "結果をグラフにまとめた。",
+      "reading": "けっか",
+      "translation": "把结果整理成了图表。"
+    }
+  },
+  {
+    "word": "傾斜",
+    "reading": "けいしゃ",
+    "meaning": "倾斜，斜率",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "グラフの傾斜から増加率がわかる。",
+      "reading": "けいしゃ・ぞうかりつ",
+      "translation": "从图表的斜率可以看出增长率。"
+    }
+  },
+  {
+    "word": "増減",
+    "reading": "ぞうげん",
+    "meaning": "增减",
+    "level": "N2",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "来客数の増減を記録している。",
+      "reading": "らいきゃくすう・ぞうげん・きろく",
+      "translation": "正在记录来客数量的增减。"
+    }
+  },
+  {
+    "word": "比例",
+    "reading": "ひれい",
+    "meaning": "比例",
+    "level": "N2",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "努力と結果は必ずしも比例しない。",
+      "reading": "どりょく・けっか・かなら・ひれい",
+      "translation": "努力和结果未必成正比。"
+    }
+  },
+  {
+    "word": "確率",
+    "reading": "かくりつ",
+    "meaning": "概率",
+    "level": "N2",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "雨が降る確率は低い。",
+      "reading": "あめ・ふ・かくりつ・ひく",
+      "translation": "下雨的概率很低。"
+    }
+  },
+  {
+    "word": "誤差",
+    "reading": "ごさ",
+    "meaning": "误差",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "測定には多少の誤差がある。",
+      "reading": "そくてい・たしょう・ごさ",
+      "translation": "测量存在些许误差。"
+    }
+  },
+  {
+    "word": "有効数字",
+    "reading": "ゆうこうすうじ",
+    "meaning": "有效数字",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "有効数字を意識して計算した。",
+      "reading": "ゆうこうすうじ・いしき・けいさん",
+      "translation": "留意有效数字进行了计算。"
+    }
+  },
+  {
+    "word": "桁",
+    "reading": "けた",
+    "meaning": "位数",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "計算で桁を間違えてしまった。",
+      "reading": "けいさん・けた・まちが",
+      "translation": "计算时把位数弄错了。"
+    }
+  },
+  {
+    "word": "端数",
+    "reading": "はすう",
+    "meaning": "尾数，零头",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "端数は切り捨てて計算する。",
+      "reading": "はすう・き す・けいさん",
+      "translation": "将尾数舍去后进行计算。"
+    }
+  },
+  {
+    "word": "概算",
+    "reading": "がいさん",
+    "meaning": "概算",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "予算の概算を出してもらった。",
+      "reading": "よさん・がいさん・だ",
+      "translation": "请对方给出了预算的概算。"
+    }
+  },
+  {
+    "word": "換算",
+    "reading": "かんさん",
+    "meaning": "换算",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "ドルを円に換算した。",
+      "reading": "ドル・えん・かんさん",
+      "translation": "把美元换算成了日元。"
+    }
+  },
+  {
+    "word": "集計",
+    "reading": "しゅうけい",
+    "meaning": "汇总",
+    "level": "N1",
+    "category": "数学・统计常用词",
+    "example": {
+      "sentence": "アンケート結果を集計している。",
+      "reading": "アンケート・けっか・しゅうけい",
+      "translation": "正在汇总问卷调查的结果。"
+    }
+  },
+  {
+    "word": "モチベーション",
+    "reading": null,
+    "meaning": "动力",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "最近、仕事へのモチベーションが下がっている。",
+      "reading": "さいきん・しごと・さ",
+      "translation": "最近对工作的积极性有所下降。"
+    }
+  },
+  {
+    "word": "アプローチ",
+    "reading": null,
+    "meaning": "方法，途径",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "新しいアプローチで問題を解決した。",
+      "reading": "あたら・もんだい・かいけつ",
+      "translation": "用新的方法解决了问题。"
+    }
+  },
+  {
+    "word": "コンセプト",
+    "reading": null,
+    "meaning": "概念",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "この店のコンセプトが気に入っている。",
+      "reading": "みせ・き い",
+      "translation": "很喜欢这家店的理念。"
+    }
+  },
+  {
+    "word": "フィードバック",
+    "reading": null,
+    "meaning": "反馈",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "上司からフィードバックをもらった。",
+      "reading": "じょうし",
+      "translation": "从上司那里得到了反馈。"
+    }
+  },
+  {
+    "word": "マニュアル",
+    "reading": null,
+    "meaning": "手册",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "業務マニュアルを作成した。",
+      "reading": "ぎょうむ・さくせい",
+      "translation": "制作了业务手册。"
+    }
+  },
+  {
+    "word": "プレゼン",
+    "reading": null,
+    "meaning": "演示，汇报",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "明日、プレゼンを行う予定だ。",
+      "reading": "あした・おこな・よてい",
+      "translation": "预计明天进行演示汇报。"
+    }
+  },
+  {
+    "word": "スケジュール",
+    "reading": null,
+    "meaning": "日程",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "スケジュールを調整した。",
+      "reading": "ちょうせい",
+      "translation": "调整了日程安排。"
+    }
+  },
+  {
+    "word": "デッドライン",
+    "reading": null,
+    "meaning": "截止日期",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "デッドラインが迫っている。",
+      "reading": "せま",
+      "translation": "截止日期临近了。"
+    }
+  },
+  {
+    "word": "アップデート",
+    "reading": null,
+    "meaning": "更新",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "ソフトをアップデートした。",
+      "reading": "ソフト",
+      "translation": "更新了软件。"
+    }
+  },
+  {
+    "word": "ノウハウ",
+    "reading": null,
+    "meaning": "诀窍，技术知识",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "長年のノウハウを活かしている。",
+      "reading": "ながねん・い かせ",
+      "translation": "活用着多年积累的诀窍。"
+    }
+  },
+  {
+    "word": "インフラ",
+    "reading": null,
+    "meaning": "基础设施",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "地域のインフラ整備が進んでいる。",
+      "reading": "ちいき・せいび・すす",
+      "translation": "当地的基础设施建设正在推进。"
+    }
+  },
+  {
+    "word": "リソース",
+    "reading": null,
+    "meaning": "资源",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "限られたリソースを有効活用する。",
+      "reading": "かぎ・ゆうこうかつよう",
+      "translation": "有效利用有限的资源。"
+    }
+  },
+  {
+    "word": "スキル",
+    "reading": null,
+    "meaning": "技能",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "新しいスキルを身につけたい。",
+      "reading": "あたら・み",
+      "translation": "想掌握新的技能。"
+    }
+  },
+  {
+    "word": "キャリア",
+    "reading": null,
+    "meaning": "职业生涯",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "キャリアアップのために転職した。",
+      "reading": "てんしょく",
+      "translation": "为了职业发展跳槽了。"
+    }
+  },
+  {
+    "word": "モデル",
+    "reading": null,
+    "meaning": "模型，模特",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "このモデルは説明に役立つ。",
+      "reading": "せつめい・やくだ",
+      "translation": "这个模型对说明很有帮助。"
+    }
+  },
+  {
+    "word": "トラブル",
+    "reading": null,
+    "meaning": "麻烦，故障",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "システムにトラブルが発生した。",
+      "reading": "はっせい",
+      "translation": "系统发生了故障。"
+    }
+  },
+  {
+    "word": "ミス",
+    "reading": null,
+    "meaning": "失误",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "入力ミスがあった。",
+      "reading": "にゅうりょく",
+      "translation": "出现了输入错误。"
+    }
+  },
+  {
+    "word": "バランス",
+    "reading": null,
+    "meaning": "平衡",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "仕事と生活のバランスを大切にしている。",
+      "reading": "しごと・せいかつ・たいせつ",
+      "translation": "很重视工作与生活的平衡。"
+    }
+  },
+  {
+    "word": "パフォーマンス",
+    "reading": null,
+    "meaning": "表现，性能",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "このパソコンはパフォーマンスが高い。",
+      "reading": "たか",
+      "translation": "这台电脑性能很高。"
+    }
+  },
+  {
+    "word": "モニター",
+    "reading": null,
+    "meaning": "监视器，监测",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "大きなモニターで作業している。",
+      "reading": "おお・さぎょう",
+      "translation": "正在用大屏幕显示器进行作业。"
+    }
+  },
+  {
+    "word": "レポート",
+    "reading": null,
+    "meaning": "报告",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "レポートを提出した。",
+      "reading": "ていしゅつ",
+      "translation": "提交了报告。"
+    }
+  },
+  {
+    "word": "シミュレーション",
+    "reading": null,
+    "meaning": "模拟",
+    "level": "N1",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "事前にシミュレーションを行った。",
+      "reading": "じぜん・おこな",
+      "translation": "事先进行了模拟演练。"
+    }
+  },
+  {
+    "word": "ネットワーク",
+    "reading": null,
+    "meaning": "网络",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "社内ネットワークに接続した。",
+      "reading": "しゃない・せつぞく",
+      "translation": "连接到了公司内部网络。"
+    }
+  },
+  {
+    "word": "コミュニティ",
+    "reading": null,
+    "meaning": "社群",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "オンラインコミュニティに参加している。",
+      "reading": "さんか",
+      "translation": "正在参加线上社群。"
+    }
+  },
+  {
+    "word": "サポート",
+    "reading": null,
+    "meaning": "支持，支援",
+    "level": "N2",
+    "category": "外来语常见词",
+    "example": {
+      "sentence": "家族のサポートに感謝している。",
+      "reading": "かぞく・かんしゃ",
+      "translation": "对家人的支持心怀感激。"
+    }
+  },
+  {
+    "word": "拝啓",
+    "reading": "はいけい",
+    "meaning": "（书信开头）敬启者",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "拝啓、時下ますますご清栄のこととお慶び申し上げます。",
+      "reading": "はいけい・じか・せいえい・よろこ もう あ",
+      "translation": "敬启者，值此时节，恭祝贵体安康。"
+    }
+  },
+  {
+    "word": "敬具",
+    "reading": "けいぐ",
+    "meaning": "（书信结尾）谨启",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "今後ともよろしくお願いいたします。敬具",
+      "reading": "こんご・ねが・けいぐ",
+      "translation": "今后也请多多关照。谨启"
+    }
+  },
+  {
+    "word": "前略",
+    "reading": "ぜんりゃく",
+    "meaning": "（书信开头，省略寒暄）前略",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "前略、早速ですが本題に入ります。",
+      "reading": "ぜんりゃく・さっそく・ほんだい・はい",
+      "translation": "前略，容我直接切入正题。"
+    }
+  },
+  {
+    "word": "時下",
+    "reading": "じか",
+    "meaning": "时下（书信用语）",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "時下ますますご発展のことと存じます。",
+      "reading": "じか・はってん・ぞん",
+      "translation": "时下贵司愈发昌盛，深感欣慰。"
+    }
+  },
+  {
+    "word": "貴社",
+    "reading": "きしゃ",
+    "meaning": "贵公司",
+    "level": "N2",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "貴社のご発展をお祈り申し上げます。",
+      "reading": "きしゃ・はってん・いの もう あ",
+      "translation": "谨祝贵公司蓬勃发展。"
+    }
+  },
+  {
+    "word": "弊社",
+    "reading": "へいしゃ",
+    "meaning": "敝公司",
+    "level": "N2",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "弊社の製品をご検討ください。",
+      "reading": "へいしゃ・せいひん・けんとう",
+      "translation": "敬请考虑敝公司的产品。"
+    }
+  },
+  {
+    "word": "貴殿",
+    "reading": "きでん",
+    "meaning": "阁下",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "貴殿のご協力に感謝いたします。",
+      "reading": "きでん・きょうりょく・かんしゃ",
+      "translation": "感谢阁下的协助。"
+    }
+  },
+  {
+    "word": "各位",
+    "reading": "かくい",
+    "meaning": "各位",
+    "level": "N2",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "関係者各位にお知らせします。",
+      "reading": "かんけいしゃかくい・し",
+      "translation": "特此通知相关各位。"
+    }
+  },
+  {
+    "word": "拝復",
+    "reading": "はいふく",
+    "meaning": "（回信开头）敬复者",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "拝復、お手紙拝見いたしました。",
+      "reading": "はいふく・てがみ・はいけん",
+      "translation": "敬复者，来信已拜读。"
+    }
+  },
+  {
+    "word": "追伸",
+    "reading": "ついしん",
+    "meaning": "附言",
+    "level": "N2",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "追伸、写真を同封いたします。",
+      "reading": "ついしん・しゃしん・どうふう",
+      "translation": "附言：随信附上照片。"
+    }
+  },
+  {
+    "word": "別紙",
+    "reading": "べっし",
+    "meaning": "附件，另纸",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "詳細は別紙をご覧ください。",
+      "reading": "しょうさい・べっし・らん",
+      "translation": "详情请参阅附件。"
+    }
+  },
+  {
+    "word": "添付",
+    "reading": "てんぷ",
+    "meaning": "附上",
+    "level": "N2",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "資料を添付いたします。",
+      "reading": "しりょう・てんぷ",
+      "translation": "随信附上资料。"
+    }
+  },
+  {
+    "word": "標題",
+    "reading": "ひょうだい",
+    "meaning": "标题",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "標題の件につきましてご報告いたします。",
+      "reading": "ひょうだい・けん・ほうこく",
+      "translation": "就标题所示事项进行报告。"
+    }
+  },
+  {
+    "word": "件名",
+    "reading": "けんめい",
+    "meaning": "邮件主题",
+    "level": "N2",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "メールの件名をわかりやすくした。",
+      "reading": "メール・けんめい",
+      "translation": "把邮件的主题写得通俗易懂了。"
+    }
+  },
+  {
+    "word": "宛先",
+    "reading": "あてさき",
+    "meaning": "收件地址",
+    "level": "N2",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "宛先を確認してから送信した。",
+      "reading": "あてさき・かくにん・そうしん",
+      "translation": "确认收件地址后发送了邮件。"
+    }
+  },
+  {
+    "word": "差出人",
+    "reading": "さしだしにん",
+    "meaning": "寄件人",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "差出人不明の郵便物が届いた。",
+      "reading": "さしだしにんふめい・ゆうびんぶつ・とど",
+      "translation": "收到了寄件人不明的邮件。"
+    }
+  },
+  {
+    "word": "発信元",
+    "reading": "はっしんもと",
+    "meaning": "发信方",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "発信元を確認してください。",
+      "reading": "はっしんもと・かくにん",
+      "translation": "请确认发信方。"
+    }
+  },
+  {
+    "word": "通達",
+    "reading": "つうたつ",
+    "meaning": "通知，公文传达",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "本社から新しい通達が来た。",
+      "reading": "ほんしゃ・あたら・つうたつ・き",
+      "translation": "总公司发来了新的通知。"
+    }
+  },
+  {
+    "word": "通知",
+    "reading": "つうち",
+    "meaning": "通知",
+    "level": "N2",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "合格の通知を受け取った。",
+      "reading": "ごうかく・つうち・う と",
+      "translation": "收到了合格的通知。"
+    }
+  },
+  {
+    "word": "案内状",
+    "reading": "あんないじょう",
+    "meaning": "通知函",
+    "level": "N2",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "イベントの案内状を送った。",
+      "reading": "イベント・あんないじょう・おく",
+      "translation": "发送了活动的通知函。"
+    }
+  },
+  {
+    "word": "回答",
+    "reading": "かいとう",
+    "meaning": "回答",
+    "level": "N2",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "期限内に回答をお願いします。",
+      "reading": "きげんない・かいとう・ねが",
+      "translation": "请在期限内予以回复。"
+    }
+  },
+  {
+    "word": "返信",
+    "reading": "へんしん",
+    "meaning": "回信",
+    "level": "N2",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "メールにすぐ返信した。",
+      "reading": "メール・へんしん",
+      "translation": "立刻回复了邮件。"
+    }
+  },
+  {
+    "word": "御中",
+    "reading": "おんちゅう",
+    "meaning": "（寄给公司、团体时用）敬启",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "会社宛の封筒には「御中」と書く。",
+      "reading": "かいしゃあて・ふうとう・おんちゅう・か",
+      "translation": "寄给公司的信封上要写\"御中\"。"
+    }
+  },
+  {
+    "word": "様",
+    "reading": "さま",
+    "meaning": "（敬称）先生，女士",
+    "level": "N2",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "田中様宛にお送りしました。",
+      "reading": "たなかさまあて・おく",
+      "translation": "已经寄送给田中先生了。"
+    }
+  },
+  {
+    "word": "敬称",
+    "reading": "けいしょう",
+    "meaning": "敬称",
+    "level": "N1",
+    "category": "书信・邮件・公文用语",
+    "example": {
+      "sentence": "正しい敬称の使い方を学んだ。",
+      "reading": "ただ・けいしょう・つか かた・まな",
+      "translation": "学习了正确使用敬称的方法。"
+    }
+  },
+  {
+    "word": "文書",
+    "reading": "ぶんしょ",
+    "meaning": "文档",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "重要な文書を保管している。",
+      "reading": "じゅうよう・ぶんしょ・ほかん",
+      "translation": "保管着重要的文档。"
+    }
+  },
+  {
+    "word": "資料",
+    "reading": "しりょう",
+    "meaning": "资料",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "会議用の資料を準備した。",
+      "reading": "かいぎよう・しりょう・じゅんび",
+      "translation": "准备了会议用的资料。"
+    }
+  },
+  {
+    "word": "作成",
+    "reading": "さくせい",
+    "meaning": "制作",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "報告書を作成している。",
+      "reading": "ほうこくしょ・さくせい",
+      "translation": "正在制作报告书。"
+    }
+  },
+  {
+    "word": "保存",
+    "reading": "ほぞん",
+    "meaning": "保存",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "ファイルを保存し忘れた。",
+      "reading": "ファイル・ほぞん・わす",
+      "translation": "忘记保存文件了。"
+    }
+  },
+  {
+    "word": "印刷",
+    "reading": "いんさつ",
+    "meaning": "打印",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "資料を十部印刷した。",
+      "reading": "しりょう・じゅうぶ・いんさつ",
+      "translation": "打印了十份资料。"
+    }
+  },
+  {
+    "word": "添付ファイル",
+    "reading": "てんぷファイル",
+    "meaning": "附件",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "添付ファイルを開けなかった。",
+      "reading": "てんぷ・ひら",
+      "translation": "无法打开附件。"
+    }
+  },
+  {
+    "word": "フォルダ",
+    "reading": null,
+    "meaning": "文件夹",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "新しいフォルダを作成した。",
+      "reading": "あたら・さくせい",
+      "translation": "创建了新的文件夹。"
+    }
+  },
+  {
+    "word": "圧縮",
+    "reading": "あっしゅく",
+    "meaning": "压缩",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "ファイルを圧縮して送った。",
+      "reading": "ファイル・あっしゅく・おく",
+      "translation": "将文件压缩后发送了。"
+    }
+  },
+  {
+    "word": "解凍",
+    "reading": "かいとう",
+    "meaning": "解压",
+    "level": "N1",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "受け取ったファイルを解凍した。",
+      "reading": "う と・ファイル・かいとう",
+      "translation": "将收到的文件解压了。"
+    }
+  },
+  {
+    "word": "共有",
+    "reading": "きょうゆう",
+    "meaning": "共享",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "ドキュメントをチームで共有している。",
+      "reading": "きょうゆう",
+      "translation": "与团队共享着文档。"
+    }
+  },
+  {
+    "word": "権限",
+    "reading": "けんげん",
+    "meaning": "权限",
+    "level": "N1",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "編集権限がないので閲覧しかできない。",
+      "reading": "へんしゅうけんげん・えつらん",
+      "translation": "因为没有编辑权限，只能查看。"
+    }
+  },
+  {
+    "word": "バックアップ",
+    "reading": null,
+    "meaning": "备份",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "データのバックアップを取っておいた。",
+      "reading": "と",
+      "translation": "提前对数据做了备份。"
+    }
+  },
+  {
+    "word": "上書き",
+    "reading": "うわがき",
+    "meaning": "覆盖（保存）",
+    "level": "N1",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "誤って上書き保存してしまった。",
+      "reading": "あやま・うわが・ほぞん",
+      "translation": "不小心进行了覆盖保存。"
+    }
+  },
+  {
+    "word": "複製",
+    "reading": "ふくせい",
+    "meaning": "复制",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "資料を複製して配布した。",
+      "reading": "しりょう・ふくせい・はいふ",
+      "translation": "复制资料后进行了分发。"
+    }
+  },
+  {
+    "word": "貼り付け",
+    "reading": "はりつけ",
+    "meaning": "粘贴",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "コピーして貼り付けした。",
+      "reading": "コピー・は つ",
+      "translation": "进行了复制粘贴。"
+    }
+  },
+  {
+    "word": "削除",
+    "reading": "さくじょ",
+    "meaning": "删除",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "不要なデータを削除した。",
+      "reading": "ふよう・さくじょ",
+      "translation": "删除了不需要的数据。"
+    }
+  },
+  {
+    "word": "挿入",
+    "reading": "そうにゅう",
+    "meaning": "插入",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "表に画像を挿入した。",
+      "reading": "ひょう・がぞう・そうにゅう",
+      "translation": "在表格中插入了图片。"
+    }
+  },
+  {
+    "word": "書式",
+    "reading": "しょしき",
+    "meaning": "格式",
+    "level": "N1",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "指定の書式に従って作成した。",
+      "reading": "してい・しょしき・したが・さくせい",
+      "translation": "按照指定的格式进行了制作。"
+    }
+  },
+  {
+    "word": "レイアウト",
+    "reading": null,
+    "meaning": "布局",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "ページのレイアウトを調整した。",
+      "reading": "ページ・ちょうせい",
+      "translation": "调整了页面的布局。"
+    }
+  },
+  {
+    "word": "表計算",
+    "reading": "ひょうけいさん",
+    "meaning": "电子表格计算",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "表計算ソフトでデータを整理した。",
+      "reading": "ひょうけいさん・ソフト・データ・せいり",
+      "translation": "用电子表格软件整理了数据。"
+    }
+  },
+  {
+    "word": "入力",
+    "reading": "にゅうりょく",
+    "meaning": "输入",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "データを正確に入力した。",
+      "reading": "データ・せいかく・にゅうりょく",
+      "translation": "准确地输入了数据。"
+    }
+  },
+  {
+    "word": "出力",
+    "reading": "しゅつりょく",
+    "meaning": "输出",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "結果をPDFで出力した。",
+      "reading": "けっか・しゅつりょく",
+      "translation": "将结果以PDF形式输出了。"
+    }
+  },
+  {
+    "word": "変換",
+    "reading": "へんかん",
+    "meaning": "转换",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "ファイル形式を変換した。",
+      "reading": "ファイルけいしき・へんかん",
+      "translation": "转换了文件格式。"
+    }
+  },
+  {
+    "word": "同期",
+    "reading": "どうき",
+    "meaning": "同步",
+    "level": "N1",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "クラウドとデータを同期させている。",
+      "reading": "どうき",
+      "translation": "正在将数据与云端进行同步。"
+    }
+  },
+  {
+    "word": "クラウド",
+    "reading": null,
+    "meaning": "云端",
+    "level": "N2",
+    "category": "办公软件与文档处理",
+    "example": {
+      "sentence": "クラウドにデータを保存している。",
+      "reading": "データ・ほぞん",
+      "translation": "正在将数据保存到云端。"
+    }
+  }
+]
