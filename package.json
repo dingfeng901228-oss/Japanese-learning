@@ -9,7 +9,9 @@
     "start": "next start",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "lint:motto": "node scripts/check-missing-punctuation.mjs"
+    "lint:motto": "node scripts/check-missing-punctuation.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
@@ -23,6 +25,7 @@
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.1115.0",
     "@next/eslint-plugin-next": "^15.5.23",
+    "@playwright/test": "^1.62.1",
     "@types/node": "22.10.5",
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3",
