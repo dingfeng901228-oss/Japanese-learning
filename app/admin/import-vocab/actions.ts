@@ -250,27 +250,47 @@ async function processImport(
     return { ...result, failed: items.length - valid.length };
   }
 
-  // ---------- 2. Skip existing words (user-scoped dedup) ----------
-  const { data: existingWords, error: existErr } = await supabase
-    .from("vocabulary_items")
-    .select("word")
-    .eq("user_id", user.id);
-  if (existErr) {
-    return {
-      ...result,
-      failed: valid.length,
-      errors: [{ word: "<query>", reason: existErr.message }],
-    };
+  // ---------- 2. Skip existing (word, reading) — user-scoped dedup ----------
+  // Per Frank #7669 (2026-09-02 18:32): the previous SELECT returned
+  // at most 1000 rows (Supabase default page size) — users with > 1000
+  // words (Frank with batches 1-9 = 1800 words) hit "duplicate key
+  // value violates unique constraint vocabulary_items_user_word_reading_unique"
+  // because the dedup Set missed existing (word, reading) pairs.
+  // Also: dedup key was just `word`, but the constraint is composite
+  // (user_id, word, reading) — same word with different reading was
+  // being over-skipped. Two partial unique indexes in 0005_chrome_extension.sql:
+  //   (user_id, word, reading) WHERE reading IS NOT NULL
+  //   (user_id, word)          WHERE reading IS NULL
+  let allExisting: Array<{ word: string; reading: string | null }> = [];
+  const PAGE_SIZE = 1000;
+  for (let page = 0; ; page++) {
+    const { data: pageData, error: pageErr } = await supabase
+      .from("vocabulary_items")
+      .select("word, reading")
+      .eq("user_id", user.id)
+      .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+    if (pageErr) {
+      return {
+        ...result,
+        failed: valid.length,
+        errors: [{ word: "<query>", reason: pageErr.message }],
+      };
+    }
+    if (!pageData || pageData.length === 0) break;
+    allExisting = allExisting.concat(pageData);
+    if (pageData.length < PAGE_SIZE) break;
   }
-  const seen = new Set<string>((existingWords ?? []).map((w) => w.word));
+  const seen = new Set<string>(
+    allExisting.map((w) => `${w.word}::${w.reading ?? ""}`)
+  );
   const toImport: ImportItem[] = [];
   for (const it of valid) {
-    if (seen.has(it.word)) {
+    const key = `${it.word}::${it.reading ?? ""}`;
+    if (seen.has(key)) {
       result.skipped++;
       continue;
     }
-    // Within-batch dedup too — same word twice in one batch counts as 1.
-    seen.add(it.word);
+    seen.add(key);
     toImport.push(it);
   }
   if (toImport.length === 0) return result;
@@ -290,7 +310,7 @@ async function processImport(
   const { data: insertedItems, error: itemErr } = await supabase
     .from("vocabulary_items")
     .insert(itemRows)
-    .select("id, word");
+    .select("id, word, reading");
 
   if (itemErr || !insertedItems) {
     return {
@@ -306,16 +326,18 @@ async function processImport(
   }
   result.inserted = insertedItems.length;
 
-  // Map: word → { id } for the follow-up inserts.
-  const idByWord = new Map<string, string>();
+  // Map: (word, reading) → id for the follow-up inserts. Composite key
+  // matters when the batch contains two entries with the same word but
+  // different readings — each must attach to its own vocabulary_id.
+  const idByKey = new Map<string, string>();
   for (const row of insertedItems) {
-    idByWord.set(row.word, row.id);
+    idByKey.set(`${row.word}::${row.reading ?? ""}`, row.id);
   }
 
   // ---------- 4. Bulk INSERT vocabulary_examples (1 per vocab) ----------
   const exampleRows = toImport
     .map((it) => {
-      const id = idByWord.get(it.word);
+      const id = idByKey.get(`${it.word}::${it.reading ?? ""}`);
       if (!id) return null;
       return {
         vocabulary_id: id,
@@ -341,10 +363,12 @@ async function processImport(
 
   // ---------- 5. Bulk INSERT vocabulary_tags (category per vocab) ----------
   const tagRows = toImport
-    .filter((it) => it.category && idByWord.has(it.word))
+    .filter(
+      (it) => it.category && idByKey.has(`${it.word}::${it.reading ?? ""}`)
+    )
     .map((it) => ({
       user_id: user.id,
-      vocabulary_id: idByWord.get(it.word)!,
+      vocabulary_id: idByKey.get(`${it.word}::${it.reading ?? ""}`)!,
       tag: it.category,
     }));
 
