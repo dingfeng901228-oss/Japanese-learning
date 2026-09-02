@@ -242,19 +242,27 @@ export default async function ImportVocabPage({
           服务端实时解析并导入，省去 JSON 中间文件。
         </p>
         <form action={importPastedMdAction} encType="multipart/form-data">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="mdFile"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             上传 .md 文件
           </label>
           <input
+            id="mdFile"
             type="file"
             name="mdFile"
             accept=".md,text/markdown,text/plain"
             className="block w-full text-sm text-gray-700 mb-4 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gray-900 file:text-white file:cursor-pointer hover:file:bg-gray-800"
           />
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="md"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             或直接粘贴 MD 内容
           </label>
           <textarea
+            id="md"
             name="md"
             rows={6}
             spellCheck={false}
