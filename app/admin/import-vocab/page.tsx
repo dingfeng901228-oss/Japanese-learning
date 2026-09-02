@@ -19,6 +19,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   importPreloadedBatchAction,
   importPastedAction,
+  importPastedMdAction,
 } from "./actions";
 import { PRELOADED_BATCHES } from "./batches";
 
@@ -226,6 +227,72 @@ export default async function ImportVocabPage({
         （PROTECTED_PREFIXES 已加 /admin）。所有写操作走 Supabase RLS，
         user_id 自动绑定当前 session。
       </p>
+
+      {/* ── Section 3: paste / upload MD (per Frank #7631) ─────────── */}
+      <section className="bg-white border border-gray-200 rounded-2xl p-8 mt-6">
+        <h2 className="text-lg font-semibold mb-2">
+          粘贴 MD / 上传 .md 文件
+          <span className="ml-2 text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full align-middle">
+            新增
+          </span>
+        </h2>
+        <p className="text-sm text-gray-600 mb-4">
+          把 <code className="bg-gray-100 px-1 rounded text-xs">JLPT_N2-N1_词汇样本_第X批200词.md</code>{" "}
+          文件内容贴到下面，或直接选择文件上传。
+          服务端实时解析并导入，省去 JSON 中间文件。
+        </p>
+        <form action={importPastedMdAction} encType="multipart/form-data">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            上传 .md 文件
+          </label>
+          <input
+            type="file"
+            name="mdFile"
+            accept=".md,text/markdown,text/plain"
+            className="block w-full text-sm text-gray-700 mb-4 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gray-900 file:text-white file:cursor-pointer hover:file:bg-gray-800"
+          />
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            或直接粘贴 MD 内容
+          </label>
+          <textarea
+            name="md"
+            rows={6}
+            spellCheck={false}
+            placeholder={`# JLPT N2-N1 主题词汇 第X批（第N-M词）\n\n## 一、章节标题（25词）\n\n1. **単語（たんご）** — 单词〔N2〕\n    例：新しい単語を覚えた。\n    （あたら・たんご・さぼ）\n    译：记住了新单词。`}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-xs mb-3 focus:outline-none focus:border-gray-900"
+          />
+          <button
+            type="submit"
+            className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+          >
+            解析 MD 并导入
+          </button>
+        </form>
+        <details className="mt-4 text-xs text-gray-500">
+          <summary className="cursor-pointer hover:text-gray-900">
+            MD 格式约定
+          </summary>
+          <ul className="mt-2 space-y-1 list-disc pl-5">
+            <li>
+              章节标题 <code>## 名称（NN词）</code>。可省略"（NN词）"后缀。
+            </li>
+            <li>
+              词条 <code>**漢字（よみ）** — 释义〔N1|N2〕</code>。纯片假名词可省略括号读音。
+            </li>
+            <li>
+              例句 / 汉字读音 / 中文翻译各占一行（缩进 4 空格），前缀{" "}
+              <code>例：</code> / <code>（读音・读音）</code> / <code>译：</code>。
+            </li>
+            <li>
+              空 hint 允许（如 <code>（）</code>），写入{" "}
+              <code>example.reading = null</code>。
+            </li>
+            <li>
+              解析后服务端跑 validateBatch：有 error 立即中止并跳回错误提示。
+            </li>
+          </ul>
+        </details>
+      </section>
     </main>
   );
 }

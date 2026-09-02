@@ -35,6 +35,10 @@ import {
   PRELOADED_BATCH_SET,
   type PreloadedBatchFilename,
 } from "./batches";
+import {
+  parseMd,
+  validateBatch,
+} from "@/lib/parse-jlpt-vocab-md.mjs";
 
 // ---------- Types ----------
 type ImportItem = {
@@ -116,6 +120,63 @@ export async function importPastedAction(formData: FormData) {
   }
 
   const result = await processImport(items, "<pasted>");
+  revalidatePath("/vocabulary");
+  revalidatePath("/review");
+  redirect(buildResultUrl(result));
+}
+
+// Per Frank #7631 (2026-09-02): accept MD content directly via file
+// upload OR textarea paste → parse server-side with the same parser
+// the CLI script uses → call processImport. No intermediate JSON
+// file needed. Pre-existing words (per current user) are deduped.
+export async function importPastedMdAction(formData: FormData) {
+  // Prefer file upload; fall back to textarea paste.
+  const fileField = formData.get("mdFile");
+  const pastedText = String(formData.get("md") ?? "").trim();
+
+  let md = "";
+  if (fileField instanceof File && fileField.size > 0) {
+    md = await fileField.text();
+  } else if (pastedText) {
+    md = pastedText;
+  } else {
+    redirect(
+      `/admin/import-vocab?error=${encodeURIComponent(
+        "MD 内容为空 — 请上传 .md 文件或在文本框粘贴"
+      )}`
+    );
+  }
+
+  let items: ImportItem[];
+  try {
+    // validateBatch below will reject items without example.sentence,
+    // so the null in the parser's intermediate state is safe to cast through.
+    items = parseMd(md) as unknown as ImportItem[];
+  } catch (err) {
+    redirect(
+      `/admin/import-vocab?error=${encodeURIComponent(
+        `MD 解析失败: ${String(err).slice(0, 200)}`
+      )}`
+    );
+  }
+
+  const report = validateBatch(items);
+  if (report.errors.length > 0) {
+    const first = report.errors[0] as {
+      at: string;
+      msg: string;
+      word?: string;
+    };
+    redirect(
+      `/admin/import-vocab?error=${encodeURIComponent(
+        `MD 校验失败 (${report.errors.length} 条): ${first.at} ${first.msg}${
+          first.word ? ` ( ${first.word} )` : ""
+        }`
+      )}`
+    );
+  }
+
+  const result = await processImport(items, "<md-paste>");
   revalidatePath("/vocabulary");
   revalidatePath("/review");
   redirect(buildResultUrl(result));

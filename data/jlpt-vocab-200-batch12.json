@@ -1,0 +1,2402 @@
+[
+  {
+    "word": "交響曲",
+    "reading": "こうきょうきょく",
+    "meaning": "交响曲",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "ベートーヴェンの交響曲を聴いた。",
+      "reading": "こうきょうきょく・き",
+      "translation": "听了贝多芬的交响曲。"
+    }
+  },
+  {
+    "word": "指揮者",
+    "reading": "しきしゃ",
+    "meaning": "指挥",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "有名な指揮者が来日した。",
+      "reading": "ゆうめい・しきしゃ・らいにち",
+      "translation": "知名指挥家来日本了。"
+    }
+  },
+  {
+    "word": "楽団",
+    "reading": "がくだん",
+    "meaning": "乐团",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "地元の楽団に所属している。",
+      "reading": "じもと・がくだん・しょぞく",
+      "translation": "隶属于当地的乐团。"
+    }
+  },
+  {
+    "word": "奏者",
+    "reading": "そうしゃ",
+    "meaning": "演奏者",
+    "level": "N1",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "ヴァイオリン奏者として活動している。",
+      "reading": "ヴァイオリンそうしゃ・かつどう",
+      "translation": "作为小提琴演奏者进行活动。"
+    }
+  },
+  {
+    "word": "楽譜",
+    "reading": "がくふ",
+    "meaning": "乐谱",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "楽譜を見ながら練習した。",
+      "reading": "がくふ・み・れんしゅう",
+      "translation": "看着乐谱进行了练习。"
+    }
+  },
+  {
+    "word": "音色",
+    "reading": "ねいろ",
+    "meaning": "音色",
+    "level": "N1",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "この楽器は美しい音色を持つ。",
+      "reading": "がっき・うつく・ねいろ・も",
+      "translation": "这件乐器拥有美丽的音色。"
+    }
+  },
+  {
+    "word": "旋律",
+    "reading": "せんりつ",
+    "meaning": "旋律",
+    "level": "N1",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "この曲の旋律が耳に残る。",
+      "reading": "きょく・せんりつ・みみ・のこ",
+      "translation": "这首曲子的旋律萦绕在耳边。"
+    }
+  },
+  {
+    "word": "和音",
+    "reading": "わおん",
+    "meaning": "和弦",
+    "level": "N1",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "和音の響きが美しい。",
+      "reading": "わおん・ひび・うつく",
+      "translation": "和弦的音响很美。"
+    }
+  },
+  {
+    "word": "リズム",
+    "reading": null,
+    "meaning": "节奏",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "リズムに合わせて体を動かした。",
+      "reading": "あ・からだ・うご",
+      "translation": "随着节奏摆动身体。"
+    }
+  },
+  {
+    "word": "テンポ",
+    "reading": null,
+    "meaning": "速度（音乐）",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "テンポが速い曲だ。",
+      "reading": "はや・きょく",
+      "translation": "这是一首节奏很快的曲子。"
+    }
+  },
+  {
+    "word": "弦楽器",
+    "reading": "げんがっき",
+    "meaning": "弦乐器",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "弦楽器の音色が好きだ。",
+      "reading": "げんがっき・ねいろ・す",
+      "translation": "喜欢弦乐器的音色。"
+    }
+  },
+  {
+    "word": "管楽器",
+    "reading": "かんがっき",
+    "meaning": "管乐器",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "管楽器を演奏している。",
+      "reading": "かんがっき・えんそう",
+      "translation": "正在演奏管乐器。"
+    }
+  },
+  {
+    "word": "打楽器",
+    "reading": "だがっき",
+    "meaning": "打击乐器",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "打楽器のリズムが心地よい。",
+      "reading": "だがっき・リズム・ここちよ",
+      "translation": "打击乐器的节奏很舒适。"
+    }
+  },
+  {
+    "word": "独奏",
+    "reading": "どくそう",
+    "meaning": "独奏",
+    "level": "N1",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "ピアノの独奏を披露した。",
+      "reading": "ピアノ・どくそう・ひろう",
+      "translation": "展示了钢琴独奏。"
+    }
+  },
+  {
+    "word": "合奏",
+    "reading": "がっそう",
+    "meaning": "合奏",
+    "level": "N1",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "全員で合奏を楽しんだ。",
+      "reading": "ぜんいん・がっそう・たの",
+      "translation": "全体成员一起享受了合奏的乐趣。"
+    }
+  },
+  {
+    "word": "協奏曲",
+    "reading": "きょうそうきょく",
+    "meaning": "协奏曲",
+    "level": "N1",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "ピアノ協奏曲が演奏された。",
+      "reading": "ピアノきょうそうきょく・えんそう",
+      "translation": "演奏了钢琴协奏曲。"
+    }
+  },
+  {
+    "word": "作曲家",
+    "reading": "さっきょくか",
+    "meaning": "作曲家",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "有名な作曲家の作品を聴いた。",
+      "reading": "ゆうめい・さっきょくか・さくひん・き",
+      "translation": "听了知名作曲家的作品。"
+    }
+  },
+  {
+    "word": "演奏会",
+    "reading": "えんそうかい",
+    "meaning": "演奏会",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "来月、演奏会を開く。",
+      "reading": "らいげつ・えんそうかい・ひら",
+      "translation": "下个月将举办演奏会。"
+    }
+  },
+  {
+    "word": "リハーサル",
+    "reading": null,
+    "meaning": "排练",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "本番前にリハーサルを行った。",
+      "reading": "ほんばんまえ・おこな",
+      "translation": "正式演出前进行了排练。"
+    }
+  },
+  {
+    "word": "音響",
+    "reading": "おんきょう",
+    "meaning": "音响",
+    "level": "N1",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "このホールは音響が素晴らしい。",
+      "reading": "ホール・おんきょう・すば",
+      "translation": "这个音乐厅的音响效果很棒。"
+    }
+  },
+  {
+    "word": "音程",
+    "reading": "おんてい",
+    "meaning": "音程",
+    "level": "N1",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "音程が少しずれていた。",
+      "reading": "おんてい・すこ",
+      "translation": "音程稍微有些走调了。"
+    }
+  },
+  {
+    "word": "拍子",
+    "reading": "ひょうし",
+    "meaning": "拍子",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "三拍子のリズムで演奏した。",
+      "reading": "さんびょうし・リズム・えんそう",
+      "translation": "以三拍子的节奏进行了演奏。"
+    }
+  },
+  {
+    "word": "楽章",
+    "reading": "がくしょう",
+    "meaning": "乐章",
+    "level": "N1",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "第二楽章が特に美しい。",
+      "reading": "だいにがくしょう・とく・うつく",
+      "translation": "第二乐章尤其优美。"
+    }
+  },
+  {
+    "word": "アンコール",
+    "reading": null,
+    "meaning": "安可，加演",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "観客がアンコールを求めた。",
+      "reading": "かんきゃく・もと",
+      "translation": "观众要求了加演。"
+    }
+  },
+  {
+    "word": "鑑賞会",
+    "reading": "かんしょうかい",
+    "meaning": "鉴赏会",
+    "level": "N2",
+    "category": "交响乐团与古典音乐",
+    "example": {
+      "sentence": "クラシック音楽の鑑賞会に参加した。",
+      "reading": "クラシックおんがく・かんしょうかい・さんか",
+      "translation": "参加了古典音乐鉴赏会。"
+    }
+  },
+  {
+    "word": "将棋",
+    "reading": "しょうぎ",
+    "meaning": "将棋",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "祖父と将棋を指すのが好きだ。",
+      "reading": "そふ・しょうぎ・さ・す",
+      "translation": "喜欢和祖父下将棋。"
+    }
+  },
+  {
+    "word": "囲碁",
+    "reading": "いご",
+    "meaning": "围棋",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "囲碁を習い始めた。",
+      "reading": "いご・なら はじ",
+      "translation": "开始学习围棋了。"
+    }
+  },
+  {
+    "word": "対局",
+    "reading": "たいきょく",
+    "meaning": "对局",
+    "level": "N1",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "プロ棋士の対局を観戦した。",
+      "reading": "プロきし・たいきょく・かんせん",
+      "translation": "观看了职业棋手的对局。"
+    }
+  },
+  {
+    "word": "棋士",
+    "reading": "きし",
+    "meaning": "棋手",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "若手棋士が活躍している。",
+      "reading": "わかて・きし・かつやく",
+      "translation": "年轻棋手正大展身手。"
+    }
+  },
+  {
+    "word": "手筋",
+    "reading": "てすじ",
+    "meaning": "棋路，招法",
+    "level": "N1",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "巧妙な手筋で勝利した。",
+      "reading": "こうみょう・てすじ・しょうり",
+      "translation": "凭借巧妙的招法取得了胜利。"
+    }
+  },
+  {
+    "word": "定石",
+    "reading": "じょうせき",
+    "meaning": "定式",
+    "level": "N1",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "この局面は定石通りに進んだ。",
+      "reading": "きょくめん・じょうせきどお・すす",
+      "translation": "这个局面按照定式发展了下去。"
+    }
+  },
+  {
+    "word": "詰め将棋",
+    "reading": "つめしょうぎ",
+    "meaning": "将棋残局问题",
+    "level": "N1",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "毎日、詰め将棋を解いている。",
+      "reading": "まいにち・つめしょうぎ・と",
+      "translation": "每天都在解将棋残局问题。"
+    }
+  },
+  {
+    "word": "布石",
+    "reading": "ふせき",
+    "meaning": "布局",
+    "level": "N1",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "序盤の布石が勝敗を分けた。",
+      "reading": "じょばん・ふせき・しょうはい・わ",
+      "translation": "开局的布局决定了胜负。"
+    }
+  },
+  {
+    "word": "トランプ",
+    "reading": null,
+    "meaning": "扑克牌",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "家族でトランプをして遊んだ。",
+      "reading": "かぞく・あそ",
+      "translation": "全家一起玩了扑克牌。"
+    }
+  },
+  {
+    "word": "カードゲーム",
+    "reading": null,
+    "meaning": "卡牌游戏",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "友人とカードゲームを楽しんだ。",
+      "reading": "ゆうじん・たの",
+      "translation": "和朋友一起享受了卡牌游戏的乐趣。"
+    }
+  },
+  {
+    "word": "パズル",
+    "reading": null,
+    "meaning": "拼图，益智游戏",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "千ピースのパズルを完成させた。",
+      "reading": "せん・かんせい",
+      "translation": "完成了一千片的拼图。"
+    }
+  },
+  {
+    "word": "クロスワード",
+    "reading": null,
+    "meaning": "填字游戏",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "新聞のクロスワードを解いている。",
+      "reading": "しんぶん・と",
+      "translation": "正在解报纸上的填字游戏。"
+    }
+  },
+  {
+    "word": "迷路",
+    "reading": "めいろ",
+    "meaning": "迷宫",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "子供が迷路のパズルを楽しんでいる。",
+      "reading": "こども・めいろ・たの",
+      "translation": "孩子正享受着迷宫拼图的乐趣。"
+    }
+  },
+  {
+    "word": "麻雀",
+    "reading": "マージャン",
+    "meaning": "麻将",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "友人たちと麻雀をした。",
+      "reading": "ゆうじん",
+      "translation": "和朋友们打了麻将。"
+    }
+  },
+  {
+    "word": "役",
+    "reading": "やく",
+    "meaning": "（麻将）牌型",
+    "level": "N1",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "珍しい役で上がった。",
+      "reading": "めずら・やく・あ",
+      "translation": "以稀有的牌型胡牌了。"
+    }
+  },
+  {
+    "word": "賽",
+    "reading": "さい",
+    "meaning": "骰子",
+    "level": "N1",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "賽の目によって勝敗が決まる。",
+      "reading": "さい・め・しょうはい・き",
+      "translation": "胜负由骰子的点数决定。"
+    }
+  },
+  {
+    "word": "サイコロ",
+    "reading": null,
+    "meaning": "骰子",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "サイコロを振ってコマを進めた。",
+      "reading": "ふ・コマ・すす",
+      "translation": "掷骰子推进了棋子。"
+    }
+  },
+  {
+    "word": "勝負",
+    "reading": "しょうぶ",
+    "meaning": "胜负",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "最後まで勝負がわからない試合だった。",
+      "reading": "さいご・しょうぶ・しあい",
+      "translation": "这是一场直到最后都不知胜负的比赛。"
+    }
+  },
+  {
+    "word": "千日手",
+    "reading": "せんにちて",
+    "meaning": "（将棋）重复局面无胜负",
+    "level": "N1",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "この対局は千日手で引き分けとなった。",
+      "reading": "たいきょく・せんにちて・ひきわ",
+      "translation": "这场对局因重复局面判定为平局。"
+    }
+  },
+  {
+    "word": "反則負け",
+    "reading": "はんそくまけ",
+    "meaning": "犯规负",
+    "level": "N1",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "ルール違反で反則負けとなった。",
+      "reading": "いはん・はんそくまけ",
+      "translation": "因违反规则被判定为犯规负。"
+    }
+  },
+  {
+    "word": "段位",
+    "reading": "だんい",
+    "meaning": "段位",
+    "level": "N1",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "三段の段位を持っている。",
+      "reading": "さんだん・だんい・も",
+      "translation": "拥有三段的段位。"
+    }
+  },
+  {
+    "word": "級位",
+    "reading": "きゅうい",
+    "meaning": "级位",
+    "level": "N1",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "初心者は級位から始まる。",
+      "reading": "しょしんしゃ・きゅうい・はじ",
+      "translation": "初学者从级位开始。"
+    }
+  },
+  {
+    "word": "対戦相手",
+    "reading": "たいせんあいて",
+    "meaning": "对手",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "強い対戦相手と当たった。",
+      "reading": "つよ・たいせんあいて・あ",
+      "translation": "遇到了强劲的对手。"
+    }
+  },
+  {
+    "word": "頭脳戦",
+    "reading": "ずのうせん",
+    "meaning": "脑力战",
+    "level": "N1",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "将棋はまさに頭脳戦だ。",
+      "reading": "しょうぎ・ずのうせん",
+      "translation": "将棋正是一场脑力战。"
+    }
+  },
+  {
+    "word": "論理的思考",
+    "reading": "ろんりてきしこう",
+    "meaning": "逻辑思维",
+    "level": "N2",
+    "category": "棋牌益智游戏",
+    "example": {
+      "sentence": "チェスで論理的思考が鍛えられる。",
+      "reading": "チェス・ろんりてきしこう・きた",
+      "translation": "国际象棋能锻炼逻辑思维。"
+    }
+  },
+  {
+    "word": "伝統工芸",
+    "reading": "でんとうこうげい",
+    "meaning": "传统工艺",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "伝統工芸の展示会を見に行った。",
+      "reading": "でんとうこうげい・てんじかい・み・い",
+      "translation": "去看了传统工艺展。"
+    }
+  },
+  {
+    "word": "職人",
+    "reading": "しょくにん",
+    "meaning": "工匠",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "熟練の職人が作った作品だ。",
+      "reading": "じゅくれん・しょくにん・つく・さくひん",
+      "translation": "这是熟练工匠制作的作品。"
+    }
+  },
+  {
+    "word": "陶芸",
+    "reading": "とうげい",
+    "meaning": "陶艺",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "陶芸教室に通っている。",
+      "reading": "とうげいきょうしつ・かよ",
+      "translation": "正在上陶艺课。"
+    }
+  },
+  {
+    "word": "漆器",
+    "reading": "しっき",
+    "meaning": "漆器",
+    "level": "N1",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "伝統的な漆器を購入した。",
+      "reading": "でんとうてき・しっき・こうにゅう",
+      "translation": "购买了传统漆器。"
+    }
+  },
+  {
+    "word": "焼き物",
+    "reading": "やきもの",
+    "meaning": "陶瓷器",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "この地域は焼き物で有名だ。",
+      "reading": "ちいき・やきもの・ゆうめい",
+      "translation": "这个地区以陶瓷器闻名。"
+    }
+  },
+  {
+    "word": "染物",
+    "reading": "そめもの",
+    "meaning": "染织品",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "伝統的な染物の技術を学んでいる。",
+      "reading": "でんとうてき・そめもの・ぎじゅつ・まな",
+      "translation": "正在学习传统染织的技艺。"
+    }
+  },
+  {
+    "word": "織物",
+    "reading": "おりもの",
+    "meaning": "纺织品",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "手織りの織物が美しい。",
+      "reading": "ており・おりもの・うつく",
+      "translation": "手工织造的纺织品十分美丽。"
+    }
+  },
+  {
+    "word": "竹細工",
+    "reading": "たけざいく",
+    "meaning": "竹编工艺",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "竹細工のかごを買った。",
+      "reading": "たけざいく・か",
+      "translation": "买了竹编的篮子。"
+    }
+  },
+  {
+    "word": "和紙",
+    "reading": "わし",
+    "meaning": "和纸",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "和紙で作った照明が素敵だ。",
+      "reading": "わし・つく・しょうめい・すてき",
+      "translation": "用和纸制作的照明灯具很漂亮。"
+    }
+  },
+  {
+    "word": "折り紙",
+    "reading": "おりがみ",
+    "meaning": "折纸",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "子供に折り紙を教えている。",
+      "reading": "こども・おりがみ・おし",
+      "translation": "正在教孩子折纸。"
+    }
+  },
+  {
+    "word": "書道",
+    "reading": "しょどう",
+    "meaning": "书法",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "週に一度、書道を習っている。",
+      "reading": "しゅう・いちど・しょどう・なら",
+      "translation": "每周学一次书法。"
+    }
+  },
+  {
+    "word": "茶道",
+    "reading": "さどう",
+    "meaning": "茶道",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "茶道の作法を学んでいる。",
+      "reading": "さどう・さほう・まな",
+      "translation": "正在学习茶道的礼仪规范。"
+    }
+  },
+  {
+    "word": "華道",
+    "reading": "かどう",
+    "meaning": "花道",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "華道を通じて心が落ち着く。",
+      "reading": "かどう・つう・こころ・お つ",
+      "translation": "通过花道让心情平静下来。"
+    }
+  },
+  {
+    "word": "着物",
+    "reading": "きもの",
+    "meaning": "和服",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "成人式に着物を着た。",
+      "reading": "せいじんしき・きもの・き",
+      "translation": "成人式时穿了和服。"
+    }
+  },
+  {
+    "word": "帯",
+    "reading": "おび",
+    "meaning": "腰带（和服用）",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "帯の結び方を教わった。",
+      "reading": "おび・むす かた・おそ",
+      "translation": "学习了腰带的系法。"
+    }
+  },
+  {
+    "word": "反物",
+    "reading": "たんもの",
+    "meaning": "布匹（整卷）",
+    "level": "N1",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "反物から着物を仕立てた。",
+      "reading": "たんもの・きもの・した",
+      "translation": "用整卷布匹缝制了和服。"
+    }
+  },
+  {
+    "word": "継承",
+    "reading": "けいしょう",
+    "meaning": "传承",
+    "level": "N1",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "伝統技術を次世代に継承する。",
+      "reading": "でんとうぎじゅつ・じせだい・けいしょう",
+      "translation": "将传统技艺传承给下一代。"
+    }
+  },
+  {
+    "word": "匠の技",
+    "reading": "たくみのわざ",
+    "meaning": "匠人技艺",
+    "level": "N1",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "匠の技が光る一品だ。",
+      "reading": "たくみのわざ・ひか・いっぴん",
+      "translation": "这是一件闪耀着匠人技艺的作品。"
+    }
+  },
+  {
+    "word": "手仕事",
+    "reading": "てしごと",
+    "meaning": "手工活",
+    "level": "N1",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "丁寧な手仕事が評価されている。",
+      "reading": "ていねい・てしごと・ひょうか",
+      "translation": "细致的手工活受到了好评。"
+    }
+  },
+  {
+    "word": "技法",
+    "reading": "ぎほう",
+    "meaning": "技法",
+    "level": "N1",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "独自の技法を確立した。",
+      "reading": "どくじ・ぎほう・かくりつ",
+      "translation": "确立了独特的技法。"
+    }
+  },
+  {
+    "word": "修行",
+    "reading": "しゅぎょう",
+    "meaning": "修行，磨练技艺",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "十年間の修行を経て一人前になった。",
+      "reading": "じゅうねんかん・しゅぎょう・へ・いちにんまえ",
+      "translation": "经过十年的磨练成为了独当一面的师傅。"
+    }
+  },
+  {
+    "word": "弟子入り",
+    "reading": "でしいり",
+    "meaning": "拜师学艺",
+    "level": "N1",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "有名な職人に弟子入りした。",
+      "reading": "ゆうめい・しょくにん・でしいり",
+      "translation": "拜入了知名工匠门下。"
+    }
+  },
+  {
+    "word": "老舗",
+    "reading": "しにせ",
+    "meaning": "老字号",
+    "level": "N1",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "創業百年の老舗だ。",
+      "reading": "そうぎょうひゃくねん・しにせ",
+      "translation": "这是一家创立百年的老字号。"
+    }
+  },
+  {
+    "word": "無形文化財",
+    "reading": "むけいぶんかざい",
+    "meaning": "非物质文化遗产",
+    "level": "N1",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "この技術は無形文化財に指定されている。",
+      "reading": "ぎじゅつ・むけいぶんかざい・してい",
+      "translation": "这项技艺被指定为非物质文化遗产。"
+    }
+  },
+  {
+    "word": "工房",
+    "reading": "こうぼう",
+    "meaning": "作坊",
+    "level": "N2",
+    "category": "日式传统工艺",
+    "example": {
+      "sentence": "職人の工房を見学した。",
+      "reading": "しょくにん・こうぼう・けんがく",
+      "translation": "参观了工匠的作坊。"
+    }
+  },
+  {
+    "word": "特別警報",
+    "reading": "とくべつけいほう",
+    "meaning": "特别警报",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "大雨特別警報が発表された。",
+      "reading": "おおあめとくべつけいほう・はっぴょう",
+      "translation": "发布了暴雨特别警报。"
+    }
+  },
+  {
+    "word": "緊急速報",
+    "reading": "きんきゅうそくほう",
+    "meaning": "紧急速报",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "スマホに緊急速報が届いた。",
+      "reading": "スマホ・きんきゅうそくほう・とど",
+      "translation": "手机收到了紧急速报。"
+    }
+  },
+  {
+    "word": "気象庁",
+    "reading": "きしょうちょう",
+    "meaning": "气象厅",
+    "level": "N2",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "気象庁が最新の情報を発表した。",
+      "reading": "きしょうちょう・さいしん・じょうほう・はっぴょう",
+      "translation": "气象厅发布了最新的信息。"
+    }
+  },
+  {
+    "word": "観測史上",
+    "reading": "かんそくしじょう",
+    "meaning": "观测史上",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "観測史上最高の気温を記録した。",
+      "reading": "かんそくしじょう・さいこう・きおん・きろく",
+      "translation": "记录了观测史上最高的气温。"
+    }
+  },
+  {
+    "word": "記録的",
+    "reading": "きろくてき",
+    "meaning": "创纪录的",
+    "level": "N2",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "記録的な猛暑となった。",
+      "reading": "きろくてき・もうしょ",
+      "translation": "出现了创纪录的酷暑。"
+    }
+  },
+  {
+    "word": "猛威",
+    "reading": "もうい",
+    "meaning": "肆虐",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "台風が猛威を振るっている。",
+      "reading": "たいふう・もうい・ふ",
+      "translation": "台风正在肆虐。"
+    }
+  },
+  {
+    "word": "直撃",
+    "reading": "ちょくげき",
+    "meaning": "直接冲击",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "台風が本州を直撃する見込みだ。",
+      "reading": "たいふう・ほんしゅう・ちょくげき・みこ",
+      "translation": "预计台风将直接冲击本州。"
+    }
+  },
+  {
+    "word": "進路予想",
+    "reading": "しんろよそう",
+    "meaning": "路径预测",
+    "level": "N2",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "台風の進路予想を確認した。",
+      "reading": "たいふう・しんろよそう・かくにん",
+      "translation": "确认了台风的路径预测。"
+    }
+  },
+  {
+    "word": "上陸",
+    "reading": "じょうりく",
+    "meaning": "（台风）登陆",
+    "level": "N2",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "台風が九州に上陸した。",
+      "reading": "たいふう・きゅうしゅう・じょうりく",
+      "translation": "台风在九州登陆了。"
+    }
+  },
+  {
+    "word": "接近",
+    "reading": "せっきん",
+    "meaning": "靠近",
+    "level": "N2",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "台風が急速に接近している。",
+      "reading": "たいふう・きゅうそく・せっきん",
+      "translation": "台风正在急速靠近。"
+    }
+  },
+  {
+    "word": "通過",
+    "reading": "つうか",
+    "meaning": "通过",
+    "level": "N2",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "前線が通過した後は気温が下がる。",
+      "reading": "ぜんせん・つうか・あと・きおん・さ",
+      "translation": "锋面通过后气温会下降。"
+    }
+  },
+  {
+    "word": "勢力",
+    "reading": "せいりょく",
+    "meaning": "势力（强度）",
+    "level": "N2",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "勢力を保ったまま接近している。",
+      "reading": "せいりょく・たも・せっきん",
+      "translation": "正保持强度靠近。"
+    }
+  },
+  {
+    "word": "中心気圧",
+    "reading": "ちゅうしんきあつ",
+    "meaning": "中心气压",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "中心気圧が低いほど勢力が強い。",
+      "reading": "ちゅうしんきあつ・ひく・せいりょく・つよ",
+      "translation": "中心气压越低势力越强。"
+    }
+  },
+  {
+    "word": "最大瞬間風速",
+    "reading": "さいだいしゅんかんふうそく",
+    "meaning": "最大瞬时风速",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "最大瞬間風速は五十メートルに達した。",
+      "reading": "さいだいしゅんかんふうそく・ごじゅう・たっ",
+      "translation": "最大瞬时风速达到了五十米。"
+    }
+  },
+  {
+    "word": "河川氾濫",
+    "reading": "かせんはんらん",
+    "meaning": "河流泛滥",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "河川氾濫の危険性が高まっている。",
+      "reading": "かせんはんらん・きけんせい・たか",
+      "translation": "河流泛滥的危险性正在提高。"
+    }
+  },
+  {
+    "word": "決壊",
+    "reading": "けっかい",
+    "meaning": "决堤",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "堤防が決壊するおそれがある。",
+      "reading": "ていぼう・けっかい",
+      "translation": "堤坝有决堤的危险。"
+    }
+  },
+  {
+    "word": "冠水",
+    "reading": "かんすい",
+    "meaning": "淹水",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "道路が冠水して通行止めになった。",
+      "reading": "どうろ・かんすい・つうこうど",
+      "translation": "道路因淹水而禁止通行了。"
+    }
+  },
+  {
+    "word": "交通規制",
+    "reading": "こうつうきせい",
+    "meaning": "交通管制",
+    "level": "N2",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "大雪のため交通規制が敷かれた。",
+      "reading": "おおゆき・こうつうきせい・し",
+      "translation": "因大雪实施了交通管制。"
+    }
+  },
+  {
+    "word": "運休",
+    "reading": "うんきゅう",
+    "meaning": "停运",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "電車が運休になっている。",
+      "reading": "でんしゃ・うんきゅう",
+      "translation": "电车正处于停运状态。"
+    }
+  },
+  {
+    "word": "計画運休",
+    "reading": "けいかくうんきゅう",
+    "meaning": "计划性停运",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "台風接近に伴い計画運休が発表された。",
+      "reading": "たいふうせっきん・ともな・けいかくうんきゅう・はっぴょう",
+      "translation": "随着台风逼近，发布了计划性停运的通知。"
+    }
+  },
+  {
+    "word": "危険度",
+    "reading": "きけんど",
+    "meaning": "危险度",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "危険度が非常に高い状況だ。",
+      "reading": "きけんど・ひじょう・たか・じょうきょう",
+      "translation": "这是危险度非常高的状况。"
+    }
+  },
+  {
+    "word": "注意喚起",
+    "reading": "ちゅういかんき",
+    "meaning": "提醒注意",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "早めの注意喚起が呼びかけられた。",
+      "reading": "はや・ちゅういかんき・よ",
+      "translation": "呼吁进行提前的注意提醒。"
+    }
+  },
+  {
+    "word": "災害級",
+    "reading": "さいがいきゅう",
+    "meaning": "灾害级别的",
+    "level": "N1",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "災害級の暑さが続いている。",
+      "reading": "さいがいきゅう・あつ・つづ",
+      "translation": "灾害级别的酷热持续着。"
+    }
+  },
+  {
+    "word": "記録更新",
+    "reading": "きろくこうしん",
+    "meaning": "打破纪录",
+    "level": "N2",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "気温が記録更新した。",
+      "reading": "きおん・きろくこうしん",
+      "translation": "气温打破了纪录。"
+    }
+  },
+  {
+    "word": "熱中症警戒",
+    "reading": "ねっちゅうしょうけいかい",
+    "meaning": "中暑警戒",
+    "level": "N2",
+    "category": "气象灾害情报专用语",
+    "example": {
+      "sentence": "熱中症警戒アラートが発表された。",
+      "reading": "ねっちゅうしょうけいかい・アラート・はっぴょう",
+      "translation": "发布了中暑警戒警报。"
+    }
+  },
+  {
+    "word": "お忙しい中",
+    "reading": "おいそがしいなか",
+    "meaning": "百忙之中（邮件用）",
+    "level": "N2",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "お忙しい中、恐れ入りますがご確認ください。",
+      "reading": "いそが なか・おそ い・ごかくにん",
+      "translation": "百忙之中打扰了，还请您予以确认。"
+    }
+  },
+  {
+    "word": "ご不明な点",
+    "reading": "ごふめいなてん",
+    "meaning": "有不明之处",
+    "level": "N2",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "ご不明な点がございましたらご連絡ください。",
+      "reading": "ごふめいなてん・ごれんらく",
+      "translation": "如有不明之处请与我们联系。"
+    }
+  },
+  {
+    "word": "ご確認のほど",
+    "reading": "ごかくにんのほど",
+    "meaning": "敬请确认",
+    "level": "N2",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "内容をご確認のほどよろしくお願いいたします。",
+      "reading": "ないよう・ごかくにん・ねが",
+      "translation": "敬请确认相关内容。"
+    }
+  },
+  {
+    "word": "お手すきの際",
+    "reading": "おてすきのさい",
+    "meaning": "有空时",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "お手すきの際にご返信ください。",
+      "reading": "おてす さい・ごへんしん",
+      "translation": "请您有空时予以回复。"
+    }
+  },
+  {
+    "word": "ご都合",
+    "reading": "ごつごう",
+    "meaning": "您方便的时间",
+    "level": "N2",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "ご都合の良い日時をお知らせください。",
+      "reading": "ごつごう・よ・にちじ・し",
+      "translation": "请告知您方便的日期时间。"
+    }
+  },
+  {
+    "word": "何卒",
+    "reading": "なにとぞ",
+    "meaning": "敬请，务必",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "何卒よろしくお願いいたします。",
+      "reading": "なにとぞ・ねが",
+      "translation": "敬请多多关照。"
+    }
+  },
+  {
+    "word": "ご容赦ください",
+    "reading": "ごようしゃください",
+    "meaning": "敬请海涵",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "至らぬ点があれば、ご容赦ください。",
+      "reading": "いた てん・ごようしゃ",
+      "translation": "如有不周之处，敬请海涵。"
+    }
+  },
+  {
+    "word": "心よりお詫び申し上げます",
+    "reading": "こころよりおわびもうしあげます",
+    "meaning": "由衷致歉",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "ご迷惑をおかけしたこと、心よりお詫び申し上げます。",
+      "reading": "めいわく・こころ・おわび もう あ",
+      "translation": "给您添麻烦了，在此由衷致歉。"
+    }
+  },
+  {
+    "word": "ご迷惑をおかけしました",
+    "reading": "ごめいわくをおかけしました",
+    "meaning": "给您添麻烦了",
+    "level": "N2",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "この度はご迷惑をおかけしました。",
+      "reading": "たび・ごめいわく",
+      "translation": "这次给您添麻烦了。"
+    }
+  },
+  {
+    "word": "重ねてお詫び申し上げます",
+    "reading": "かさねておわびもうしあげます",
+    "meaning": "再次致歉",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "手違いがあり、重ねてお詫び申し上げます。",
+      "reading": "てちが・かさ・おわび もう あ",
+      "translation": "出现了差错，再次致以歉意。"
+    }
+  },
+  {
+    "word": "何かございましたら",
+    "reading": "なにかございましたら",
+    "meaning": "若有任何事项",
+    "level": "N2",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "何かございましたらお気軽にご連絡ください。",
+      "reading": "き がる・ごれんらく",
+      "translation": "若有任何事项请随时与我们联系。"
+    }
+  },
+  {
+    "word": "ご指摘いただき",
+    "reading": "ごしてきいただき",
+    "meaning": "承蒙指出",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "ご指摘いただきありがとうございます。",
+      "reading": "ごしてき",
+      "translation": "非常感谢您的指出。"
+    }
+  },
+  {
+    "word": "大変恐縮ですが",
+    "reading": "たいへんきょうしゅくですが",
+    "meaning": "十分惶恐，不好意思",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "大変恐縮ですが、日程を変更していただけますか。",
+      "reading": "たいへんきょうしゅく・にってい・へんこう",
+      "translation": "十分惶恐，能否请您变更一下日程。"
+    }
+  },
+  {
+    "word": "ご検討いただければ幸いです",
+    "reading": "ごけんとういただければさいわいです",
+    "meaning": "若能考虑将不胜感激",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "前向きにご検討いただければ幸いです。",
+      "reading": "まえむ・ごけんとう・さいわ",
+      "translation": "若能积极予以考虑，将不胜感激。"
+    }
+  },
+  {
+    "word": "ご協力のほどよろしくお願いいたします",
+    "reading": "ごきょうりょくのほどよろしくおねがいいたします",
+    "meaning": "敬请协助",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "アンケートへのご協力のほどよろしくお願いいたします。",
+      "reading": "アンケート・ごきょうりょく・ねが",
+      "translation": "敬请对本次问卷调查予以协助。"
+    }
+  },
+  {
+    "word": "取り急ぎご連絡まで",
+    "reading": "とりいそぎごれんらくまで",
+    "meaning": "特此先行联络",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "詳細は後日お伝えします。取り急ぎご連絡まで。",
+      "reading": "しょうさい・ごじつ・つた・とりいそ・ごれんらく",
+      "translation": "详情将于日后告知，特此先行联络。"
+    }
+  },
+  {
+    "word": "何卒よろしくお願い申し上げます",
+    "reading": "なにとぞよろしくおねがいもうしあげます",
+    "meaning": "敬请多多关照",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "引き続き何卒よろしくお願い申し上げます。",
+      "reading": "ひ つづ・なにとぞ・ねが もう あ",
+      "translation": "今后也请多多关照。"
+    }
+  },
+  {
+    "word": "ご査収ください",
+    "reading": "ごさしゅうください",
+    "meaning": "请查收",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "資料を添付しますので、ご査収ください。",
+      "reading": "しりょう・てんぷ・ごさしゅう",
+      "translation": "随信附上资料，请查收。"
+    }
+  },
+  {
+    "word": "別途",
+    "reading": "べっと",
+    "meaning": "另行",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "別途、詳細をご案内いたします。",
+      "reading": "べっと・しょうさい・ごあんない",
+      "translation": "将另行告知详情。"
+    }
+  },
+  {
+    "word": "追って",
+    "reading": "おって",
+    "meaning": "稍后，随后",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "追ってご連絡いたします。",
+      "reading": "おって・ごれんらく",
+      "translation": "稍后将与您联系。"
+    }
+  },
+  {
+    "word": "至急",
+    "reading": "しきゅう",
+    "meaning": "火速，紧急",
+    "level": "N2",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "至急ご対応いただけますでしょうか。",
+      "reading": "しきゅう・ごたいおう",
+      "translation": "能否请您紧急处理一下。"
+    }
+  },
+  {
+    "word": "幸いです",
+    "reading": "さいわいです",
+    "meaning": "将不胜感激",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "ご返信いただければ幸いです。",
+      "reading": "ごへんしん・さいわ",
+      "translation": "若能得到您的回复，将不胜感激。"
+    }
+  },
+  {
+    "word": "差し支えございません",
+    "reading": "さしつかえございません",
+    "meaning": "不妨碍，没问题",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "来週でも差し支えございません。",
+      "reading": "らいしゅう・さ つか",
+      "translation": "下周也没有问题。"
+    }
+  },
+  {
+    "word": "ご一報ください",
+    "reading": "ごいっぽうください",
+    "meaning": "请告知一声",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "ご到着の際はご一報ください。",
+      "reading": "ごとうちゃく・さい・ごいっぽう",
+      "translation": "您到达时请告知一声。"
+    }
+  },
+  {
+    "word": "お役に立てず",
+    "reading": "おやくにたてず",
+    "meaning": "未能帮上忙",
+    "level": "N1",
+    "category": "职场邮件礼貌表达进阶",
+    "example": {
+      "sentence": "お役に立てず申し訳ございません。",
+      "reading": "おやく・た・もう わけ",
+      "translation": "未能帮上忙，实在抱歉。"
+    }
+  },
+  {
+    "word": "語学学校",
+    "reading": "ごがくがっこう",
+    "meaning": "语言学校",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "現地の語学学校に通っている。",
+      "reading": "げんち・ごがくがっこう・かよ",
+      "translation": "正在当地的语言学校学习。"
+    }
+  },
+  {
+    "word": "交換留学",
+    "reading": "こうかんりゅうがく",
+    "meaning": "交换留学",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "交換留学のプログラムに応募した。",
+      "reading": "こうかんりゅうがく・プログラム・おうぼ",
+      "translation": "申请了交换留学项目。"
+    }
+  },
+  {
+    "word": "学生寮",
+    "reading": "がくせいりょう",
+    "meaning": "学生宿舍",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "学生寮で生活している。",
+      "reading": "がくせいりょう・せいかつ",
+      "translation": "正在学生宿舍生活。"
+    }
+  },
+  {
+    "word": "単位互換",
+    "reading": "たんいごかん",
+    "meaning": "学分互认",
+    "level": "N1",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "単位互換制度を利用した。",
+      "reading": "たんいごかんせいど・りよう",
+      "translation": "利用了学分互认制度。"
+    }
+  },
+  {
+    "word": "現地校",
+    "reading": "げんちこう",
+    "meaning": "当地学校",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "現地校に転入した。",
+      "reading": "げんちこう・てんにゅう",
+      "translation": "转学到了当地学校。"
+    }
+  },
+  {
+    "word": "学費免除",
+    "reading": "がくひめんじょ",
+    "meaning": "学费减免",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "成績優秀者は学費免除の対象になる。",
+      "reading": "せいせきゆうしゅうしゃ・がくひめんじょ・たいしょう",
+      "translation": "成绩优秀者可以成为学费减免的对象。"
+    }
+  },
+  {
+    "word": "カルチャーショック",
+    "reading": null,
+    "meaning": "文化冲击",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "留学初期はカルチャーショックを受けた。",
+      "reading": "りゅうがくしょき・う",
+      "translation": "留学初期受到了文化冲击。"
+    }
+  },
+  {
+    "word": "ホームシック",
+    "reading": null,
+    "meaning": "想家",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "ホームシックにかかることもある。",
+      "reading": null,
+      "translation": "有时也会想家。"
+    }
+  },
+  {
+    "word": "履修登録",
+    "reading": "りしゅうとうろく",
+    "meaning": "选课登记",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "履修登録の締め切りが迫っている。",
+      "reading": "りしゅうとうろく・し き・せま",
+      "translation": "选课登记的截止日期临近了。"
+    }
+  },
+  {
+    "word": "単位取得",
+    "reading": "たんいしゅとく",
+    "meaning": "修得学分",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "無事に単位取得ができた。",
+      "reading": "ぶじ・たんいしゅとく",
+      "translation": "顺利地修得了学分。"
+    }
+  },
+  {
+    "word": "学生ビザ",
+    "reading": "がくせいビザ",
+    "meaning": "学生签证",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "学生ビザの更新手続きをした。",
+      "reading": "がくせいビザ・こうしんてつづ",
+      "translation": "办理了学生签证的续签手续。"
+    }
+  },
+  {
+    "word": "言語の壁",
+    "reading": "げんごのかべ",
+    "meaning": "语言障碍",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "言語の壁を感じることが多い。",
+      "reading": "げんご・かべ・かん・おお",
+      "translation": "经常感受到语言障碍。"
+    }
+  },
+  {
+    "word": "アルバイト許可",
+    "reading": "アルバイトきょか",
+    "meaning": "打工许可",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "アルバイト許可を取得した。",
+      "reading": "きょか・しゅとく",
+      "translation": "取得了打工许可。"
+    }
+  },
+  {
+    "word": "生活適応",
+    "reading": "せいかつてきおう",
+    "meaning": "生活适应",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "現地の生活適応には時間がかかった。",
+      "reading": "げんち・せいかつてきおう・じかん",
+      "translation": "适应当地的生活花费了不少时间。"
+    }
+  },
+  {
+    "word": "帰国後",
+    "reading": "きこくご",
+    "meaning": "归国后",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "帰国後は日本で就職する予定だ。",
+      "reading": "きこくご・にほん・しゅうしょく・よてい",
+      "translation": "归国后打算在日本就职。"
+    }
+  },
+  {
+    "word": "単身留学",
+    "reading": "たんしんりゅうがく",
+    "meaning": "独自留学",
+    "level": "N1",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "十八歳で単身留学を決意した。",
+      "reading": "じゅうはっさい・たんしんりゅうがく・けつい",
+      "translation": "十八岁时下定决心独自留学。"
+    }
+  },
+  {
+    "word": "語学留学",
+    "reading": "ごがくりゅうがく",
+    "meaning": "语言留学",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "半年間の語学留学を経験した。",
+      "reading": "はんとしかん・ごがくりゅうがく・けいけん",
+      "translation": "经历了半年的语言留学。"
+    }
+  },
+  {
+    "word": "学位取得",
+    "reading": "がくいしゅとく",
+    "meaning": "取得学位",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "現地で学位取得を目指している。",
+      "reading": "げんち・がくいしゅとく・めざ",
+      "translation": "正以在当地取得学位为目标。"
+    }
+  },
+  {
+    "word": "現地生活",
+    "reading": "げんちせいかつ",
+    "meaning": "当地生活",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "現地生活にもすっかり慣れた。",
+      "reading": "げんちせいかつ・な",
+      "translation": "已经完全适应了当地生活。"
+    }
+  },
+  {
+    "word": "異国",
+    "reading": "いこく",
+    "meaning": "异国",
+    "level": "N1",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "異国の地で暮らす経験を積んだ。",
+      "reading": "いこく・ち・く・けいけん・つ",
+      "translation": "积累了在异国生活的经验。"
+    }
+  },
+  {
+    "word": "孤独感",
+    "reading": "こどくかん",
+    "meaning": "孤独感",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "一人暮らしで孤独感を覚えることもある。",
+      "reading": "ひとりぐ・こどくかん・おぼ",
+      "translation": "一个人生活有时也会感到孤独。"
+    }
+  },
+  {
+    "word": "適応力",
+    "reading": "てきおうりょく",
+    "meaning": "适应能力",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "留学生活で適応力が鍛えられた。",
+      "reading": "りゅうがくせいかつ・てきおうりょく・きた",
+      "translation": "留学生活锻炼了适应能力。"
+    }
+  },
+  {
+    "word": "文化交流",
+    "reading": "ぶんかこうりゅう",
+    "meaning": "文化交流",
+    "level": "N2",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "現地の学生と文化交流を楽しんだ。",
+      "reading": "げんち・がくせい・ぶんかこうりゅう・たの",
+      "translation": "与当地学生享受了文化交流的乐趣。"
+    }
+  },
+  {
+    "word": "語彙力",
+    "reading": "ごいりょく",
+    "meaning": "词汇量",
+    "level": "N1",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "現地生活を通して語彙力が伸びた。",
+      "reading": "げんちせいかつ・つう・ごいりょく・の",
+      "translation": "通过当地生活词汇量提高了。"
+    }
+  },
+  {
+    "word": "現地採用",
+    "reading": "げんちさいよう",
+    "meaning": "当地录用",
+    "level": "N1",
+    "category": "留学生活场景词汇",
+    "example": {
+      "sentence": "卒業後は現地採用で就職する予定だ。",
+      "reading": "そつぎょうご・げんちさいよう・しゅうしょく・よてい",
+      "translation": "毕业后预计通过当地录用方式就职。"
+    }
+  },
+  {
+    "word": "児童手当",
+    "reading": "じどうてあて",
+    "meaning": "儿童补贴",
+    "level": "N2",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "児童手当が毎月振り込まれる。",
+      "reading": "じどうてあて・まいつき・ふ こ",
+      "translation": "儿童补贴每月都会汇入账户。"
+    }
+  },
+  {
+    "word": "育児休業",
+    "reading": "いくじきゅうぎょう",
+    "meaning": "育儿假",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "育児休業を一年間取得した。",
+      "reading": "いくじきゅうぎょう・いちねんかん・しゅとく",
+      "translation": "休了一年的育儿假。"
+    }
+  },
+  {
+    "word": "産休",
+    "reading": "さんきゅう",
+    "meaning": "产假",
+    "level": "N2",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "来月から産休に入る。",
+      "reading": "らいげつ・さんきゅう・はい",
+      "translation": "下个月起将开始休产假。"
+    }
+  },
+  {
+    "word": "育休",
+    "reading": "いくきゅう",
+    "meaning": "育儿假（简称）",
+    "level": "N2",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "夫も育休を取得することにした。",
+      "reading": "おっと・いくきゅう・しゅとく",
+      "translation": "丈夫也决定休育儿假了。"
+    }
+  },
+  {
+    "word": "保育料",
+    "reading": "ほいくりょう",
+    "meaning": "保育费",
+    "level": "N2",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "保育料が無償化された地域がある。",
+      "reading": "ほいくりょう・むしょうか・ちいき",
+      "translation": "有些地区实现了保育费的免费化。"
+    }
+  },
+  {
+    "word": "待機児童",
+    "reading": "たいきじどう",
+    "meaning": "等候入园儿童",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "待機児童の問題が解消されつつある。",
+      "reading": "たいきじどう・もんだい・かいしょう",
+      "translation": "等候入园儿童的问题正在逐步解决。"
+    }
+  },
+  {
+    "word": "出産育児一時金",
+    "reading": "しゅっさんいくじいちじきん",
+    "meaning": "生育一次性补助",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "出産育児一時金を申請した。",
+      "reading": "しゅっさんいくじいちじきん・しんせい",
+      "translation": "申请了生育一次性补助金。"
+    }
+  },
+  {
+    "word": "扶養控除",
+    "reading": "ふようこうじょ",
+    "meaning": "抚养扣除",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "扶養控除の対象になる子供がいる。",
+      "reading": "ふようこうじょ・たいしょう・こども",
+      "translation": "有孩子符合抚养扣除的条件。"
+    }
+  },
+  {
+    "word": "医療費助成",
+    "reading": "いりょうひじょせい",
+    "meaning": "医疗费补助",
+    "level": "N2",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "子供の医療費助成を受けている。",
+      "reading": "こども・いりょうひじょせい・う",
+      "translation": "正在享受孩子的医疗费补助。"
+    }
+  },
+  {
+    "word": "社会保険",
+    "reading": "しゃかいほけん",
+    "meaning": "社会保险",
+    "level": "N2",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "社会保険に加入している。",
+      "reading": "しゃかいほけん・かにゅう",
+      "translation": "已经加入了社会保险。"
+    }
+  },
+  {
+    "word": "厚生年金",
+    "reading": "こうせいねんきん",
+    "meaning": "厚生年金",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "厚生年金の保険料が給与から引かれる。",
+      "reading": "こうせいねんきん・ほけんりょう・きゅうよ・ひ",
+      "translation": "厚生年金的保险费从工资中扣除。"
+    }
+  },
+  {
+    "word": "国民年金",
+    "reading": "こくみんねんきん",
+    "meaning": "国民年金",
+    "level": "N2",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "国民年金を毎月支払っている。",
+      "reading": "こくみんねんきん・まいつき・しはら",
+      "translation": "每月缴纳国民年金。"
+    }
+  },
+  {
+    "word": "健康保険",
+    "reading": "けんこうほけん",
+    "meaning": "健康保险",
+    "level": "N2",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "健康保険証を病院で提示した。",
+      "reading": "けんこうほけんしょう・びょういん・ていじ",
+      "translation": "在医院出示了健康保险证。"
+    }
+  },
+  {
+    "word": "雇用保険",
+    "reading": "こようほけん",
+    "meaning": "雇佣保险",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "雇用保険から失業給付を受けた。",
+      "reading": "こようほけん・しつぎょうきゅうふ・う",
+      "translation": "从雇佣保险中获得了失业补助。"
+    }
+  },
+  {
+    "word": "労災保険",
+    "reading": "ろうさいほけん",
+    "meaning": "工伤保险",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "労災保険で治療費がカバーされた。",
+      "reading": "ろうさいほけん・ちりょうひ・カバー",
+      "translation": "治疗费被工伤保险覆盖了。"
+    }
+  },
+  {
+    "word": "介護保険",
+    "reading": "かいごほけん",
+    "meaning": "护理保险",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "介護保険を利用してサービスを受けている。",
+      "reading": "かいごほけん・りよう・サービス・う",
+      "translation": "正在利用护理保险接受服务。"
+    }
+  },
+  {
+    "word": "年金受給",
+    "reading": "ねんきんじゅきゅう",
+    "meaning": "领取年金",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "六十五歳から年金受給が始まる。",
+      "reading": "ろくじゅうごさい・ねんきんじゅきゅう・はじ",
+      "translation": "从六十五岁开始领取年金。"
+    }
+  },
+  {
+    "word": "手当",
+    "reading": "てあて",
+    "meaning": "津贴",
+    "level": "N2",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "残業手当が支給される。",
+      "reading": "ざんぎょうてあて・しきゅう",
+      "translation": "会发放加班津贴。"
+    }
+  },
+  {
+    "word": "生活保護",
+    "reading": "せいかつほご",
+    "meaning": "生活保护（低保）",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "生活保護の申請について相談した。",
+      "reading": "せいかつほご・しんせい・そうだん",
+      "translation": "就生活保护的申请进行了咨询。"
+    }
+  },
+  {
+    "word": "補助制度",
+    "reading": "ほじょせいど",
+    "meaning": "补助制度",
+    "level": "N2",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "市の補助制度を利用した。",
+      "reading": "し・ほじょせいど・りよう",
+      "translation": "利用了市里的补助制度。"
+    }
+  },
+  {
+    "word": "申請窓口",
+    "reading": "しんせいまどぐち",
+    "meaning": "申请窗口",
+    "level": "N2",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "申請窓口で書類を提出した。",
+      "reading": "しんせいまどぐち・しょるい・ていしゅつ",
+      "translation": "在申请窗口提交了文件。"
+    }
+  },
+  {
+    "word": "所得制限",
+    "reading": "しょとくせいげん",
+    "meaning": "收入限制",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "所得制限を超えると支給されない。",
+      "reading": "しょとくせいげん・こ・しきゅう",
+      "translation": "超过收入限制就不予发放。"
+    }
+  },
+  {
+    "word": "支給対象",
+    "reading": "しきゅうたいしょう",
+    "meaning": "发放对象",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "支給対象の条件を確認した。",
+      "reading": "しきゅうたいしょう・じょうけん・かくにん",
+      "translation": "确认了发放对象的条件。"
+    }
+  },
+  {
+    "word": "認定",
+    "reading": "にんてい",
+    "meaning": "认定",
+    "level": "N1",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "要介護認定を受けた。",
+      "reading": "ようかいごにんてい・う",
+      "translation": "接受了需护理认定。"
+    }
+  },
+  {
+    "word": "更新手続き",
+    "reading": "こうしんてつづき",
+    "meaning": "更新手续",
+    "level": "N2",
+    "category": "育儿津贴与社保制度",
+    "example": {
+      "sentence": "保険証の更新手続きをした。",
+      "reading": "ほけんしょう・こうしんてつづ",
+      "translation": "办理了保险证的更新手续。"
+    }
+  },
+  {
+    "word": "社会的責任",
+    "reading": "しゃかいてきせきにん",
+    "meaning": "社会责任",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "企業の社会的責任が問われている。",
+      "reading": "きぎょう・しゃかいてきせきにん・と",
+      "translation": "企业的社会责任正受到关注。"
+    }
+  },
+  {
+    "word": "環境保護",
+    "reading": "かんきょうほご",
+    "meaning": "环境保护",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "環境保護に取り組む企業が増えている。",
+      "reading": "かんきょうほご・と く・きぎょう・ふ",
+      "translation": "致力于环境保护的企业在增加。"
+    }
+  },
+  {
+    "word": "貢献",
+    "reading": "こうけん",
+    "meaning": "贡献",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "地域社会への貢献を大切にしている。",
+      "reading": "ちいきしゃかい・こうけん・たいせつ",
+      "translation": "重视对当地社会的贡献。"
+    }
+  },
+  {
+    "word": "寄付",
+    "reading": "きふ",
+    "meaning": "捐款",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "災害支援のために寄付をした。",
+      "reading": "さいがいしえん・きふ",
+      "translation": "为灾害支援进行了捐款。"
+    }
+  },
+  {
+    "word": "社会貢献活動",
+    "reading": "しゃかいこうけんかつどう",
+    "meaning": "社会贡献活动",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "社員が社会貢献活動に参加している。",
+      "reading": "しゃいん・しゃかいこうけんかつどう・さんか",
+      "translation": "员工正参加社会贡献活动。"
+    }
+  },
+  {
+    "word": "透明性",
+    "reading": "とうめいせい",
+    "meaning": "透明度",
+    "level": "N1",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "経営の透明性を高めている。",
+      "reading": "けいえい・とうめいせい・たか",
+      "translation": "正在提高经营的透明度。"
+    }
+  },
+  {
+    "word": "情報開示",
+    "reading": "じょうほうかいじ",
+    "meaning": "信息披露",
+    "level": "N1",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "適切な情報開示が求められる。",
+      "reading": "てきせつ・じょうほうかいじ・もと",
+      "translation": "需要进行适当的信息披露。"
+    }
+  },
+  {
+    "word": "コンプライアンス",
+    "reading": null,
+    "meaning": "合规",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "コンプライアンス研修を受けた。",
+      "reading": "けんしゅう・う",
+      "translation": "接受了合规培训。"
+    }
+  },
+  {
+    "word": "ガバナンス",
+    "reading": null,
+    "meaning": "治理",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "企業ガバナンスの強化を図っている。",
+      "reading": "きぎょう・きょうか・はか",
+      "translation": "正谋求加强企业治理。"
+    }
+  },
+  {
+    "word": "人権尊重",
+    "reading": "じんけんそんちょう",
+    "meaning": "尊重人权",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "人権尊重の方針を掲げている。",
+      "reading": "じんけんそんちょう・ほうしん・かか",
+      "translation": "秉持着尊重人权的方针。"
+    }
+  },
+  {
+    "word": "労働環境",
+    "reading": "ろうどうかんきょう",
+    "meaning": "劳动环境",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "労働環境の改善に取り組んでいる。",
+      "reading": "ろうどうかんきょう・かいぜん・と く",
+      "translation": "正致力于改善劳动环境。"
+    }
+  },
+  {
+    "word": "多様性",
+    "reading": "たようせい",
+    "meaning": "多样性",
+    "level": "N1",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "職場の多様性を推進している。",
+      "reading": "しょくば・たようせい・すいしん",
+      "translation": "正在推进职场的多样性。"
+    }
+  },
+  {
+    "word": "ダイバーシティ",
+    "reading": null,
+    "meaning": "多元化",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "ダイバーシティを重視する企業が増えた。",
+      "reading": "じゅうし・きぎょう・ふ",
+      "translation": "重视多元化的企业增加了。"
+    }
+  },
+  {
+    "word": "働き方改革",
+    "reading": "はたらきかたかいかく",
+    "meaning": "工作方式改革",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "働き方改革の一環として在宅勤務を導入した。",
+      "reading": "はたらきかたかいかく・いっかん・ざいたくきんむ・どうにゅう",
+      "translation": "作为工作方式改革的一环引入了居家办公。"
+    }
+  },
+  {
+    "word": "サステナビリティ",
+    "reading": null,
+    "meaning": "可持续性",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "サステナビリティ報告書を発表した。",
+      "reading": "ほうこくしょ・はっぴょう",
+      "translation": "发布了可持续性报告书。"
+    }
+  },
+  {
+    "word": "企業倫理",
+    "reading": "きぎょうりんり",
+    "meaning": "企业伦理",
+    "level": "N1",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "企業倫理の教育を強化している。",
+      "reading": "きぎょうりんり・きょういく・きょうか",
+      "translation": "正在加强企业伦理的教育。"
+    }
+  },
+  {
+    "word": "社会的信頼",
+    "reading": "しゃかいてきしんらい",
+    "meaning": "社会信任",
+    "level": "N1",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "社会的信頼を築くことが重要だ。",
+      "reading": "しゃかいてきしんらい・きず・じゅうよう",
+      "translation": "建立社会信任十分重要。"
+    }
+  },
+  {
+    "word": "ステークホルダー",
+    "reading": null,
+    "meaning": "利益相关方",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "ステークホルダーとの対話を重視している。",
+      "reading": "たいわ・じゅうし",
+      "translation": "重视与利益相关方的对话。"
+    }
+  },
+  {
+    "word": "説明責任",
+    "reading": "せつめいせきにん",
+    "meaning": "说明责任",
+    "level": "N1",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "企業には説明責任がある。",
+      "reading": "きぎょう・せつめいせきにん",
+      "translation": "企业负有说明责任。"
+    }
+  },
+  {
+    "word": "不祥事",
+    "reading": "ふしょうじ",
+    "meaning": "丑闻",
+    "level": "N1",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "不祥事を受けて対応策を発表した。",
+      "reading": "ふしょうじ・う・たいおうさく・はっぴょう",
+      "translation": "针对丑闻事件发布了应对措施。"
+    }
+  },
+  {
+    "word": "リコール",
+    "reading": null,
+    "meaning": "召回",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "欠陥商品のリコールを実施した。",
+      "reading": "けっかんしょうひん・じっし",
+      "translation": "对存在缺陷的商品实施了召回。"
+    }
+  },
+  {
+    "word": "品質保証",
+    "reading": "ひんしつほしょう",
+    "meaning": "质量保证",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "品質保証体制を見直した。",
+      "reading": "ひんしつほしょうたいせい・みなお",
+      "translation": "重新审视了质量保证体制。"
+    }
+  },
+  {
+    "word": "内部統制",
+    "reading": "ないぶとうせい",
+    "meaning": "内部管制",
+    "level": "N1",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "内部統制システムを強化した。",
+      "reading": "ないぶとうせい・きょうか",
+      "translation": "加强了内部管制体系。"
+    }
+  },
+  {
+    "word": "監視体制",
+    "reading": "かんしたいせい",
+    "meaning": "监督体制",
+    "level": "N1",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "不正防止のため監視体制を整えた。",
+      "reading": "ふせいぼうし・かんしたいせい・ととの",
+      "translation": "为防止舞弊完善了监督体制。"
+    }
+  },
+  {
+    "word": "企業イメージ",
+    "reading": "きぎょうイメージ",
+    "meaning": "企业形象",
+    "level": "N2",
+    "category": "企业社会责任（CSR）",
+    "example": {
+      "sentence": "不祥事によって企業イメージが低下した。",
+      "reading": "ふしょうじ・きぎょうイメージ・ていか",
+      "translation": "因丑闻事件企业形象受损了。"
+    }
+  }
+]

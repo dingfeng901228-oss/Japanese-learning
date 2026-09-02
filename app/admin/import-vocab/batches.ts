@@ -71,6 +71,35 @@ export const PRELOADED_BATCHES = [
     description:
       "健身・运动进阶 / 感官形容・拟态语补充 / 二字汉语进阶 / 时事・政治二级词 / 企业・组织架构 / 婚丧嫁娶仪式细节 / 方言・口语表达 / 灾害应急预案专用词 (N2:121 + N1:79)",
   },
+  // Per Frank #7625 (2026-09-02) — 批次 10/11/12/13。
+  // MD source location changed: 批次 7-9 在 F:\WebSite\Japanese-learning\docs\，
+  // 批次 10-13 在 F:\日语学习资料\（同一文件命名格式）。
+  // Generator: node scripts/parse-jlpt-vocab-md.mjs <md> data/jlpt-vocab-200-batchN.json
+  // 也可走 /admin/import-vocab 的“粘贴 MD / 上传 .md”通道直接导入 (#7631)。
+  {
+    filename: "jlpt-vocab-200-batch10.json",
+    label: "JLPT N2-N1 第十批 200 词",
+    description:
+      "环保生活方式细节 / 儿童发展阶段术语 / 体育竞技规则细节 / 酒文化与聚会用语 / 时尚美妆产业 / 二手交易与共享经济 / 日常小物件名称 / 身体不适口语表达 (N2:155 + N1:45)",
+  },
+  {
+    filename: "jlpt-vocab-200-batch11.json",
+    label: "JLPT N2-N1 第十一批 200 词",
+    description:
+      "外交礼仪与国际交流 / 动物园・水族馆常见词 / 建筑风格与室内设计流派 / 宠物饲养专用词 / 职场人际冲突处理 / 网购物流细节 / 大学学术研究用语 / 投资理财进阶 (N2:126 + N1:74)",
+  },
+  {
+    filename: "jlpt-vocab-200-batch12.json",
+    label: "JLPT N2-N1 第十二批 200 词",
+    description:
+      "交响乐团与古典音乐 / 棋牌益智游戏 / 日式传统工艺 / 气象灾害情报专用语 / 职场邮件礼貌表达进阶 / 留学生活场景词汇 / 育儿津贴与社保制度 / 企业社会责任（CSR） (N2:109 + N1:91)",
+  },
+  {
+    filename: "jlpt-vocab-200-batch13.json",
+    label: "JLPT N2-N1 第十三批 200 词",
+    description:
+      "面部表情与心理描写 / 天文历法与阴阳历 / 一百、日本历史常识 / 一〇一、佛教用语细分 / 一〇二、企业并购与股权结构 / 一〇三、育儿教育心理学专业词 / 一〇四、语言学与翻译理论（源 MD 首段缺 ## 标题，25 25 词未归类）(N2:93 + N1:107)",
+  },
 ] as const;
 
 export type PreloadedBatchFilename = (typeof PRELOADED_BATCHES)[number]["filename"];

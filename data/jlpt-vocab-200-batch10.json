@@ -1,0 +1,2402 @@
+[
+  {
+    "word": "マイバッグ",
+    "reading": null,
+    "meaning": "自备购物袋",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "買い物にはいつもマイバッグを持参する。",
+      "reading": "か もの・じさん",
+      "translation": "购物时总是自带购物袋。"
+    }
+  },
+  {
+    "word": "マイボトル",
+    "reading": null,
+    "meaning": "自备水杯",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "マイボトルを持ち歩くようになった。",
+      "reading": "も ある",
+      "translation": "养成了随身携带水杯的习惯。"
+    }
+  },
+  {
+    "word": "使い捨て",
+    "reading": "つかいすて",
+    "meaning": "一次性",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "使い捨ての容器を減らそうとしている。",
+      "reading": "つかいす・ようき・へ",
+      "translation": "正努力减少一次性容器的使用。"
+    }
+  },
+  {
+    "word": "詰め替え",
+    "reading": "つめかえ",
+    "meaning": "补充装",
+    "level": "N1",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "詰め替え用の洗剤を買った。",
+      "reading": "つめかえよう・せんざい・か",
+      "translation": "买了补充装的洗涤剂。"
+    }
+  },
+  {
+    "word": "量り売り",
+    "reading": "はかりうり",
+    "meaning": "称重零售",
+    "level": "N1",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "量り売りの店で必要な分だけ買った。",
+      "reading": "はかりうり・みせ・ひつよう・ぶん・か",
+      "translation": "在称重零售的店里只买了需要的量。"
+    }
+  },
+  {
+    "word": "フードロス",
+    "reading": null,
+    "meaning": "食物浪费",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "フードロスを減らす取り組みが広がっている。",
+      "reading": "へ・と く・ひろ",
+      "translation": "减少食物浪费的举措正在推广。"
+    }
+  },
+  {
+    "word": "賞味期限切れ",
+    "reading": "しょうみきげんぎれ",
+    "meaning": "过期（临期食品）",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "賞味期限切れの食品を安く販売している。",
+      "reading": "しょうみきげんぎ・しょくひん・やす・はんばい",
+      "translation": "正在低价销售临期食品。"
+    }
+  },
+  {
+    "word": "コンポスト",
+    "reading": null,
+    "meaning": "堆肥",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "生ごみをコンポストで堆肥にしている。",
+      "reading": "なま・たいひ",
+      "translation": "正在用堆肥箱把厨余垃圾变成堆肥。"
+    }
+  },
+  {
+    "word": "生ごみ",
+    "reading": "なまごみ",
+    "meaning": "厨余垃圾",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "生ごみは別に分別して捨てる。",
+      "reading": "なま・べつ・ぶんべつ・す",
+      "translation": "厨余垃圾要单独分类丢弃。"
+    }
+  },
+  {
+    "word": "プラスチックフリー",
+    "reading": null,
+    "meaning": "无塑料",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "プラスチックフリーの生活を心がけている。",
+      "reading": "せいかつ・こころ",
+      "translation": "留心过着无塑料的生活。"
+    }
+  },
+  {
+    "word": "サステナブル",
+    "reading": null,
+    "meaning": "可持续的",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "サステナブルな社会を目指している。",
+      "reading": "しゃかい・めざ",
+      "translation": "以可持续社会为目标。"
+    }
+  },
+  {
+    "word": "エシカル消費",
+    "reading": "エシカルしょうひ",
+    "meaning": "伦理消费，道德消费",
+    "level": "N1",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "エシカル消費への関心が高まっている。",
+      "reading": "エシカルしょうひ・かんしん・たか",
+      "translation": "对伦理消费的关注正在提高。"
+    }
+  },
+  {
+    "word": "フェアトレード",
+    "reading": null,
+    "meaning": "公平贸易",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "フェアトレードのコーヒーを買っている。",
+      "reading": "コーヒー・か",
+      "translation": "正在购买公平贸易咖啡。"
+    }
+  },
+  {
+    "word": "オーガニック",
+    "reading": null,
+    "meaning": "有机",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "オーガニック野菜を選ぶようにしている。",
+      "reading": "やさい・えら",
+      "translation": "留心选择有机蔬菜。"
+    }
+  },
+  {
+    "word": "地産地消",
+    "reading": "ちさんちしょう",
+    "meaning": "本地生产本地消费",
+    "level": "N1",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "地産地消を推進する取り組みがある。",
+      "reading": "ちさんちしょう・すいしん・と く",
+      "translation": "有推进本地生产本地消费的举措。"
+    }
+  },
+  {
+    "word": "ミニマリスト",
+    "reading": null,
+    "meaning": "极简主义者",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "彼女はミニマリストとして知られている。",
+      "reading": "かのじょ・し",
+      "translation": "她以极简主义者著称。"
+    }
+  },
+  {
+    "word": "断捨離",
+    "reading": "だんしゃり",
+    "meaning": "断舍离",
+    "level": "N1",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "週末に部屋の断捨離をした。",
+      "reading": "しゅうまつ・へや・だんしゃり",
+      "translation": "周末对房间进行了断舍离。"
+    }
+  },
+  {
+    "word": "シェア",
+    "reading": null,
+    "meaning": "共享",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "家電をシェアするサービスを利用している。",
+      "reading": "かでん・サービス・りよう",
+      "translation": "正在利用共享家电的服务。"
+    }
+  },
+  {
+    "word": "ゼロウェイスト",
+    "reading": null,
+    "meaning": "零垃圾",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "ゼロウェイストを目指す生活を始めた。",
+      "reading": "めざ・せいかつ・はじ",
+      "translation": "开始了以零垃圾为目标的生活。"
+    }
+  },
+  {
+    "word": "環境意識",
+    "reading": "かんきょういしき",
+    "meaning": "环保意识",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "若い世代の環境意識が高まっている。",
+      "reading": "わか・せだい・かんきょういしき・たか",
+      "translation": "年轻一代的环保意识正在提高。"
+    }
+  },
+  {
+    "word": "カーボンフットプリント",
+    "reading": null,
+    "meaning": "碳足迹",
+    "level": "N1",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "自分のカーボンフットプリントを計算してみた。",
+      "reading": "じぶん・けいさん",
+      "translation": "试着计算了自己的碳足迹。"
+    }
+  },
+  {
+    "word": "自然派",
+    "reading": "しぜんは",
+    "meaning": "天然派",
+    "level": "N1",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "自然派の化粧品にこだわっている。",
+      "reading": "しぜんは・けしょうひん",
+      "translation": "很讲究使用天然派的化妆品。"
+    }
+  },
+  {
+    "word": "詰め合わせ",
+    "reading": "つめあわせ",
+    "meaning": "拼装，组合装",
+    "level": "N1",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "野菜の詰め合わせセットを買った。",
+      "reading": "やさい・つめあ・か",
+      "translation": "买了蔬菜拼装礼盒。"
+    }
+  },
+  {
+    "word": "再利用",
+    "reading": "さいりよう",
+    "meaning": "再利用",
+    "level": "N2",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "瓶を再利用して花瓶にした。",
+      "reading": "びん・さいりよう・かびん",
+      "translation": "把瓶子再利用做成了花瓶。"
+    }
+  },
+  {
+    "word": "使い回す",
+    "reading": "つかいまわす",
+    "meaning": "反复使用",
+    "level": "N1",
+    "category": "环保生活方式细节",
+    "example": {
+      "sentence": "包装紙を使い回している。",
+      "reading": "ほうそうし・つかいまわ",
+      "translation": "包装纸在反复使用。"
+    }
+  },
+  {
+    "word": "乳児",
+    "reading": "にゅうじ",
+    "meaning": "婴儿",
+    "level": "N1",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "乳児の健診に行ってきた。",
+      "reading": "にゅうじ・けんしん・い",
+      "translation": "去做了婴儿体检。"
+    }
+  },
+  {
+    "word": "幼児",
+    "reading": "ようじ",
+    "meaning": "幼儿",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "幼児向けの絵本を選んだ。",
+      "reading": "ようじむ・えほん・えら",
+      "translation": "选择了适合幼儿的绘本。"
+    }
+  },
+  {
+    "word": "児童",
+    "reading": "じどう",
+    "meaning": "儿童",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "児童文学を研究している。",
+      "reading": "じどうぶんがく・けんきゅう",
+      "translation": "正在研究儿童文学。"
+    }
+  },
+  {
+    "word": "思春期",
+    "reading": "ししゅんき",
+    "meaning": "青春期",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "思春期の子育ては難しいと感じる。",
+      "reading": "ししゅんき・こそだ・むずか・かん",
+      "translation": "感觉青春期孩子的养育很难。"
+    }
+  },
+  {
+    "word": "発達段階",
+    "reading": "はったつだんかい",
+    "meaning": "发展阶段",
+    "level": "N1",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "子供の発達段階に合わせて接する。",
+      "reading": "こども・はったつだんかい・あ・せっ",
+      "translation": "根据孩子的发展阶段来对待他们。"
+    }
+  },
+  {
+    "word": "言語発達",
+    "reading": "げんごはったつ",
+    "meaning": "语言发展",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "二歳頃から言語発達が著しい。",
+      "reading": "にさいごろ・げんごはったつ・いちじる",
+      "translation": "两岁左右语言发展开始显著加速。"
+    }
+  },
+  {
+    "word": "運動能力",
+    "reading": "うんどうのうりょく",
+    "meaning": "运动能力",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "この年齢は運動能力が急速に発達する。",
+      "reading": "ねんれい・うんどうのうりょく・きゅうそく・はったつ",
+      "translation": "这个年龄段运动能力发育得很快。"
+    }
+  },
+  {
+    "word": "認知発達",
+    "reading": "にんちはったつ",
+    "meaning": "认知发展",
+    "level": "N1",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "認知発達には個人差がある。",
+      "reading": "にんちはったつ・こじんさ",
+      "translation": "认知发展存在个体差异。"
+    }
+  },
+  {
+    "word": "情緒発達",
+    "reading": "じょうちょはったつ",
+    "meaning": "情绪发展",
+    "level": "N1",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "情緒発達を促す関わり方を学んだ。",
+      "reading": "じょうちょはったつ・うなが・かか かた・まな",
+      "translation": "学习了促进情绪发展的相处方式。"
+    }
+  },
+  {
+    "word": "社会性",
+    "reading": "しゃかいせい",
+    "meaning": "社会性",
+    "level": "N1",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "集団生活を通して社会性を身につける。",
+      "reading": "しゅうだんせいかつ・とお・しゃかいせい・み",
+      "translation": "通过集体生活培养社会性。"
+    }
+  },
+  {
+    "word": "自我",
+    "reading": "じが",
+    "meaning": "自我",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "この時期は自我が芽生えてくる。",
+      "reading": "じき・じが・めば",
+      "translation": "这个时期自我意识开始萌芽。"
+    }
+  },
+  {
+    "word": "人見知り",
+    "reading": "ひとみしり",
+    "meaning": "认生",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "うちの子は人見知りが激しい。",
+      "reading": "こ・ひとみし・はげ",
+      "translation": "我家孩子很认生。"
+    }
+  },
+  {
+    "word": "分離不安",
+    "reading": "ぶんりふあん",
+    "meaning": "分离焦虑",
+    "level": "N1",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "登園時に分離不安を示す子供もいる。",
+      "reading": "とうえんじ・ぶんりふあん・しめ・こども",
+      "translation": "也有孩子在上幼儿园时表现出分离焦虑。"
+    }
+  },
+  {
+    "word": "生後",
+    "reading": "せいご",
+    "meaning": "出生后",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "生後六ヶ月から離乳食を始めた。",
+      "reading": "せいご・ろっかげつ・りにゅうしょく・はじ",
+      "translation": "从出生后六个月开始添加辅食。"
+    }
+  },
+  {
+    "word": "月齢",
+    "reading": "げつれい",
+    "meaning": "月龄",
+    "level": "N1",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "月齢に応じた発育をチェックしている。",
+      "reading": "げつれい・おう・はついく・チェック",
+      "translation": "正在根据月龄检查发育情况。"
+    }
+  },
+  {
+    "word": "成長曲線",
+    "reading": "せいちょうきょくせん",
+    "meaning": "成长曲线",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "成長曲線に沿って順調に育っている。",
+      "reading": "せいちょうきょくせん・そ・じゅんちょう・そだ",
+      "translation": "孩子正沿着成长曲线顺利成长。"
+    }
+  },
+  {
+    "word": "予防接種",
+    "reading": "よぼうせっしゅ",
+    "meaning": "疫苗接种",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "予防接種のスケジュールを確認した。",
+      "reading": "よぼうせっしゅ・スケジュール・かくにん",
+      "translation": "确认了疫苗接种的日程安排。"
+    }
+  },
+  {
+    "word": "離乳食",
+    "reading": "りにゅうしょく",
+    "meaning": "断奶食品",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "手作りの離乳食を用意している。",
+      "reading": "てづく・りにゅうしょく・ようい",
+      "translation": "正在准备手工制作的婴儿辅食。"
+    }
+  },
+  {
+    "word": "母乳",
+    "reading": "ぼにゅう",
+    "meaning": "母乳",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "母乳育児を続けている。",
+      "reading": "ぼにゅういくじ・つづ",
+      "translation": "正在坚持母乳喂养。"
+    }
+  },
+  {
+    "word": "哺乳瓶",
+    "reading": "ほにゅうびん",
+    "meaning": "奶瓶",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "哺乳瓶を消毒した。",
+      "reading": "ほにゅうびん・しょうどく",
+      "translation": "给奶瓶消毒了。"
+    }
+  },
+  {
+    "word": "おむつ",
+    "reading": null,
+    "meaning": "尿布",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "おむつを新しいものに替えた。",
+      "reading": "あたら・か",
+      "translation": "换上了新的尿布。"
+    }
+  },
+  {
+    "word": "夜泣き",
+    "reading": "よなき",
+    "meaning": "夜哭",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "赤ちゃんの夜泣きで睡眠不足だ。",
+      "reading": "あか・よなき・すいみんぶそく",
+      "translation": "因婴儿夜哭而睡眠不足。"
+    }
+  },
+  {
+    "word": "人格形成",
+    "reading": "じんかくけいせい",
+    "meaning": "人格形成",
+    "level": "N1",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "幼少期は人格形成に大きく影響する。",
+      "reading": "ようしょうき・じんかくけいせい・おお・えいきょう",
+      "translation": "幼年时期对人格形成有很大影响。"
+    }
+  },
+  {
+    "word": "発達障害",
+    "reading": "はったつしょうがい",
+    "meaning": "发育障碍",
+    "level": "N1",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "発達障害についての理解が広がっている。",
+      "reading": "はったつしょうがい・りかい・ひろ",
+      "translation": "对发育障碍的理解正在扩大。"
+    }
+  },
+  {
+    "word": "学年",
+    "reading": "がくねん",
+    "meaning": "年级",
+    "level": "N2",
+    "category": "儿童发展阶段术语",
+    "example": {
+      "sentence": "来年、上の学年に進む。",
+      "reading": "らいねん・うえ・がくねん・すす",
+      "translation": "明年将升入更高年级。"
+    }
+  },
+  {
+    "word": "得点",
+    "reading": "とくてん",
+    "meaning": "得分",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "後半に得点を重ねて逆転した。",
+      "reading": "こうはん・とくてん・かさ・ぎゃくてん",
+      "translation": "下半场累积得分实现了逆转。"
+    }
+  },
+  {
+    "word": "失点",
+    "reading": "しってん",
+    "meaning": "失分",
+    "level": "N1",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "守備のミスで失点した。",
+      "reading": "しゅび・ミス・しってん",
+      "translation": "因防守失误而失分了。"
+    }
+  },
+  {
+    "word": "判定",
+    "reading": "はんてい",
+    "meaning": "判定",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "審判の判定に選手が異議を唱えた。",
+      "reading": "しんぱん・はんてい・せんしゅ・いぎ・とな",
+      "translation": "选手对裁判的判定提出了异议。"
+    }
+  },
+  {
+    "word": "延長戦",
+    "reading": "えんちょうせん",
+    "meaning": "加时赛",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "試合は延長戦にもつれ込んだ。",
+      "reading": "しあい・えんちょうせん",
+      "translation": "比赛拖入了加时赛。"
+    }
+  },
+  {
+    "word": "引き分け",
+    "reading": "ひきわけ",
+    "meaning": "平局",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "試合は引き分けに終わった。",
+      "reading": "しあい・ひきわ・お",
+      "translation": "比赛以平局告终。"
+    }
+  },
+  {
+    "word": "交代",
+    "reading": "こうたい",
+    "meaning": "换人",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "後半に選手交代が行われた。",
+      "reading": "こうはん・せんしゅこうたい・おこな",
+      "translation": "下半场进行了换人。"
+    }
+  },
+  {
+    "word": "タイムアウト",
+    "reading": null,
+    "meaning": "暂停",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "監督がタイムアウトを要求した。",
+      "reading": "かんとく・ようきゅう",
+      "translation": "教练要求了暂停。"
+    }
+  },
+  {
+    "word": "ファウル",
+    "reading": null,
+    "meaning": "犯规",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "ファウルで一発退場になった。",
+      "reading": "いっぱつたいじょう",
+      "translation": "因犯规被直接罚下场了。"
+    }
+  },
+  {
+    "word": "イエローカード",
+    "reading": null,
+    "meaning": "黄牌",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "危険なプレーでイエローカードを受けた。",
+      "reading": "きけん・プレー・う",
+      "translation": "因危险动作被出示了黄牌。"
+    }
+  },
+  {
+    "word": "レッドカード",
+    "reading": null,
+    "meaning": "红牌",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "レッドカードで退場になった。",
+      "reading": "たいじょう",
+      "translation": "因红牌被罚下场了。"
+    }
+  },
+  {
+    "word": "オフサイド",
+    "reading": null,
+    "meaning": "越位",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "オフサイドの判定でゴールが取り消された。",
+      "reading": "はんてい・ゴール・と け",
+      "translation": "因越位判定进球被取消了。"
+    }
+  },
+  {
+    "word": "コーナーキック",
+    "reading": null,
+    "meaning": "角球",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "コーナーキックからゴールが決まった。",
+      "reading": "ゴール・き",
+      "translation": "通过角球攻入了一球。"
+    }
+  },
+  {
+    "word": "ペナルティ",
+    "reading": null,
+    "meaning": "罚球，处罚",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "ペナルティキックを外してしまった。",
+      "reading": "キック・はず",
+      "translation": "罚球没能罚进。"
+    }
+  },
+  {
+    "word": "得点圏",
+    "reading": "とくてんけん",
+    "meaning": "得分圈（棒球）",
+    "level": "N1",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "得点圏にランナーがいる場面だった。",
+      "reading": "とくてんけん・ランナー・ばめん",
+      "translation": "当时是得分圈有跑垒员的局面。"
+    }
+  },
+  {
+    "word": "スコア",
+    "reading": null,
+    "meaning": "比分",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "スコアを確認しながら応援した。",
+      "reading": "かくにん・おうえん",
+      "translation": "一边确认比分一边加油。"
+    }
+  },
+  {
+    "word": "同点",
+    "reading": "どうてん",
+    "meaning": "平分",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "終盤で同点に追いついた。",
+      "reading": "しゅうばん・どうてん・お つ",
+      "translation": "在比赛尾声追平了比分。"
+    }
+  },
+  {
+    "word": "逆転",
+    "reading": "ぎゃくてん",
+    "meaning": "逆转",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "土壇場での逆転劇に沸いた。",
+      "reading": "どたんば・ぎゃくてんげき・わ",
+      "translation": "绝境中的逆转剧让全场沸腾了。"
+    }
+  },
+  {
+    "word": "リード",
+    "reading": null,
+    "meaning": "领先",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "三点リードして試合を終えた。",
+      "reading": "さんてん・しあい・お",
+      "translation": "以领先三分的成绩结束了比赛。"
+    }
+  },
+  {
+    "word": "ハンデ",
+    "reading": null,
+    "meaning": "让步，差点",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "初心者にはハンデを与えている。",
+      "reading": "しょしんしゃ・あた",
+      "translation": "给初学者提供了让步条件。"
+    }
+  },
+  {
+    "word": "出場権",
+    "reading": "しゅつじょうけん",
+    "meaning": "参赛资格",
+    "level": "N1",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "全国大会の出場権を獲得した。",
+      "reading": "ぜんこくたいかい・しゅつじょうけん・かくとく",
+      "translation": "获得了全国大赛的参赛资格。"
+    }
+  },
+  {
+    "word": "シード",
+    "reading": null,
+    "meaning": "种子（选手）",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "シード選手として一回戦は免除された。",
+      "reading": "せんしゅ・いっかいせん・めんじょ",
+      "translation": "作为种子选手第一轮比赛被免除了。"
+    }
+  },
+  {
+    "word": "トーナメント",
+    "reading": null,
+    "meaning": "淘汰赛",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "トーナメント方式で勝敗を決める。",
+      "reading": "ほうしき・しょうはい・き",
+      "translation": "以淘汰赛的方式决出胜负。"
+    }
+  },
+  {
+    "word": "リーグ戦",
+    "reading": "リーグせん",
+    "meaning": "联赛",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "リーグ戦は来月から始まる。",
+      "reading": "らいげつ・はじ",
+      "translation": "联赛将于下月开始。"
+    }
+  },
+  {
+    "word": "団体戦",
+    "reading": "だんたいせん",
+    "meaning": "团体赛",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "団体戦で見事に優勝した。",
+      "reading": "だんたいせん・みごと・ゆうしょう",
+      "translation": "在团体赛中出色地夺得了冠军。"
+    }
+  },
+  {
+    "word": "個人戦",
+    "reading": "こじんせん",
+    "meaning": "个人赛",
+    "level": "N2",
+    "category": "体育竞技规则细节",
+    "example": {
+      "sentence": "個人戦では惜しくも二位だった。",
+      "reading": "こじんせん・お・にい",
+      "translation": "在个人赛中惜败获得第二名。"
+    }
+  },
+  {
+    "word": "乾杯",
+    "reading": "かんぱい",
+    "meaning": "干杯",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "みんなで乾杯した。",
+      "reading": "かんぱい",
+      "translation": "大家一起干了杯。"
+    }
+  },
+  {
+    "word": "お酌",
+    "reading": "おしゃく",
+    "meaning": "斟酒",
+    "level": "N1",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "上司にお酌をした。",
+      "reading": "じょうし・おしゃく",
+      "translation": "给上司斟了酒。"
+    }
+  },
+  {
+    "word": "二次会",
+    "reading": "にじかい",
+    "meaning": "续摊",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "飲み会の後、二次会に行った。",
+      "reading": "の かい・あと・にじかい・い",
+      "translation": "聚餐结束后去续摊了。"
+    }
+  },
+  {
+    "word": "飲み会",
+    "reading": "のみかい",
+    "meaning": "聚餐喝酒",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "今夜は職場の飲み会がある。",
+      "reading": "こんや・しょくば・の かい",
+      "translation": "今晚有单位的聚餐喝酒活动。"
+    }
+  },
+  {
+    "word": "宴会",
+    "reading": "えんかい",
+    "meaning": "宴会",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "取引先との宴会に出席した。",
+      "reading": "とりひきさき・えんかい・しゅっせき",
+      "translation": "出席了与客户的宴会。"
+    }
+  },
+  {
+    "word": "忘年会",
+    "reading": "ぼうねんかい",
+    "meaning": "忘年会",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "年末に忘年会が開かれる。",
+      "reading": "ねんまつ・ぼうねんかい・ひら",
+      "translation": "年末会举办忘年会。"
+    }
+  },
+  {
+    "word": "新年会",
+    "reading": "しんねんかい",
+    "meaning": "新年会",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "一月に新年会を予定している。",
+      "reading": "いちがつ・しんねんかい・よてい",
+      "translation": "预定一月举办新年会。"
+    }
+  },
+  {
+    "word": "歓迎会",
+    "reading": "かんげいかい",
+    "meaning": "欢迎会",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "新入社員の歓迎会が開かれた。",
+      "reading": "しんにゅうしゃいん・かんげいかい・ひら",
+      "translation": "举办了新员工的欢迎会。"
+    }
+  },
+  {
+    "word": "送別会",
+    "reading": "そうべつかい",
+    "meaning": "欢送会",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "退職する同僚の送別会をした。",
+      "reading": "たいしょく・どうりょう・そうべつかい",
+      "translation": "为即将离职的同事举办了欢送会。"
+    }
+  },
+  {
+    "word": "割り勘",
+    "reading": "わりかん",
+    "meaning": "AA制",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "飲み代は割り勘にした。",
+      "reading": "の だい・わりかん",
+      "translation": "酒钱采用了AA制。"
+    }
+  },
+  {
+    "word": "差し入れ",
+    "reading": "さしいれ",
+    "meaning": "慰问品，送来的食物",
+    "level": "N1",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "残業中に差し入れをもらった。",
+      "reading": "ざんぎょうちゅう・さしいれ",
+      "translation": "加班时收到了送来的慰问食物。"
+    }
+  },
+  {
+    "word": "酔っ払う",
+    "reading": "よっぱらう",
+    "meaning": "喝醉",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "飲みすぎて酔っ払ってしまった。",
+      "reading": "の・よっぱら",
+      "translation": "喝得太多醉倒了。"
+    }
+  },
+  {
+    "word": "二日酔い",
+    "reading": "ふつかよい",
+    "meaning": "宿醉",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "昨日の飲み会で二日酔いだ。",
+      "reading": "きのう・の かい・ふつかよ",
+      "translation": "因昨天的聚餐喝酒而宿醉。"
+    }
+  },
+  {
+    "word": "下戸",
+    "reading": "げこ",
+    "meaning": "不能喝酒的人",
+    "level": "N1",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "私は下戸なのでお酒は飲めない。",
+      "reading": "わたし・げこ・さけ・の",
+      "translation": "我不能喝酒，滴酒不沾。"
+    }
+  },
+  {
+    "word": "酒豪",
+    "reading": "しゅごう",
+    "meaning": "千杯不醉的人",
+    "level": "N1",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "彼は有名な酒豪だ。",
+      "reading": "かれ・ゆうめい・しゅごう",
+      "translation": "他是有名的千杯不醉的人。"
+    }
+  },
+  {
+    "word": "一気飲み",
+    "reading": "いっきのみ",
+    "meaning": "一口闷",
+    "level": "N1",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "一気飲みは体に良くない。",
+      "reading": "いっきの・からだ・よ",
+      "translation": "一口闷式的饮酒对身体不好。"
+    }
+  },
+  {
+    "word": "手酌",
+    "reading": "てじゃく",
+    "meaning": "自斟自饮",
+    "level": "N1",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "一人で手酌で飲んでいた。",
+      "reading": "ひとり・てじゃく・の",
+      "translation": "一个人自斟自饮着。"
+    }
+  },
+  {
+    "word": "お通し",
+    "reading": "おとおし",
+    "meaning": "（居酒屋）开胃小菜",
+    "level": "N1",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "居酒屋でお通しが出された。",
+      "reading": "いざかや・おとお・だ",
+      "translation": "居酒屋端上来了开胃小菜。"
+    }
+  },
+  {
+    "word": "お開き",
+    "reading": "おひらき",
+    "meaning": "（宴会）散场",
+    "level": "N1",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "そろそろお開きにしましょう。",
+      "reading": "おひら",
+      "translation": "差不多该散场了吧。"
+    }
+  },
+  {
+    "word": "幹事",
+    "reading": "かんじ",
+    "meaning": "组织者，干事",
+    "level": "N1",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "今回の飲み会の幹事を任された。",
+      "reading": "こんかい・の かい・かんじ・まか",
+      "translation": "被委任担任这次聚餐的组织者。"
+    }
+  },
+  {
+    "word": "出し物",
+    "reading": "だしもの",
+    "meaning": "助兴节目",
+    "level": "N1",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "宴会で出し物を披露した。",
+      "reading": "えんかい・だしもの・ひろう",
+      "translation": "在宴会上表演了助兴节目。"
+    }
+  },
+  {
+    "word": "芸",
+    "reading": "げい",
+    "meaning": "才艺",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "宴会で一芸を披露した。",
+      "reading": "えんかい・いちげい・ひろう",
+      "translation": "在宴会上展示了一项才艺。"
+    }
+  },
+  {
+    "word": "盛り上がる",
+    "reading": "もりあがる",
+    "meaning": "气氛热烈",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "話が盛り上がって時間を忘れた。",
+      "reading": "はなし・も あ・じかん・わす",
+      "translation": "聊得热火朝天忘记了时间。"
+    }
+  },
+  {
+    "word": "意気投合",
+    "reading": "いきとうごう",
+    "meaning": "意气相投",
+    "level": "N1",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "初対面なのに意気投合した。",
+      "reading": "しょたいめん・いきとうごう",
+      "translation": "明明是初次见面却意气相投。"
+    }
+  },
+  {
+    "word": "打ち上げ",
+    "reading": "うちあげ",
+    "meaning": "庆功宴",
+    "level": "N2",
+    "category": "酒文化与聚会用语",
+    "example": {
+      "sentence": "プロジェクト終了後、打ち上げをした。",
+      "reading": "プロジェクトしゅうりょうご・うちあ",
+      "translation": "项目结束后举办了庆功宴。"
+    }
+  },
+  {
+    "word": "化粧品",
+    "reading": "けしょうひん",
+    "meaning": "化妆品",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "新しい化粧品を試してみた。",
+      "reading": "あたら・けしょうひん・ため",
+      "translation": "试用了新的化妆品。"
+    }
+  },
+  {
+    "word": "スキンケア",
+    "reading": null,
+    "meaning": "护肤",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "毎晩、丁寧にスキンケアをしている。",
+      "reading": "まいばん・ていねい",
+      "translation": "每晚都仔细地进行护肤。"
+    }
+  },
+  {
+    "word": "保湿",
+    "reading": "ほしつ",
+    "meaning": "保湿",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "乾燥する季節は保湿が大切だ。",
+      "reading": "かんそう・きせつ・ほしつ・たいせつ",
+      "translation": "干燥的季节保湿很重要。"
+    }
+  },
+  {
+    "word": "美白",
+    "reading": "びはく",
+    "meaning": "美白",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "美白効果のある化粧水を使っている。",
+      "reading": "びはくこうか・けしょうすい・つか",
+      "translation": "正在使用具有美白效果的化妆水。"
+    }
+  },
+  {
+    "word": "化粧下地",
+    "reading": "けしょうしたじ",
+    "meaning": "妆前乳",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "ファンデーションの前に化粧下地を塗る。",
+      "reading": "まえ・けしょうしたじ・ぬ",
+      "translation": "涂粉底之前先涂妆前乳。"
+    }
+  },
+  {
+    "word": "ファンデーション",
+    "reading": null,
+    "meaning": "粉底",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "肌に合うファンデーションを探している。",
+      "reading": "はだ・あ・さが",
+      "translation": "正在寻找适合肤质的粉底。"
+    }
+  },
+  {
+    "word": "口紅",
+    "reading": "くちべに",
+    "meaning": "口红",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "新しい口紅の色を試した。",
+      "reading": "あたら・くちべに・いろ・ため",
+      "translation": "试了新色号的口红。"
+    }
+  },
+  {
+    "word": "アイシャドウ",
+    "reading": null,
+    "meaning": "眼影",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "シンプルなアイシャドウを選んだ。",
+      "reading": "えら",
+      "translation": "选择了简约的眼影。"
+    }
+  },
+  {
+    "word": "マスカラ",
+    "reading": null,
+    "meaning": "睫毛膏",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "マスカラでまつげを長く見せる。",
+      "reading": "なが・み",
+      "translation": "用睫毛膏让睫毛看起来更长。"
+    }
+  },
+  {
+    "word": "眉毛",
+    "reading": "まゆげ",
+    "meaning": "眉毛",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "眉毛の形を整えてもらった。",
+      "reading": "まゆげ・かたち・ととの",
+      "translation": "请人修整了眉毛的形状。"
+    }
+  },
+  {
+    "word": "美容液",
+    "reading": "びようえき",
+    "meaning": "精华液",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "夜は美容液をたっぷり使う。",
+      "reading": "よる・びようえき・つか",
+      "translation": "晚上会大量使用精华液。"
+    }
+  },
+  {
+    "word": "化粧水",
+    "reading": "けしょうすい",
+    "meaning": "化妆水",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "洗顔の後、化粧水をつける。",
+      "reading": "せんがん・あと・けしょうすい",
+      "translation": "洗脸后涂上化妆水。"
+    }
+  },
+  {
+    "word": "パック",
+    "reading": null,
+    "meaning": "面膜",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "週に二回パックをしている。",
+      "reading": "しゅう・にかい",
+      "translation": "每周做两次面膜。"
+    }
+  },
+  {
+    "word": "スパ",
+    "reading": null,
+    "meaning": "水疗",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "週末はスパでリラックスした。",
+      "reading": "しゅうまつ",
+      "translation": "周末在水疗中心放松了身心。"
+    }
+  },
+  {
+    "word": "エステ",
+    "reading": null,
+    "meaning": "美容护理",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "エステに通ってフェイシャルケアを受けている。",
+      "reading": "かよ",
+      "translation": "正在美容院接受面部护理。"
+    }
+  },
+  {
+    "word": "ネイル",
+    "reading": null,
+    "meaning": "美甲",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "週末にネイルサロンに行く予定だ。",
+      "reading": "しゅうまつ・サロン・い・よてい",
+      "translation": "预计周末去美甲店。"
+    }
+  },
+  {
+    "word": "ヘアメイク",
+    "reading": null,
+    "meaning": "发型化妆",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "結婚式のヘアメイクを予約した。",
+      "reading": "けっこんしき・よやく",
+      "translation": "预约了婚礼的发型化妆服务。"
+    }
+  },
+  {
+    "word": "トリートメント",
+    "reading": null,
+    "meaning": "护理（头发）",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "美容院でトリートメントをしてもらった。",
+      "reading": "びよういん",
+      "translation": "在美发店做了护发护理。"
+    }
+  },
+  {
+    "word": "美容師",
+    "reading": "びようし",
+    "meaning": "美发师",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "担当の美容師を指名した。",
+      "reading": "たんとう・びようし・しめい",
+      "translation": "指定了负责的美发师。"
+    }
+  },
+  {
+    "word": "カット",
+    "reading": null,
+    "meaning": "剪发",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "髪をばっさりカットした。",
+      "reading": "かみ",
+      "translation": "把头发剪短了很多。"
+    }
+  },
+  {
+    "word": "パーマ",
+    "reading": null,
+    "meaning": "烫发",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "緩めのパーマをかけた。",
+      "reading": "ゆる",
+      "translation": "烫了个轻微卷度的头发。"
+    }
+  },
+  {
+    "word": "カラーリング",
+    "reading": null,
+    "meaning": "染发",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "明るい色にカラーリングした。",
+      "reading": "あか・いろ",
+      "translation": "染成了明亮的颜色。"
+    }
+  },
+  {
+    "word": "毛穴",
+    "reading": "けあな",
+    "meaning": "毛孔",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "毛穴の汚れが気になる。",
+      "reading": "けあな・よご・き",
+      "translation": "很在意毛孔的污垢。"
+    }
+  },
+  {
+    "word": "しみ",
+    "reading": null,
+    "meaning": "斑点",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "紫外線でしみが増えた。",
+      "reading": "しがいせん・ふ",
+      "translation": "因紫外线斑点增多了。"
+    }
+  },
+  {
+    "word": "くすみ",
+    "reading": null,
+    "meaning": "暗沉",
+    "level": "N2",
+    "category": "时尚美妆产业",
+    "example": {
+      "sentence": "肌のくすみが気になる年齢だ。",
+      "reading": "はだ・き・ねんれい",
+      "translation": "正是开始在意肤色暗沉的年纪。"
+    }
+  },
+  {
+    "word": "フリマ",
+    "reading": null,
+    "meaning": "跳蚤市场",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "週末にフリマアプリで服を売った。",
+      "reading": "しゅうまつ・アプリ・ふく・う",
+      "translation": "周末在跳蚤市场应用上卖了衣服。"
+    }
+  },
+  {
+    "word": "中古市場",
+    "reading": "ちゅうこしじょう",
+    "meaning": "二手市场",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "中古市場が拡大している。",
+      "reading": "ちゅうこしじょう・かくだい",
+      "translation": "二手市场正在扩大。"
+    }
+  },
+  {
+    "word": "出品",
+    "reading": "しゅっぴん",
+    "meaning": "上架出售",
+    "level": "N1",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "使わない本を出品した。",
+      "reading": "つか・ほん・しゅっぴん",
+      "translation": "把不用的书上架出售了。"
+    }
+  },
+  {
+    "word": "落札",
+    "reading": "らくさつ",
+    "meaning": "拍卖中标",
+    "level": "N1",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "オークションで無事に落札できた。",
+      "reading": "オークション・ぶじ・らくさつ",
+      "translation": "在拍卖中顺利拍到了。"
+    }
+  },
+  {
+    "word": "出品者",
+    "reading": "しゅっぴんしゃ",
+    "meaning": "卖家",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "出品者に質問を送った。",
+      "reading": "しゅっぴんしゃ・しつもん・おく",
+      "translation": "向卖家发送了询问。"
+    }
+  },
+  {
+    "word": "購入者",
+    "reading": "こうにゅうしゃ",
+    "meaning": "买家",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "購入者からの評価が高い。",
+      "reading": "こうにゅうしゃ・ひょうか・たか",
+      "translation": "来自买家的评价很高。"
+    }
+  },
+  {
+    "word": "値引き",
+    "reading": "ねびき",
+    "meaning": "降价",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "値引き交渉をしてみた。",
+      "reading": "ねびき・こうしょう",
+      "translation": "试着进行了砍价谈判。"
+    }
+  },
+  {
+    "word": "値下げ",
+    "reading": "ねさげ",
+    "meaning": "降价",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "売れないので値下げした。",
+      "reading": "う・ねさ",
+      "translation": "因为卖不出去所以降价了。"
+    }
+  },
+  {
+    "word": "買取",
+    "reading": "かいとり",
+    "meaning": "收购（二手物品）",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "不用品を買取に出した。",
+      "reading": "ふようひん・かいとり・だ",
+      "translation": "把不需要的物品送去收购了。"
+    }
+  },
+  {
+    "word": "譲渡",
+    "reading": "じょうと",
+    "meaning": "转让",
+    "level": "N1",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "不要な家具を無料で譲渡した。",
+      "reading": "ふよう・かぐ・むりょう・じょうと",
+      "translation": "把不需要的家具免费转让了。"
+    }
+  },
+  {
+    "word": "シェアリングエコノミー",
+    "reading": null,
+    "meaning": "共享经济",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "シェアリングエコノミーが広がっている。",
+      "reading": "ひろ",
+      "translation": "共享经济正在普及。"
+    }
+  },
+  {
+    "word": "カーシェア",
+    "reading": null,
+    "meaning": "共享汽车",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "カーシェアを利用して出かけた。",
+      "reading": "りよう・で",
+      "translation": "利用共享汽车出门了。"
+    }
+  },
+  {
+    "word": "レンタル",
+    "reading": null,
+    "meaning": "租赁",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "スーツをレンタルすることにした。",
+      "reading": null,
+      "translation": "决定租赁西装了。"
+    }
+  },
+  {
+    "word": "サブスク",
+    "reading": null,
+    "meaning": "订阅制",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "動画配信のサブスクに入っている。",
+      "reading": "どうがはいしん・はい",
+      "translation": "加入了视频流媒体的订阅服务。"
+    }
+  },
+  {
+    "word": "シェアハウス",
+    "reading": null,
+    "meaning": "合租房",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "外国人とシェアハウスで暮らしている。",
+      "reading": "がいこくじん・く",
+      "translation": "正与外国人一起住在合租房里。"
+    }
+  },
+  {
+    "word": "マッチング",
+    "reading": null,
+    "meaning": "匹配",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "条件に合う相手とマッチングした。",
+      "reading": "じょうけん・あ・あいて",
+      "translation": "与符合条件的对方成功匹配了。"
+    }
+  },
+  {
+    "word": "個人間取引",
+    "reading": "こじんかんとりひき",
+    "meaning": "个人间交易",
+    "level": "N1",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "個人間取引でのトラブルが増えている。",
+      "reading": "こじんかんとりひき・トラブル・ふ",
+      "translation": "个人间交易中的纠纷正在增加。"
+    }
+  },
+  {
+    "word": "委託販売",
+    "reading": "いたくはんばい",
+    "meaning": "委托销售",
+    "level": "N1",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "委託販売の店に商品を預けた。",
+      "reading": "いたくはんばい・みせ・しょうひん・あず",
+      "translation": "把商品交给了委托销售的店铺。"
+    }
+  },
+  {
+    "word": "掘り出し物",
+    "reading": "ほりだしもの",
+    "meaning": "淘到的便宜好货",
+    "level": "N1",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "フリマで掘り出し物を見つけた。",
+      "reading": "ほりだしもの・み",
+      "translation": "在跳蚤市场淘到了便宜好货。"
+    }
+  },
+  {
+    "word": "美品",
+    "reading": "びひん",
+    "meaning": "品相良好的二手品",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "美品状態のバッグを購入した。",
+      "reading": "びひんじょうたい・バッグ・こうにゅう",
+      "translation": "购买了品相良好的包。"
+    }
+  },
+  {
+    "word": "ジャンク品",
+    "reading": "ジャンクひん",
+    "meaning": "破损品，垃圾货",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "ジャンク品として安く売られていた。",
+      "reading": "やす・う",
+      "translation": "作为破损品被便宜地卖出了。"
+    }
+  },
+  {
+    "word": "状態",
+    "reading": "じょうたい",
+    "meaning": "状态",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "商品の状態を写真で確認した。",
+      "reading": "しょうひん・じょうたい・しゃしん・かくにん",
+      "translation": "通过照片确认了商品的状态。"
+    }
+  },
+  {
+    "word": "匿名配送",
+    "reading": "とくめいはいそう",
+    "meaning": "匿名配送",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "匿名配送を利用して安心して取引した。",
+      "reading": "とくめいはいそう・りよう・あんしん・とりひき",
+      "translation": "利用匿名配送安心地完成了交易。"
+    }
+  },
+  {
+    "word": "発送",
+    "reading": "はっそう",
+    "meaning": "发货",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "商品はすぐに発送された。",
+      "reading": "しょうひん・はっそう",
+      "translation": "商品很快就发货了。"
+    }
+  },
+  {
+    "word": "受け取り",
+    "reading": "うけとり",
+    "meaning": "收货",
+    "level": "N2",
+    "category": "二手交易与共享经济",
+    "example": {
+      "sentence": "荷物の受け取りにサインをした。",
+      "reading": "にもつ・うけとり・サイン",
+      "translation": "签收了包裹的收货单。"
+    }
+  },
+  {
+    "word": "文房具",
+    "reading": "ぶんぼうぐ",
+    "meaning": "文具",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "新学期のために文房具を買いそろえた。",
+      "reading": "しんがっき・ぶんぼうぐ・か",
+      "translation": "为新学期备齐了文具。"
+    }
+  },
+  {
+    "word": "はさみ",
+    "reading": null,
+    "meaning": "剪刀",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "はさみで紙を切った。",
+      "reading": "かみ・き",
+      "translation": "用剪刀剪了纸。"
+    }
+  },
+  {
+    "word": "のり",
+    "reading": null,
+    "meaning": "胶水",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "のりで写真を貼り付けた。",
+      "reading": "しゃしん・は つ",
+      "translation": "用胶水粘贴了照片。"
+    }
+  },
+  {
+    "word": "テープ",
+    "reading": null,
+    "meaning": "胶带",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "箱をテープで留めた。",
+      "reading": "はこ・と",
+      "translation": "用胶带把箱子封好了。"
+    }
+  },
+  {
+    "word": "クリップ",
+    "reading": null,
+    "meaning": "回形针",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "書類をクリップでまとめた。",
+      "reading": "しょるい",
+      "translation": "用回形针把文件夹在一起了。"
+    }
+  },
+  {
+    "word": "ホチキス",
+    "reading": null,
+    "meaning": "订书机",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "資料をホチキスで留めた。",
+      "reading": "しりょう・と",
+      "translation": "用订书机把资料订好了。"
+    }
+  },
+  {
+    "word": "消しゴム",
+    "reading": "けしゴム",
+    "meaning": "橡皮",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "消しゴムで間違いを消した。",
+      "reading": "けしゴム・まちが・け",
+      "translation": "用橡皮擦掉了错误。"
+    }
+  },
+  {
+    "word": "定規",
+    "reading": "じょうぎ",
+    "meaning": "尺子",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "定規で線を引いた。",
+      "reading": "じょうぎ・せん・ひ",
+      "translation": "用尺子画了线。"
+    }
+  },
+  {
+    "word": "付箋",
+    "reading": "ふせん",
+    "meaning": "便利贴",
+    "level": "N1",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "重要な部分に付箋を貼った。",
+      "reading": "じゅうよう・ぶぶん・ふせん・は",
+      "translation": "在重要的部分贴上了便利贴。"
+    }
+  },
+  {
+    "word": "メモ帳",
+    "reading": "メモちょう",
+    "meaning": "备忘录本",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "メモ帳にアイデアを書き留めた。",
+      "reading": "アイデア・か と",
+      "translation": "把想法记录在了备忘录本上。"
+    }
+  },
+  {
+    "word": "手帳",
+    "reading": "てちょう",
+    "meaning": "记事本",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "手帳にスケジュールを書き込んでいる。",
+      "reading": "てちょう・スケジュール・か こ",
+      "translation": "正在记事本上记录日程安排。"
+    }
+  },
+  {
+    "word": "財布",
+    "reading": "さいふ",
+    "meaning": "钱包",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "新しい財布を買った。",
+      "reading": "あたら・さいふ・か",
+      "translation": "买了新的钱包。"
+    }
+  },
+  {
+    "word": "鍵",
+    "reading": "かぎ",
+    "meaning": "钥匙",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "家の鍵をなくしてしまった。",
+      "reading": "いえ・かぎ",
+      "translation": "把家里的钥匙弄丢了。"
+    }
+  },
+  {
+    "word": "傘立て",
+    "reading": "かさたて",
+    "meaning": "伞架",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "玄関に傘立てを置いている。",
+      "reading": "げんかん・かさたて・お",
+      "translation": "在玄关放着伞架。"
+    }
+  },
+  {
+    "word": "ハンカチ",
+    "reading": null,
+    "meaning": "手帕",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "ハンカチで手を拭いた。",
+      "reading": "て・ふ",
+      "translation": "用手帕擦了手。"
+    }
+  },
+  {
+    "word": "ティッシュ",
+    "reading": null,
+    "meaning": "纸巾",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "ティッシュを箱ごと買っておいた。",
+      "reading": "はこ・か",
+      "translation": "提前买了一整盒纸巾。"
+    }
+  },
+  {
+    "word": "爪切り",
+    "reading": "つめきり",
+    "meaning": "指甲刀",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "爪切りで爪を切った。",
+      "reading": "つめきり・つめ・き",
+      "translation": "用指甲刀剪了指甲。"
+    }
+  },
+  {
+    "word": "耳かき",
+    "reading": "みみかき",
+    "meaning": "掏耳勺",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "耳かきで耳掃除をした。",
+      "reading": "みみかき・みみそうじ",
+      "translation": "用掏耳勺掏了耳朵。"
+    }
+  },
+  {
+    "word": "歯ブラシ",
+    "reading": "はブラシ",
+    "meaning": "牙刷",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "歯ブラシを新しいものに替えた。",
+      "reading": "はブラシ・あたら・か",
+      "translation": "换了新的牙刷。"
+    }
+  },
+  {
+    "word": "くし",
+    "reading": null,
+    "meaning": "梳子",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "くしで髪をとかした。",
+      "reading": "かみ",
+      "translation": "用梳子梳了头发。"
+    }
+  },
+  {
+    "word": "鏡",
+    "reading": "かがみ",
+    "meaning": "镜子",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "鏡を見て身だしなみを整えた。",
+      "reading": "かがみ・み・みだしなみ・ととの",
+      "translation": "照镜子整理了仪容。"
+    }
+  },
+  {
+    "word": "目覚まし時計",
+    "reading": "めざましどけい",
+    "meaning": "闹钟",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "目覚まし時計をセットして寝た。",
+      "reading": "めざましどけい・セット・ね",
+      "translation": "设置好闹钟后睡觉了。"
+    }
+  },
+  {
+    "word": "印鑑",
+    "reading": "いんかん",
+    "meaning": "印章",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "契約書に印鑑を押した。",
+      "reading": "けいやくしょ・いんかん・お",
+      "translation": "在合同上盖了印章。"
+    }
+  },
+  {
+    "word": "スタンプ",
+    "reading": null,
+    "meaning": "图章，邮票",
+    "level": "N2",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "荷物にスタンプを押した。",
+      "reading": "にもつ・お",
+      "translation": "在包裹上盖了印章。"
+    }
+  },
+  {
+    "word": "裁縫道具",
+    "reading": "さいほうどうぐ",
+    "meaning": "缝纫用具",
+    "level": "N1",
+    "category": "日常小物件名称",
+    "example": {
+      "sentence": "裁縫道具でボタンを付け直した。",
+      "reading": "さいほうどうぐ・ボタン・つ なお",
+      "translation": "用缝纫用具重新缝上了纽扣。"
+    }
+  },
+  {
+    "word": "だるさ",
+    "reading": null,
+    "meaning": "倦怠感",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "全身にだるさを感じる。",
+      "reading": "ぜんしん・かん",
+      "translation": "感觉全身倦怠无力。"
+    }
+  },
+  {
+    "word": "むかつく",
+    "reading": null,
+    "meaning": "恶心，反胃",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "食べ過ぎて胃がむかつく。",
+      "reading": "た す・い",
+      "translation": "吃太多导致胃里反胃。"
+    }
+  },
+  {
+    "word": "吐き気",
+    "reading": "はきけ",
+    "meaning": "恶心感",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "吐き気がして横になった。",
+      "reading": "はきけ・よこ",
+      "translation": "因感到恶心而躺下了。"
+    }
+  },
+  {
+    "word": "めまい",
+    "reading": null,
+    "meaning": "头晕",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "立ち上がった瞬間、めまいがした。",
+      "reading": "た あ・しゅんかん",
+      "translation": "站起来的瞬间感到一阵头晕。"
+    }
+  },
+  {
+    "word": "立ちくらみ",
+    "reading": "たちくらみ",
+    "meaning": "起身眩晕",
+    "level": "N1",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "貧血で立ちくらみを起こしやすい。",
+      "reading": "ひんけつ・たちくらみ・お",
+      "translation": "因贫血容易起身眩晕。"
+    }
+  },
+  {
+    "word": "しびれ",
+    "reading": null,
+    "meaning": "麻木",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "足にしびれを感じる。",
+      "reading": "あし・かん",
+      "translation": "感到腿部麻木。"
+    }
+  },
+  {
+    "word": "こり",
+    "reading": null,
+    "meaning": "酸痛，僵硬",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "肩のこりがひどい。",
+      "reading": "かた",
+      "translation": "肩膀酸痛得厉害。"
+    }
+  },
+  {
+    "word": "かゆみ",
+    "reading": null,
+    "meaning": "瘙痒",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "虫に刺されてかゆみがある。",
+      "reading": "むし・さ",
+      "translation": "被虫子咬了感到瘙痒。"
+    }
+  },
+  {
+    "word": "ヒリヒリ",
+    "reading": null,
+    "meaning": "火辣辣的疼",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "日焼けした肌がヒリヒリする。",
+      "reading": "ひや・はだ",
+      "translation": "晒伤的皮肤火辣辣地疼。"
+    }
+  },
+  {
+    "word": "ズキズキ",
+    "reading": null,
+    "meaning": "一跳一跳地疼",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "頭がズキズキ痛む。",
+      "reading": "あたま・いた",
+      "translation": "头一跳一跳地疼。"
+    }
+  },
+  {
+    "word": "チクチク",
+    "reading": null,
+    "meaning": "刺痛",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "注射の後、チクチクした痛みがあった。",
+      "reading": "ちゅうしゃ・あと・いた",
+      "translation": "打针后有针刺般的疼痛感。"
+    }
+  },
+  {
+    "word": "ガンガン",
+    "reading": null,
+    "meaning": "（头）剧烈地疼",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "二日酔いで頭がガンガンする。",
+      "reading": "ふつかよ・あたま",
+      "translation": "因宿醉头疼得厉害。"
+    }
+  },
+  {
+    "word": "キリキリ",
+    "reading": null,
+    "meaning": "（胃等）绞痛",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "ストレスで胃がキリキリ痛む。",
+      "reading": "ストレス・い・いた",
+      "translation": "因压力胃部绞痛。"
+    }
+  },
+  {
+    "word": "むくみ",
+    "reading": null,
+    "meaning": "浮肿",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "足のむくみが気になる。",
+      "reading": "あし・き",
+      "translation": "很在意腿部的浮肿。"
+    }
+  },
+  {
+    "word": "息切れ",
+    "reading": "いきぎれ",
+    "meaning": "气喘",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "階段を上ると息切れがする。",
+      "reading": "かいだん・のぼ・いきぎれ",
+      "translation": "一爬楼梯就气喘吁吁。"
+    }
+  },
+  {
+    "word": "動悸",
+    "reading": "どうき",
+    "meaning": "心悸",
+    "level": "N1",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "緊張すると動悸がする。",
+      "reading": "きんちょう・どうき",
+      "translation": "一紧张就会心悸。"
+    }
+  },
+  {
+    "word": "冷え性",
+    "reading": "ひえしょう",
+    "meaning": "畏寒体质",
+    "level": "N1",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "冷え性で冬は辛い。",
+      "reading": "ひえしょう・ふゆ・つら",
+      "translation": "因畏寒体质冬天很难受。"
+    }
+  },
+  {
+    "word": "便秘",
+    "reading": "べんぴ",
+    "meaning": "便秘",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "便秘気味で困っている。",
+      "reading": "べんぴぎみ・こま",
+      "translation": "因有点便秘而困扰。"
+    }
+  },
+  {
+    "word": "下痢",
+    "reading": "げり",
+    "meaning": "腹泻",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "食あたりで下痢をした。",
+      "reading": "しょくあたり・げり",
+      "translation": "因食物中毒而腹泻了。"
+    }
+  },
+  {
+    "word": "食あたり",
+    "reading": "しょくあたり",
+    "meaning": "食物中毒",
+    "level": "N1",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "食あたりで一日寝込んだ。",
+      "reading": "しょくあたり・いちにち・ねこ",
+      "translation": "因食物中毒卧床了一天。"
+    }
+  },
+  {
+    "word": "寝違え",
+    "reading": "ねちがえ",
+    "meaning": "落枕",
+    "level": "N1",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "寝違えて首が痛い。",
+      "reading": "ねちが・くび・いた",
+      "translation": "落枕了脖子很疼。"
+    }
+  },
+  {
+    "word": "肩こり",
+    "reading": "かたこり",
+    "meaning": "肩膀酸痛",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "デスクワークで肩こりがひどい。",
+      "reading": "デスクワーク・かたこり",
+      "translation": "因案头工作肩膀酸痛得厉害。"
+    }
+  },
+  {
+    "word": "腰痛",
+    "reading": "ようつう",
+    "meaning": "腰痛",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "慢性的な腰痛に悩んでいる。",
+      "reading": "まんせいてき・ようつう・なや",
+      "translation": "为慢性腰痛而烦恼。"
+    }
+  },
+  {
+    "word": "頭痛",
+    "reading": "ずつう",
+    "meaning": "头痛",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "頭痛がひどくて薬を飲んだ。",
+      "reading": "ずつう・くすり・の",
+      "translation": "头痛得厉害吃了药。"
+    }
+  },
+  {
+    "word": "発熱",
+    "reading": "はつねつ",
+    "meaning": "发烧",
+    "level": "N2",
+    "category": "身体不适口语表达",
+    "example": {
+      "sentence": "発熱したので学校を休んだ。",
+      "reading": "はつねつ・がっこう・やす",
+      "translation": "因发烧向学校请了假。"
+    }
+  }
+]

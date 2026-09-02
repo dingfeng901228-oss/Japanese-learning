@@ -1,0 +1,2402 @@
+[
+  {
+    "word": "運転免許",
+    "reading": "うんてんめんきょ",
+    "meaning": "驾照",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "来月、運転免許を取得する予定だ。",
+      "reading": "らいげつ・うんてんめんきょ・しゅとく・よてい",
+      "translation": "预计下个月考取驾照。"
+    }
+  },
+  {
+    "word": "教習所",
+    "reading": "きょうしゅうじょ",
+    "meaning": "驾校",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "週末に教習所に通っている。",
+      "reading": "しゅうまつ・きょうしゅうじょ・かよ",
+      "translation": "周末在驾校上课。"
+    }
+  },
+  {
+    "word": "仮免許",
+    "reading": "かりめんきょ",
+    "meaning": "临时驾照",
+    "level": "N1",
+    "category": null,
+    "example": {
+      "sentence": "仮免許の試験に合格した。",
+      "reading": "かりめんきょ・しけん・ごうかく",
+      "translation": "通过了临时驾照的考试。"
+    }
+  },
+  {
+    "word": "本免許",
+    "reading": "ほんめんきょ",
+    "meaning": "正式驾照",
+    "level": "N1",
+    "category": null,
+    "example": {
+      "sentence": "本免許の試験を来週受ける。",
+      "reading": "ほんめんきょ・しけん・らいしゅう・う",
+      "translation": "下周将参加正式驾照的考试。"
+    }
+  },
+  {
+    "word": "実技試験",
+    "reading": "じつぎしけん",
+    "meaning": "路考",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "実技試験に緊張している。",
+      "reading": "じつぎしけん・きんちょう",
+      "translation": "对路考感到紧张。"
+    }
+  },
+  {
+    "word": "学科試験",
+    "reading": "がっかしけん",
+    "meaning": "笔试",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "学科試験は無事に合格した。",
+      "reading": "がっかしけん・ぶじ・ごうかく",
+      "translation": "笔试顺利通过了。"
+    }
+  },
+  {
+    "word": "路上教習",
+    "reading": "ろじょうきょうしゅう",
+    "meaning": "路上教学",
+    "level": "N1",
+    "category": null,
+    "example": {
+      "sentence": "初めての路上教習は緊張した。",
+      "reading": "はじ・ろじょうきょうしゅう・きんちょう",
+      "translation": "第一次路上教学练习感到很紧张。"
+    }
+  },
+  {
+    "word": "縦列駐車",
+    "reading": "じゅうれつちゅうしゃ",
+    "meaning": "纵向停车（倒库）",
+    "level": "N1",
+    "category": null,
+    "example": {
+      "sentence": "縦列駐車がなかなか上手くできない。",
+      "reading": "じゅうれつちゅうしゃ・じょうず",
+      "translation": "纵向停车怎么也做不好。"
+    }
+  },
+  {
+    "word": "車庫入れ",
+    "reading": "しゃこいれ",
+    "meaning": "入库",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "車庫入れの練習を繰り返した。",
+      "reading": "しゃこいれ・れんしゅう・く かえ",
+      "translation": "反复练习了入库停车。"
+    }
+  },
+  {
+    "word": "一時停止",
+    "reading": "いちじていし",
+    "meaning": "暂停",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "一時停止の標識を見逃した。",
+      "reading": "いちじていし・ひょうしき・みのが",
+      "translation": "没看到暂停的标志。"
+    }
+  },
+  {
+    "word": "信号無視",
+    "reading": "しんごうむし",
+    "meaning": "闯红灯",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "信号無視は重い違反になる。",
+      "reading": "しんごうむし・おも・いはん",
+      "translation": "闯红灯是严重的违规行为。"
+    }
+  },
+  {
+    "word": "速度超過",
+    "reading": "そくどちょうか",
+    "meaning": "超速",
+    "level": "N1",
+    "category": null,
+    "example": {
+      "sentence": "速度超過で罰金を払った。",
+      "reading": "そくどちょうか・ばっきん・はら",
+      "translation": "因超速支付了罚款。"
+    }
+  },
+  {
+    "word": "飲酒運転",
+    "reading": "いんしゅうんてん",
+    "meaning": "酒驾",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "飲酒運転は絶対にしてはいけない。",
+      "reading": "いんしゅうんてん・ぜったい",
+      "translation": "绝对不能酒后驾车。"
+    }
+  },
+  {
+    "word": "免許更新",
+    "reading": "めんきょこうしん",
+    "meaning": "驾照更新",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "来月、免許更新の手続きに行く。",
+      "reading": "らいげつ・めんきょこうしん・てつづ・い",
+      "translation": "下个月要去办理驾照更新手续。"
+    }
+  },
+  {
+    "word": "違反点数",
+    "reading": "いはんてんすう",
+    "meaning": "违章记分",
+    "level": "N1",
+    "category": null,
+    "example": {
+      "sentence": "違反点数が累積してしまった。",
+      "reading": "いはんてんすう・るいせき",
+      "translation": "违章记分累积起来了。"
+    }
+  },
+  {
+    "word": "免許取り消し",
+    "reading": "めんきょとりけし",
+    "meaning": "吊销驾照",
+    "level": "N1",
+    "category": null,
+    "example": {
+      "sentence": "重大な違反で免許取り消しになった。",
+      "reading": "じゅうだい・いはん・めんきょとりけし",
+      "translation": "因重大违规被吊销了驾照。"
+    }
+  },
+  {
+    "word": "講習",
+    "reading": "こうしゅう",
+    "meaning": "培训，学习班",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "違反者講習を受けた。",
+      "reading": "いはんしゃこうしゅう・う",
+      "translation": "接受了违规者培训班。"
+    }
+  },
+  {
+    "word": "ペーパードライバー",
+    "reading": null,
+    "meaning": "有本没经验的司机（俗语）",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "免許は持っているがペーパードライバーだ。",
+      "reading": "めんきょ・も",
+      "translation": "虽然有驾照但是只是纸上司机（没有实际驾驶经验）。"
+    }
+  },
+  {
+    "word": "教官",
+    "reading": "きょうかん",
+    "meaning": "教练",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "優しい教官に教えてもらった。",
+      "reading": "やさ・きょうかん・おし",
+      "translation": "从和蔼的教练那里学到了驾驶技巧。"
+    }
+  },
+  {
+    "word": "ハンドル",
+    "reading": null,
+    "meaning": "方向盘",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "ハンドルをしっかり握った。",
+      "reading": "にぎ",
+      "translation": "紧紧握住了方向盘。"
+    }
+  },
+  {
+    "word": "ブレーキ",
+    "reading": null,
+    "meaning": "刹车",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "急いでブレーキを踏んだ。",
+      "reading": "いそ・ふ",
+      "translation": "赶紧踩了刹车。"
+    }
+  },
+  {
+    "word": "アクセル",
+    "reading": null,
+    "meaning": "油门",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "アクセルを緩めて減速した。",
+      "reading": "ゆる・げんそく",
+      "translation": "松开油门减速了。"
+    }
+  },
+  {
+    "word": "サイドミラー",
+    "reading": null,
+    "meaning": "后视镜",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "サイドミラーで後方を確認した。",
+      "reading": "こうほう・かくにん",
+      "translation": "通过后视镜确认了后方情况。"
+    }
+  },
+  {
+    "word": "シートベルト",
+    "reading": null,
+    "meaning": "安全带",
+    "level": "N2",
+    "category": null,
+    "example": {
+      "sentence": "シートベルトを必ず着用する。",
+      "reading": "かなら・ちゃくよう",
+      "translation": "一定要系好安全带。"
+    }
+  },
+  {
+    "word": "死角",
+    "reading": "しかく",
+    "meaning": "盲区",
+    "level": "N1",
+    "category": null,
+    "example": {
+      "sentence": "死角に注意しながら運転した。",
+      "reading": "しかく・ちゅうい・うんてん",
+      "translation": "注意盲区的同时进行了驾驶。"
+    }
+  },
+  {
+    "word": "表情を曇らせる",
+    "reading": "ひょうじょうをくもらせる",
+    "meaning": "面露愁容",
+    "level": "N2",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "悪い知らせに表情を曇らせた。",
+      "reading": "わる・し・ひょうじょう・くも",
+      "translation": "因坏消息而面露愁容。"
+    }
+  },
+  {
+    "word": "顔をしかめる",
+    "reading": "かおをしかめる",
+    "meaning": "皱眉",
+    "level": "N2",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "苦い薬に顔をしかめた。",
+      "reading": "にが・くすり・かお",
+      "translation": "因苦药而皱起了眉头。"
+    }
+  },
+  {
+    "word": "目を丸くする",
+    "reading": "めをまるくする",
+    "meaning": "瞪大眼睛（惊讶）",
+    "level": "N2",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "意外な知らせに目を丸くした。",
+      "reading": "いがい・し・め・まる",
+      "translation": "因意外的消息而瞪大了眼睛。"
+    }
+  },
+  {
+    "word": "眉をひそめる",
+    "reading": "まゆをひそめる",
+    "meaning": "皱眉（不悦）",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "不快な話に眉をひそめた。",
+      "reading": "ふかい・はなし・まゆ",
+      "translation": "因不愉快的话而皱起了眉头。"
+    }
+  },
+  {
+    "word": "口をとがらせる",
+    "reading": "くちをとがらせる",
+    "meaning": "撅嘴",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "子供が口をとがらせて不満を示した。",
+      "reading": "こども・くち・ふまん・しめ",
+      "translation": "孩子撅着嘴表示不满。"
+    }
+  },
+  {
+    "word": "頬を赤らめる",
+    "reading": "ほほをあからめる",
+    "meaning": "脸红",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "褒められて頬を赤らめた。",
+      "reading": "ほ・ほほ・あか",
+      "translation": "因被夸奖而脸红了。"
+    }
+  },
+  {
+    "word": "唇を噛む",
+    "reading": "くちびるをかむ",
+    "meaning": "咬嘴唇（忍耐）",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "悔しさに唇を噛んだ。",
+      "reading": "くや・くちびる・か",
+      "translation": "因懊悔而咬紧了嘴唇。"
+    }
+  },
+  {
+    "word": "涙をこらえる",
+    "reading": "なみだをこらえる",
+    "meaning": "强忍眼泪",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "別れの場面で涙をこらえた。",
+      "reading": "わか・ばめん・なみだ",
+      "translation": "在离别的场景中强忍住了眼泪。"
+    }
+  },
+  {
+    "word": "目をそらす",
+    "reading": "めをそらす",
+    "meaning": "移开视线",
+    "level": "N2",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "気まずくて目をそらしてしまった。",
+      "reading": "きまず・め",
+      "translation": "因尴尬而不由得移开了视线。"
+    }
+  },
+  {
+    "word": "目を輝かせる",
+    "reading": "めをかがやかせる",
+    "meaning": "眼睛发亮（兴奋）",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "新しいおもちゃに目を輝かせた。",
+      "reading": "あたら・め・かがや",
+      "translation": "因新玩具而眼睛发亮。"
+    }
+  },
+  {
+    "word": "うつむく",
+    "reading": null,
+    "meaning": "低头",
+    "level": "N2",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "叱られてうつむいてしまった。",
+      "reading": "しか",
+      "translation": "被训斥后不由得低下了头。"
+    }
+  },
+  {
+    "word": "見つめる",
+    "reading": "みつめる",
+    "meaning": "凝视",
+    "level": "N2",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "じっと相手の目を見つめた。",
+      "reading": "あいて・め・み",
+      "translation": "一动不动地凝视着对方的眼睛。"
+    }
+  },
+  {
+    "word": "にらむ",
+    "reading": null,
+    "meaning": "瞪视",
+    "level": "N2",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "怒った顔でにらまれた。",
+      "reading": "おこ・かお",
+      "translation": "被人用生气的表情瞪了一眼。"
+    }
+  },
+  {
+    "word": "苦笑い",
+    "reading": "にがわらい",
+    "meaning": "苦笑",
+    "level": "N2",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "返す言葉がなく苦笑いした。",
+      "reading": "かえ ことば・にがわら",
+      "translation": "无言以对只能苦笑。"
+    }
+  },
+  {
+    "word": "微笑む",
+    "reading": "ほほえむ",
+    "meaning": "微笑",
+    "level": "N2",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "優しく微笑んでくれた。",
+      "reading": "やさ・ほほえ",
+      "translation": "对方温柔地微笑了一下。"
+    }
+  },
+  {
+    "word": "表情がこわばる",
+    "reading": "ひょうじょうがこわばる",
+    "meaning": "表情僵硬",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "緊張で表情がこわばった。",
+      "reading": "きんちょう・ひょうじょう",
+      "translation": "因紧张表情变得僵硬。"
+    }
+  },
+  {
+    "word": "ため息をつく",
+    "reading": "ためいきをつく",
+    "meaning": "叹气",
+    "level": "N2",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "問題の多さにため息をついた。",
+      "reading": "もんだい・おお・ためいき",
+      "translation": "因问题太多而叹了口气。"
+    }
+  },
+  {
+    "word": "冷や汗をかく",
+    "reading": "ひやあせをかく",
+    "meaning": "冒冷汗",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "ミスに気づいて冷や汗をかいた。",
+      "reading": "ミス・き・ひやあせ",
+      "translation": "意识到失误后不由得冒了冷汗。"
+    }
+  },
+  {
+    "word": "呆然とする",
+    "reading": "ぼうぜんとする",
+    "meaning": "呆然若失",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "突然の知らせに呆然とした。",
+      "reading": "とつぜん・し・ぼうぜん",
+      "translation": "因突如其来的消息而呆然若失。"
+    }
+  },
+  {
+    "word": "動揺を隠せない",
+    "reading": "どうようをかくせない",
+    "meaning": "无法掩饰动摇",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "予想外の展開に動揺を隠せなかった。",
+      "reading": "よそうがい・てんかい・どうよう・かく",
+      "translation": "对出乎意料的发展无法掩饰内心的动摇。"
+    }
+  },
+  {
+    "word": "顔色を変える",
+    "reading": "かおいろをかえる",
+    "meaning": "脸色骤变",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "その一言に顔色を変えた。",
+      "reading": "ひとこと・かおいろ・か",
+      "translation": "因那句话脸色骤变了。"
+    }
+  },
+  {
+    "word": "目を潤ませる",
+    "reading": "めをうるませる",
+    "meaning": "眼眶湿润",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "感動して目を潤ませた。",
+      "reading": "かんどう・め・うる",
+      "translation": "因感动而眼眶湿润了。"
+    }
+  },
+  {
+    "word": "表情豊か",
+    "reading": "ひょうじょうゆたか",
+    "meaning": "表情丰富",
+    "level": "N2",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "表情豊かに話す人だ。",
+      "reading": "ひょうじょうゆた・はな・ひと",
+      "translation": "他是个说话表情很丰富的人。"
+    }
+  },
+  {
+    "word": "無表情",
+    "reading": "むひょうじょう",
+    "meaning": "面无表情",
+    "level": "N2",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "無表情のまま話を聞いていた。",
+      "reading": "むひょうじょう・はなし・き",
+      "translation": "一直面无表情地听着讲话。"
+    }
+  },
+  {
+    "word": "顔がこわばる",
+    "reading": "かおがこわばる",
+    "meaning": "表情紧绷",
+    "level": "N1",
+    "category": "面部表情与心理描写",
+    "example": {
+      "sentence": "怖い話を聞いて顔がこわばった。",
+      "reading": "こわ・はなし・き・かお",
+      "translation": "听了恐怖的故事后表情变得紧绷。"
+    }
+  },
+  {
+    "word": "旧暦",
+    "reading": "きゅうれき",
+    "meaning": "农历",
+    "level": "N1",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "旧暦のお正月を祝う地域もある。",
+      "reading": "きゅうれき・しょうがつ・いわ・ちいき",
+      "translation": "也有地区庆祝农历新年。"
+    }
+  },
+  {
+    "word": "新暦",
+    "reading": "しんれき",
+    "meaning": "阳历",
+    "level": "N1",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "現在は新暦が使われている。",
+      "reading": "げんざい・しんれき・つか",
+      "translation": "现在使用的是阳历。"
+    }
+  },
+  {
+    "word": "太陰暦",
+    "reading": "たいいんれき",
+    "meaning": "阴历",
+    "level": "N1",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "太陰暦は月の満ち欠けを基準にする。",
+      "reading": "たいいんれき・つき・み か・きじゅん",
+      "translation": "阴历以月亮的圆缺为基准。"
+    }
+  },
+  {
+    "word": "太陽暦",
+    "reading": "たいようれき",
+    "meaning": "阳历",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "太陽暦では一年が三百六十五日だ。",
+      "reading": "たいようれき・いちねん・さんびゃくろくじゅうごにち",
+      "translation": "阳历中一年是三百六十五天。"
+    }
+  },
+  {
+    "word": "閏年",
+    "reading": "うるうどし",
+    "meaning": "闰年",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "今年は閏年で二月が二十九日ある。",
+      "reading": "ことし・うるうどし・にがつ・にじゅうくにち",
+      "translation": "今年是闰年，二月有二十九天。"
+    }
+  },
+  {
+    "word": "閏月",
+    "reading": "うるうづき",
+    "meaning": "闰月",
+    "level": "N1",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "旧暦には閏月がある年もある。",
+      "reading": "きゅうれき・うるうづき・とし",
+      "translation": "农历中也有存在闰月的年份。"
+    }
+  },
+  {
+    "word": "干支",
+    "reading": "えと",
+    "meaning": "干支，生肖",
+    "level": "N1",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "今年の干支は何ですか。",
+      "reading": "ことし・えと・なん",
+      "translation": "今年是什么生肖？"
+    }
+  },
+  {
+    "word": "十二支",
+    "reading": "じゅうにし",
+    "meaning": "十二地支",
+    "level": "N1",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "十二支は動物で表される。",
+      "reading": "じゅうにし・どうぶつ・あらわ",
+      "translation": "十二地支用动物来表示。"
+    }
+  },
+  {
+    "word": "二十四節気",
+    "reading": "にじゅうしせっき",
+    "meaning": "二十四节气",
+    "level": "N1",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "二十四節気は季節の変化を表す。",
+      "reading": "にじゅうしせっき・きせつ・へんか・あらわ",
+      "translation": "二十四节气表现了季节的变化。"
+    }
+  },
+  {
+    "word": "立春",
+    "reading": "りっしゅん",
+    "meaning": "立春",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "立春を過ぎても寒い日が続く。",
+      "reading": "りっしゅん・す・さむ・ひ・つづ",
+      "translation": "过了立春寒冷的天气仍在持续。"
+    }
+  },
+  {
+    "word": "夏至",
+    "reading": "げし",
+    "meaning": "夏至",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "夏至は一年で最も昼が長い日だ。",
+      "reading": "げし・いちねん・もっと・ひる・なが・ひ",
+      "translation": "夏至是一年中白天最长的日子。"
+    }
+  },
+  {
+    "word": "冬至",
+    "reading": "とうじ",
+    "meaning": "冬至",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "冬至にゆず湯に入る習慣がある。",
+      "reading": "とうじ・ゆ・はい・しゅうかん",
+      "translation": "有在冬至泡柚子澡的习惯。"
+    }
+  },
+  {
+    "word": "春分",
+    "reading": "しゅんぶん",
+    "meaning": "春分",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "春分の日は祝日だ。",
+      "reading": "しゅんぶん・ひ・しゅくじつ",
+      "translation": "春分日是法定假日。"
+    }
+  },
+  {
+    "word": "秋分",
+    "reading": "しゅうぶん",
+    "meaning": "秋分",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "秋分を過ぎると夜が長くなる。",
+      "reading": "しゅうぶん・す・よる・なが",
+      "translation": "过了秋分夜晚会变长。"
+    }
+  },
+  {
+    "word": "満月",
+    "reading": "まんげつ",
+    "meaning": "满月",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "今夜は満月がきれいに見える。",
+      "reading": "こんや・まんげつ・み",
+      "translation": "今晚能清楚地看到满月。"
+    }
+  },
+  {
+    "word": "新月",
+    "reading": "しんげつ",
+    "meaning": "新月",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "新月の日は星がよく見える。",
+      "reading": "しんげつ・ひ・ほし・み",
+      "translation": "新月之夜能很清楚地看到星星。"
+    }
+  },
+  {
+    "word": "日食",
+    "reading": "にっしょく",
+    "meaning": "日食",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "来月、部分日食が観測できる。",
+      "reading": "らいげつ・ぶぶんにっしょく・かんそく",
+      "translation": "下个月可以观测到日偏食。"
+    }
+  },
+  {
+    "word": "月食",
+    "reading": "げっしょく",
+    "meaning": "月食",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "皆既月食を観察した。",
+      "reading": "かいきげっしょく・かんさつ",
+      "translation": "观察了月全食。"
+    }
+  },
+  {
+    "word": "元号",
+    "reading": "げんごう",
+    "meaning": "年号",
+    "level": "N1",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "新しい元号が発表された。",
+      "reading": "あたら・げんごう・はっぴょう",
+      "translation": "新的年号被公布了。"
+    }
+  },
+  {
+    "word": "西暦",
+    "reading": "せいれき",
+    "meaning": "公历",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "西暦で誕生日を記入した。",
+      "reading": "せいれき・たんじょうび・きにゅう",
+      "translation": "用公历填写了生日。"
+    }
+  },
+  {
+    "word": "暦",
+    "reading": "こよみ",
+    "meaning": "历法",
+    "level": "N2",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "昔の暦を調べてみた。",
+      "reading": "むかし・こよみ・しら",
+      "translation": "试着查了一下过去的历法。"
+    }
+  },
+  {
+    "word": "節気",
+    "reading": "せっき",
+    "meaning": "节气",
+    "level": "N1",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "この節気は農作業の目安になる。",
+      "reading": "せっき・のうさぎょう・めやす",
+      "translation": "这个节气是农事活动的参考标准。"
+    }
+  },
+  {
+    "word": "恵方",
+    "reading": "えほう",
+    "meaning": "吉利方位",
+    "level": "N1",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "恵方を向いて恵方巻きを食べた。",
+      "reading": "えほう・む・えほうま・た",
+      "translation": "朝着吉利方位吃了惠方卷。"
+    }
+  },
+  {
+    "word": "六曜",
+    "reading": "ろくよう",
+    "meaning": "六曜（吉凶日历）",
+    "level": "N1",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "結婚式の日取りに六曜を参考にした。",
+      "reading": "けっこんしき・ひど・ろくよう・さんこう",
+      "translation": "确定婚礼日期时参考了六曜吉凶。"
+    }
+  },
+  {
+    "word": "大安",
+    "reading": "たいあん",
+    "meaning": "大安（黄道吉日）",
+    "level": "N1",
+    "category": "天文历法与阴阳历",
+    "example": {
+      "sentence": "大安の日に入籍した。",
+      "reading": "たいあん・ひ・にゅうせき",
+      "translation": "在大安吉日办理了结婚登记。"
+    }
+  },
+  {
+    "word": "時代区分",
+    "reading": "じだいくぶん",
+    "meaning": "时代划分",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "日本史の時代区分を学んだ。",
+      "reading": "にほんし・じだいくぶん・まな",
+      "translation": "学习了日本历史的时代划分。"
+    }
+  },
+  {
+    "word": "縄文時代",
+    "reading": "じょうもんじだい",
+    "meaning": "绳文时代",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "縄文時代の土器が発掘された。",
+      "reading": "じょうもんじだい・どき・はっくつ",
+      "translation": "发掘出了绳文时代的陶器。"
+    }
+  },
+  {
+    "word": "弥生時代",
+    "reading": "やよいじだい",
+    "meaning": "弥生时代",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "弥生時代に稲作が広まった。",
+      "reading": "やよいじだい・いなさく・ひろ",
+      "translation": "稻作在弥生时代得到了普及。"
+    }
+  },
+  {
+    "word": "飛鳥時代",
+    "reading": "あすかじだい",
+    "meaning": "飞鸟时代",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "飛鳥時代に仏教が伝来した。",
+      "reading": "あすかじだい・ぶっきょう・でんらい",
+      "translation": "佛教在飞鸟时代传入日本。"
+    }
+  },
+  {
+    "word": "奈良時代",
+    "reading": "ならじだい",
+    "meaning": "奈良时代",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "奈良時代に都が置かれた。",
+      "reading": "ならじだい・みやこ・お",
+      "translation": "奈良时代设立了都城。"
+    }
+  },
+  {
+    "word": "平安時代",
+    "reading": "へいあんじだい",
+    "meaning": "平安时代",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "平安時代の貴族文化を学んだ。",
+      "reading": "へいあんじだい・きぞくぶんか・まな",
+      "translation": "学习了平安时代的贵族文化。"
+    }
+  },
+  {
+    "word": "鎌倉時代",
+    "reading": "かまくらじだい",
+    "meaning": "镰仓时代",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "鎌倉時代に武士政権が誕生した。",
+      "reading": "かまくらじだい・ぶしせいけん・たんじょう",
+      "translation": "武士政权诞生于镰仓时代。"
+    }
+  },
+  {
+    "word": "室町時代",
+    "reading": "むろまちじだい",
+    "meaning": "室町时代",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "室町時代の建築様式に興味がある。",
+      "reading": "むろまちじだい・けんちくようしき・きょうみ",
+      "translation": "对室町时代的建筑样式感兴趣。"
+    }
+  },
+  {
+    "word": "戦国時代",
+    "reading": "せんごくじだい",
+    "meaning": "战国时代",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "戦国時代の武将について調べている。",
+      "reading": "せんごくじだい・ぶしょう・しら",
+      "translation": "正在了解战国时代的武将。"
+    }
+  },
+  {
+    "word": "江戸時代",
+    "reading": "えどじだい",
+    "meaning": "江户时代",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "江戸時代は約二百六十年続いた。",
+      "reading": "えどじだい・やく・にひゃくろくじゅうねん・つづ",
+      "translation": "江户时代持续了约二百六十年。"
+    }
+  },
+  {
+    "word": "明治維新",
+    "reading": "めいじいしん",
+    "meaning": "明治维新",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "明治維新で近代化が進んだ。",
+      "reading": "めいじいしん・きんだいか・すす",
+      "translation": "明治维新推动了近代化的进程。"
+    }
+  },
+  {
+    "word": "幕府",
+    "reading": "ばくふ",
+    "meaning": "幕府",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "幕府が政治を統治していた。",
+      "reading": "ばくふ・せいじ・とうち",
+      "translation": "幕府曾统治着政治大权。"
+    }
+  },
+  {
+    "word": "将軍",
+    "reading": "しょうぐん",
+    "meaning": "将军",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "将軍が全国を治めていた。",
+      "reading": "しょうぐん・ぜんこく・おさ",
+      "translation": "将军曾统治着全国。"
+    }
+  },
+  {
+    "word": "天皇",
+    "reading": "てんのう",
+    "meaning": "天皇",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "天皇が儀式に出席した。",
+      "reading": "てんのう・ぎしき・しゅっせき",
+      "translation": "天皇出席了仪式。"
+    }
+  },
+  {
+    "word": "武士",
+    "reading": "ぶし",
+    "meaning": "武士",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "武士の生き方に関心がある。",
+      "reading": "ぶし・い かた・かんしん",
+      "translation": "对武士的生活方式很感兴趣。"
+    }
+  },
+  {
+    "word": "侍",
+    "reading": "さむらい",
+    "meaning": "侍（武士）",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "侍の映画をよく見る。",
+      "reading": "さむらい・えいが・よ・み",
+      "translation": "经常看武士题材的电影。"
+    }
+  },
+  {
+    "word": "藩",
+    "reading": "はん",
+    "meaning": "藩（诸侯领地）",
+    "level": "N1",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "それぞれの藩に独自の文化があった。",
+      "reading": "はん・どくじ・ぶんか",
+      "translation": "各个藩国都有各自独特的文化。"
+    }
+  },
+  {
+    "word": "開国",
+    "reading": "かいこく",
+    "meaning": "开国（开放国门）",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "黒船来航をきっかけに開国した。",
+      "reading": "くろふねらいこう・かいこく",
+      "translation": "以黑船来航为契机开放了国门。"
+    }
+  },
+  {
+    "word": "鎖国",
+    "reading": "さこく",
+    "meaning": "锁国",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "江戸時代は鎖国政策をとっていた。",
+      "reading": "えどじだい・さこくせいさく",
+      "translation": "江户时代实行了锁国政策。"
+    }
+  },
+  {
+    "word": "大名",
+    "reading": "だいみょう",
+    "meaning": "大名（诸侯）",
+    "level": "N1",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "大名が城を築いた。",
+      "reading": "だいみょう・しろ・きず",
+      "translation": "大名建造了城堡。"
+    }
+  },
+  {
+    "word": "城下町",
+    "reading": "じょうかまち",
+    "meaning": "城下町",
+    "level": "N1",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "城下町として発展した街だ。",
+      "reading": "じょうかまち・はってん・まち",
+      "translation": "这是作为城下町发展起来的城镇。"
+    }
+  },
+  {
+    "word": "遺跡",
+    "reading": "いせき",
+    "meaning": "遗迹",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "古代の遺跡を見学した。",
+      "reading": "こだい・いせき・けんがく",
+      "translation": "参观了古代的遗迹。"
+    }
+  },
+  {
+    "word": "古墳",
+    "reading": "こふん",
+    "meaning": "古坟",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "巨大な古墳が発見された。",
+      "reading": "きょだい・こふん・はっけん",
+      "translation": "发现了一座巨大的古坟。"
+    }
+  },
+  {
+    "word": "文明開化",
+    "reading": "ぶんめいかいか",
+    "meaning": "文明开化",
+    "level": "N1",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "文明開化により西洋の文化が流入した。",
+      "reading": "ぶんめいかいか・せいよう・ぶんか・りゅうにゅう",
+      "translation": "文明开化使西洋文化得以流入。"
+    }
+  },
+  {
+    "word": "統一",
+    "reading": "とういつ",
+    "meaning": "统一",
+    "level": "N2",
+    "category": "一百、日本历史常识",
+    "example": {
+      "sentence": "戦国大名が天下統一を目指した。",
+      "reading": "せんごくだいみょう・てんかとういつ・めざ",
+      "translation": "战国大名以统一天下为目标。"
+    }
+  },
+  {
+    "word": "仏教",
+    "reading": "ぶっきょう",
+    "meaning": "佛教",
+    "level": "N2",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "仏教の教えに興味がある。",
+      "reading": "ぶっきょう・おし・きょうみ",
+      "translation": "对佛教的教义感兴趣。"
+    }
+  },
+  {
+    "word": "座禅",
+    "reading": "ざぜん",
+    "meaning": "坐禅",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "毎朝、座禅を組んでいる。",
+      "reading": "まいあさ・ざぜん・く",
+      "translation": "每天早上都会打坐禅修。"
+    }
+  },
+  {
+    "word": "経典",
+    "reading": "きょうてん",
+    "meaning": "经典（佛经）",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "古い経典を読んでいる。",
+      "reading": "ふる・きょうてん・よ",
+      "translation": "正在阅读古老的佛经。"
+    }
+  },
+  {
+    "word": "読経",
+    "reading": "どきょう",
+    "meaning": "诵经",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "僧侶が読経を始めた。",
+      "reading": "そうりょ・どきょう・はじ",
+      "translation": "僧侣开始诵经了。"
+    }
+  },
+  {
+    "word": "法話",
+    "reading": "ほうわ",
+    "meaning": "法话",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "住職の法話を聞きに行った。",
+      "reading": "じゅうしょく・ほうわ・き・い",
+      "translation": "去听了住持的法话。"
+    }
+  },
+  {
+    "word": "住職",
+    "reading": "じゅうしょく",
+    "meaning": "住持",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "この寺の住職と話をした。",
+      "reading": "てら・じゅうしょく・はなし",
+      "translation": "和这座寺庙的住持交谈了。"
+    }
+  },
+  {
+    "word": "僧侶",
+    "reading": "そうりょ",
+    "meaning": "僧侣",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "僧侶が読経している姿を見た。",
+      "reading": "そうりょ・どきょう・すがた・み",
+      "translation": "看到了僧侣诵经的身影。"
+    }
+  },
+  {
+    "word": "出家",
+    "reading": "しゅっけ",
+    "meaning": "出家",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "若くして出家した人だ。",
+      "reading": "わか・しゅっけ・ひと",
+      "translation": "这是一位年纪轻轻就出家的人。"
+    }
+  },
+  {
+    "word": "涅槃",
+    "reading": "ねはん",
+    "meaning": "涅槃",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "涅槃の境地を目指す修行だ。",
+      "reading": "ねはん・きょうち・めざ・しゅぎょう",
+      "translation": "这是以涅槃境界为目标的修行。"
+    }
+  },
+  {
+    "word": "煩悩",
+    "reading": "ぼんのう",
+    "meaning": "烦恼（佛教概念）",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "煩悩を捨てるための修行をする。",
+      "reading": "ぼんのう・す・しゅぎょう",
+      "translation": "进行舍弃烦恼的修行。"
+    }
+  },
+  {
+    "word": "無常",
+    "reading": "むじょう",
+    "meaning": "无常",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "世の無常を感じさせる出来事だった。",
+      "reading": "よ・むじょう・かん・でき ごと",
+      "translation": "这是让人感受到世事无常的事件。"
+    }
+  },
+  {
+    "word": "因縁",
+    "reading": "いんねん",
+    "meaning": "因缘",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "これも何かの因縁かもしれない。",
+      "reading": "なに・いんねん",
+      "translation": "这也许也是某种因缘吧。"
+    }
+  },
+  {
+    "word": "慈悲",
+    "reading": "じひ",
+    "meaning": "慈悲",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "慈悲の心を持つことを教えられた。",
+      "reading": "じひ・こころ・も・おし",
+      "translation": "被教导要怀有慈悲之心。"
+    }
+  },
+  {
+    "word": "功徳",
+    "reading": "くどく",
+    "meaning": "功德",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "善行を積むことで功徳を得るとされる。",
+      "reading": "ぜんこう・つ・くどく・え",
+      "translation": "据说积累善行可以获得功德。"
+    }
+  },
+  {
+    "word": "布施",
+    "reading": "ふせ",
+    "meaning": "布施",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "お坊さんに布施をした。",
+      "reading": "ぼう・ふせ",
+      "translation": "向僧人进行了布施。"
+    }
+  },
+  {
+    "word": "仏像",
+    "reading": "ぶつぞう",
+    "meaning": "佛像",
+    "level": "N2",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "古い仏像が寺に安置されている。",
+      "reading": "ふる・ぶつぞう・てら・あんち",
+      "translation": "古老的佛像被安置在寺庙中。"
+    }
+  },
+  {
+    "word": "曼荼羅",
+    "reading": "まんだら",
+    "meaning": "曼陀罗",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "美しい曼荼羅の絵を見た。",
+      "reading": "うつく・まんだら・え・み",
+      "translation": "看到了美丽的曼陀罗图画。"
+    }
+  },
+  {
+    "word": "般若心経",
+    "reading": "はんにゃしんぎょう",
+    "meaning": "般若心经",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "般若心経を暗唱できるようになった。",
+      "reading": "はんにゃしんぎょう・あんしょう",
+      "translation": "变得能够背诵般若心经了。"
+    }
+  },
+  {
+    "word": "卒塔婆",
+    "reading": "そとば",
+    "meaning": "卒塔婆（墓标）",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "お墓に卒塔婆を立てた。",
+      "reading": "はか・そとば・た",
+      "translation": "在墓地立了卒塔婆。"
+    }
+  },
+  {
+    "word": "位牌",
+    "reading": "いはい",
+    "meaning": "灵位",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "仏壇に位牌を安置している。",
+      "reading": "ぶつだん・いはい・あんち",
+      "translation": "在佛龛中安置着灵位。"
+    }
+  },
+  {
+    "word": "数珠",
+    "reading": "じゅず",
+    "meaning": "佛珠",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "法事のために数珠を用意した。",
+      "reading": "ほうじ・じゅず・ようい",
+      "translation": "为法事准备了佛珠。"
+    }
+  },
+  {
+    "word": "般若",
+    "reading": "はんにゃ",
+    "meaning": "般若",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "般若とは仏教の智慧を指す言葉だ。",
+      "reading": "はんにゃ・ぶっきょう・ちえ・さ ことば",
+      "translation": "般若是指佛教智慧的词语。"
+    }
+  },
+  {
+    "word": "極楽",
+    "reading": "ごくらく",
+    "meaning": "极乐",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "極楽浄土への往生を願う。",
+      "reading": "ごくらくじょうど・おうじょう・ねが",
+      "translation": "祈愿往生极乐净土。"
+    }
+  },
+  {
+    "word": "地獄",
+    "reading": "じごく",
+    "meaning": "地狱",
+    "level": "N2",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "地獄の絵を見て怖くなった。",
+      "reading": "じごく・え・み・こわ",
+      "translation": "看了地狱的画后感到害怕。"
+    }
+  },
+  {
+    "word": "成仏",
+    "reading": "じょうぶつ",
+    "meaning": "成佛",
+    "level": "N1",
+    "category": "一〇一、佛教用语细分",
+    "example": {
+      "sentence": "亡くなった人が成仏することを祈った。",
+      "reading": "な・ひと・じょうぶつ・いの",
+      "translation": "为逝者能够成佛祈祷。"
+    }
+  },
+  {
+    "word": "株主",
+    "reading": "かぶぬし",
+    "meaning": "股东",
+    "level": "N2",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "株主総会が来月開かれる。",
+      "reading": "かぶぬしそうかい・らいげつ・ひら",
+      "translation": "股东大会将于下月召开。"
+    }
+  },
+  {
+    "word": "株式会社",
+    "reading": "かぶしきがいしゃ",
+    "meaning": "股份公司",
+    "level": "N2",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "株式会社として登記した。",
+      "reading": "かぶしきがいしゃ・とうき",
+      "translation": "以股份公司的形式进行了登记。"
+    }
+  },
+  {
+    "word": "出資比率",
+    "reading": "しゅっしひりつ",
+    "meaning": "出资比例",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "出資比率に応じて権利が異なる。",
+      "reading": "しゅっしひりつ・おう・けんり・こと",
+      "translation": "权利根据出资比例而有所不同。"
+    }
+  },
+  {
+    "word": "持株会社",
+    "reading": "もちかぶがいしゃ",
+    "meaning": "控股公司",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "持株会社の傘下に入った。",
+      "reading": "もちかぶがいしゃ・さんか・はい",
+      "translation": "加入了控股公司旗下。"
+    }
+  },
+  {
+    "word": "子会社化",
+    "reading": "こがいしゃか",
+    "meaning": "子公司化",
+    "level": "N2",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "この会社は来年子会社化される。",
+      "reading": "かいしゃ・らいねん・こがいしゃか",
+      "translation": "这家公司明年将成为子公司。"
+    }
+  },
+  {
+    "word": "敵対的買収",
+    "reading": "てきたいてきばいしゅう",
+    "meaning": "恶意收购",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "敵対的買収を防ぐ対策を取った。",
+      "reading": "てきたいてきばいしゅう・ふせ・たいさく・と",
+      "translation": "采取了防止恶意收购的对策。"
+    }
+  },
+  {
+    "word": "友好的買収",
+    "reading": "ゆうこうてきばいしゅう",
+    "meaning": "善意收购",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "友好的買収により合意に至った。",
+      "reading": "ゆうこうてきばいしゅう・ごうい・いた",
+      "translation": "通过善意收购达成了协议。"
+    }
+  },
+  {
+    "word": "公開買付け",
+    "reading": "こうかいかいつけ",
+    "meaning": "公开收购",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "公開買付けが発表された。",
+      "reading": "こうかいかいつけ・はっぴょう",
+      "translation": "公开收购已经宣布。"
+    }
+  },
+  {
+    "word": "経営統合",
+    "reading": "けいえいとうごう",
+    "meaning": "经营整合",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "二社の経営統合が発表された。",
+      "reading": "にしゃ・けいえいとうごう・はっぴょう",
+      "translation": "两家公司的经营整合已经公布。"
+    }
+  },
+  {
+    "word": "資本提携",
+    "reading": "しほんていけい",
+    "meaning": "资本合作",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "資本提携を結ぶことになった。",
+      "reading": "しほんていけい・むす",
+      "translation": "决定缔结资本合作。"
+    }
+  },
+  {
+    "word": "増資",
+    "reading": "ぞうし",
+    "meaning": "增资",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "増資によって資金を調達した。",
+      "reading": "ぞうし・しきん・ちょうたつ",
+      "translation": "通过增资筹措了资金。"
+    }
+  },
+  {
+    "word": "減資",
+    "reading": "げんし",
+    "meaning": "减资",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "経営再建のため減資を行った。",
+      "reading": "けいえいさいけん・げんし・おこな",
+      "translation": "为重建经营进行了减资。"
+    }
+  },
+  {
+    "word": "株式公開",
+    "reading": "かぶしきこうかい",
+    "meaning": "股票公开（上市）",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "株式公開を目指している。",
+      "reading": "かぶしきこうかい・めざ",
+      "translation": "正以股票上市为目标。"
+    }
+  },
+  {
+    "word": "上場",
+    "reading": "じょうじょう",
+    "meaning": "上市",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "来年、東京証券取引所に上場する予定だ。",
+      "reading": "らいねん・とうきょうしょうけんとりひきじょ・じょうじょう・よてい",
+      "translation": "预计明年在东京证券交易所上市。"
+    }
+  },
+  {
+    "word": "非上場",
+    "reading": "ひじょうじょう",
+    "meaning": "非上市",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "この会社はあえて非上場を選んでいる。",
+      "reading": "かいしゃ・ひじょうじょう・えら",
+      "translation": "这家公司特意选择了不上市。"
+    }
+  },
+  {
+    "word": "時価総額",
+    "reading": "じかそうがく",
+    "meaning": "市值",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "時価総額が急速に上昇した。",
+      "reading": "じかそうがく・きゅうそく・じょうしょう",
+      "translation": "市值迅速上升了。"
+    }
+  },
+  {
+    "word": "株価",
+    "reading": "かぶか",
+    "meaning": "股价",
+    "level": "N2",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "株価の動きを毎日チェックしている。",
+      "reading": "かぶか・うご・まいにち",
+      "translation": "每天都在关注股价的动向。"
+    }
+  },
+  {
+    "word": "議決権",
+    "reading": "ぎけつけん",
+    "meaning": "表决权",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "議決権の割合が経営に影響する。",
+      "reading": "ぎけつけん・わりあい・けいえい・えいきょう",
+      "translation": "表决权的比例会影响到经营。"
+    }
+  },
+  {
+    "word": "経営権",
+    "reading": "けいえいけん",
+    "meaning": "经营权",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "経営権を巡って争いが起きた。",
+      "reading": "けいえいけん・めぐ・あらそ・お",
+      "translation": "围绕经营权发生了争夺。"
+    }
+  },
+  {
+    "word": "統合",
+    "reading": "とうごう",
+    "meaning": "整合",
+    "level": "N2",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "システムの統合を進めている。",
+      "reading": "システム・とうごう・すす",
+      "translation": "正在推进系统的整合。"
+    }
+  },
+  {
+    "word": "分社化",
+    "reading": "ぶんしゃか",
+    "meaning": "拆分公司",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "事業部門を分社化することにした。",
+      "reading": "じぎょうぶもん・ぶんしゃか",
+      "translation": "决定将事业部门拆分为独立公司。"
+    }
+  },
+  {
+    "word": "事業譲渡",
+    "reading": "じぎょうじょうと",
+    "meaning": "事业转让",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "不採算部門の事業譲渡を検討している。",
+      "reading": "ふさいさんぶもん・じぎょうじょうと・けんとう",
+      "translation": "正在考虑转让不盈利部门的事业。"
+    }
+  },
+  {
+    "word": "株式譲渡",
+    "reading": "かぶしきじょうと",
+    "meaning": "股权转让",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "株式譲渡の契約を結んだ。",
+      "reading": "かぶしきじょうと・けいやく・むす",
+      "translation": "签订了股权转让的合同。"
+    }
+  },
+  {
+    "word": "デューデリジェンス",
+    "reading": null,
+    "meaning": "尽职调查",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "買収前にデューデリジェンスを実施した。",
+      "reading": "ばいしゅうまえ・じっし",
+      "translation": "收购前进行了尽职调查。"
+    }
+  },
+  {
+    "word": "シナジー効果",
+    "reading": "シナジーこうか",
+    "meaning": "协同效应",
+    "level": "N1",
+    "category": "一〇二、企业并购与股权结构",
+    "example": {
+      "sentence": "合併によるシナジー効果が期待されている。",
+      "reading": "がっぺい・シナジーこうか・きたい",
+      "translation": "期待着合并带来的协同效应。"
+    }
+  },
+  {
+    "word": "愛着形成",
+    "reading": "あいちゃくけいせい",
+    "meaning": "依恋关系形成",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "乳幼児期の愛着形成が重要だ。",
+      "reading": "にゅうようじき・あいちゃくけいせい・じゅうよう",
+      "translation": "婴幼儿期的依恋关系形成很重要。"
+    }
+  },
+  {
+    "word": "安全基地",
+    "reading": "あんぜんきち",
+    "meaning": "安全基地（心理学概念）",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "親が子供の安全基地となる。",
+      "reading": "おや・こども・あんぜんきち",
+      "translation": "父母成为孩子的安全基地。"
+    }
+  },
+  {
+    "word": "自己効力感",
+    "reading": "じここうりょくかん",
+    "meaning": "自我效能感",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "成功体験が自己効力感を高める。",
+      "reading": "せいこうたいけん・じここうりょくかん・たか",
+      "translation": "成功的体验能提高自我效能感。"
+    }
+  },
+  {
+    "word": "モデリング",
+    "reading": null,
+    "meaning": "模仿学习",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "子供は親をモデリングして育つ。",
+      "reading": "こども・おや・そだ",
+      "translation": "孩子通过模仿父母来成长。"
+    }
+  },
+  {
+    "word": "強化",
+    "reading": "きょうか",
+    "meaning": "强化（行为学）",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "褒めることで良い行動を強化する。",
+      "reading": "ほ・よ・こうどう・きょうか",
+      "translation": "通过表扬来强化良好的行为。"
+    }
+  },
+  {
+    "word": "罰",
+    "reading": "ばつ",
+    "meaning": "惩罚",
+    "level": "N2",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "罰よりも励ましを重視している。",
+      "reading": "ばつ・はげ・じゅうし",
+      "translation": "比起惩罚更重视鼓励。"
+    }
+  },
+  {
+    "word": "内発的動機",
+    "reading": "ないはつてきどうき",
+    "meaning": "内在动机",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "内発的動機を引き出すことが大切だ。",
+      "reading": "ないはつてきどうき・ひ だ・たいせつ",
+      "translation": "引导出内在动机很重要。"
+    }
+  },
+  {
+    "word": "外発的動機",
+    "reading": "がいはつてきどうき",
+    "meaning": "外在动机",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "外発的動機に頼りすぎない教育を心がけている。",
+      "reading": "がいはつてきどうき・たよ・きょういく・こころ",
+      "translation": "留心不过度依赖外在动机的教育方式。"
+    }
+  },
+  {
+    "word": "発達心理学",
+    "reading": "はったつしんりがく",
+    "meaning": "发展心理学",
+    "level": "N2",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "大学で発達心理学を専攻した。",
+      "reading": "だいがく・はったつしんりがく・せんこう",
+      "translation": "在大学专攻了发展心理学。"
+    }
+  },
+  {
+    "word": "臨界期",
+    "reading": "りんかいき",
+    "meaning": "关键期",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "言語習得には臨界期があるとされる。",
+      "reading": "げんごしゅうとく・りんかいき",
+      "translation": "据说语言习得存在关键期。"
+    }
+  },
+  {
+    "word": "感受性期",
+    "reading": "かんじゅせいき",
+    "meaning": "敏感期",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "この時期は感受性期と呼ばれる。",
+      "reading": "じき・かんじゅせいき・よ",
+      "translation": "这个时期被称为敏感期。"
+    }
+  },
+  {
+    "word": "自己主張",
+    "reading": "じこしゅちょう",
+    "meaning": "自我主张",
+    "level": "N2",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "自己主張が強くなる時期だ。",
+      "reading": "じこしゅちょう・つよ・じき",
+      "translation": "这是自我主张变强的时期。"
+    }
+  },
+  {
+    "word": "自己統制",
+    "reading": "じことうせい",
+    "meaning": "自我控制",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "自己統制の力を養う。",
+      "reading": "じことうせい・ちから・やしな",
+      "translation": "培养自我控制的能力。"
+    }
+  },
+  {
+    "word": "共感性",
+    "reading": "きょうかんせい",
+    "meaning": "共情能力",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "絵本を通じて共感性を育む。",
+      "reading": "えほん・つう・きょうかんせい・はぐく",
+      "translation": "通过绘本培养共情能力。"
+    }
+  },
+  {
+    "word": "愛情表現",
+    "reading": "あいじょうひょうげん",
+    "meaning": "表达爱意",
+    "level": "N2",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "日常的な愛情表現を大切にしている。",
+      "reading": "にちじょうてき・あいじょうひょうげん・たいせつ",
+      "translation": "重视日常中表达爱意。"
+    }
+  },
+  {
+    "word": "育児不安",
+    "reading": "いくじふあん",
+    "meaning": "育儿焦虑",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "初めての育児で育児不安を感じている。",
+      "reading": "はじ・いくじ・いくじふあん・かん",
+      "translation": "因为是第一次育儿而感到育儿焦虑。"
+    }
+  },
+  {
+    "word": "ワンオペ育児",
+    "reading": "ワンオペいくじ",
+    "meaning": "独自育儿（俗语）",
+    "level": "N2",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "夫の出張中はワンオペ育児だった。",
+      "reading": "おっと・しゅっちょうちゅう・いくじ",
+      "translation": "丈夫出差期间只能一个人独自带娃。"
+    }
+  },
+  {
+    "word": "育児ノイローゼ",
+    "reading": "いくじノイローゼ",
+    "meaning": "育儿神经症",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "育児ノイローゼにならないよう気をつけている。",
+      "reading": "いくじ・き",
+      "translation": "注意避免陷入育儿神经症。"
+    }
+  },
+  {
+    "word": "しつけ方",
+    "reading": "しつけかた",
+    "meaning": "管教方式",
+    "level": "N2",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "夫婦でしつけ方について話し合った。",
+      "reading": "ふうふ・しつけかた・はな あ",
+      "translation": "夫妻就管教方式进行了商谈。"
+    }
+  },
+  {
+    "word": "過干渉",
+    "reading": "かかんしょう",
+    "meaning": "过度干涉",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "過干渉にならないよう気をつけている。",
+      "reading": "かかんしょう・き",
+      "translation": "注意不要过度干涉孩子。"
+    }
+  },
+  {
+    "word": "放置",
+    "reading": "ほうち",
+    "meaning": "放任不管",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "子供を放置してしまうこともある。",
+      "reading": "こども・ほうち",
+      "translation": "有时也会把孩子放任不管。"
+    }
+  },
+  {
+    "word": "スキンシップ",
+    "reading": null,
+    "meaning": "肌肤接触（亲子间）",
+    "level": "N2",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "赤ちゃんとのスキンシップを大切にしている。",
+      "reading": "あか・たいせつ",
+      "translation": "重视与婴儿的肌肤接触。"
+    }
+  },
+  {
+    "word": "発達支援",
+    "reading": "はったつしえん",
+    "meaning": "发育支援",
+    "level": "N1",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "発達支援センターに相談した。",
+      "reading": "はったつしえん・センター・そうだん",
+      "translation": "向发育支援中心进行了咨询。"
+    }
+  },
+  {
+    "word": "保護者会",
+    "reading": "ほごしゃかい",
+    "meaning": "家长会",
+    "level": "N2",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "来週、保護者会が開かれる。",
+      "reading": "らいしゅう・ほごしゃかい・ひら",
+      "translation": "下周将举行家长会。"
+    }
+  },
+  {
+    "word": "参観日",
+    "reading": "さんかんび",
+    "meaning": "家长开放日",
+    "level": "N2",
+    "category": "一〇三、育儿教育心理学专业词",
+    "example": {
+      "sentence": "参観日に子供の様子を見に行った。",
+      "reading": "さんかんび・こども・ようす・み・い",
+      "translation": "在家长开放日去看了孩子的情况。"
+    }
+  },
+  {
+    "word": "言語学",
+    "reading": "げんごがく",
+    "meaning": "语言学",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "大学で言語学を学んでいる。",
+      "reading": "だいがく・げんごがく・まな",
+      "translation": "正在大学学习语言学。"
+    }
+  },
+  {
+    "word": "音韻",
+    "reading": "おんいん",
+    "meaning": "音韵",
+    "level": "N1",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "この方言は音韻の特徴が面白い。",
+      "reading": "ほうげん・おんいん・とくちょう・おもしろ",
+      "translation": "这种方言的音韵特点很有趣。"
+    }
+  },
+  {
+    "word": "文法",
+    "reading": "ぶんぽう",
+    "meaning": "语法",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "日本語の文法を復習している。",
+      "reading": "にほんご・ぶんぽう・ふくしゅう",
+      "translation": "正在复习日语语法。"
+    }
+  },
+  {
+    "word": "統語論",
+    "reading": "とうごろん",
+    "meaning": "句法学",
+    "level": "N1",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "統語論の授業を履修した。",
+      "reading": "とうごろん・じゅぎょう・りしゅう",
+      "translation": "修读了句法学的课程。"
+    }
+  },
+  {
+    "word": "意味論",
+    "reading": "いみろん",
+    "meaning": "语义学",
+    "level": "N1",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "意味論の観点から単語を分析した。",
+      "reading": "いみろん・かんてん・たんご・ぶんせき",
+      "translation": "从语义学的角度分析了单词。"
+    }
+  },
+  {
+    "word": "語用論",
+    "reading": "ごようろん",
+    "meaning": "语用学",
+    "level": "N1",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "語用論は文脈での意味を扱う。",
+      "reading": "ごようろん・ぶんみゃく・いみ・あつか",
+      "translation": "语用学研究语境中的意义。"
+    }
+  },
+  {
+    "word": "方言学",
+    "reading": "ほうげんがく",
+    "meaning": "方言学",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "方言学に興味を持っている。",
+      "reading": "ほうげんがく・きょうみ・も",
+      "translation": "对方言学抱有兴趣。"
+    }
+  },
+  {
+    "word": "言語習得",
+    "reading": "げんごしゅうとく",
+    "meaning": "语言习得",
+    "level": "N1",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "子供の言語習得の過程を研究している。",
+      "reading": "こども・げんごしゅうとく・かてい・けんきゅう",
+      "translation": "正在研究儿童语言习得的过程。"
+    }
+  },
+  {
+    "word": "母語",
+    "reading": "ぼご",
+    "meaning": "母语",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "母語以外の言語を学ぶのは面白い。",
+      "reading": "ぼご いがい・げんご・まな・おもしろ",
+      "translation": "学习母语以外的语言很有趣。"
+    }
+  },
+  {
+    "word": "第二言語",
+    "reading": "だいにげんご",
+    "meaning": "第二语言",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "英語を第二言語として学んでいる。",
+      "reading": "えいご・だいにげんご・まな",
+      "translation": "正在把英语作为第二语言学习。"
+    }
+  },
+  {
+    "word": "バイリンガル",
+    "reading": null,
+    "meaning": "双语者",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "バイリンガル教育を受けて育った。",
+      "reading": "きょういく・う・そだ",
+      "translation": "从小接受双语教育长大。"
+    }
+  },
+  {
+    "word": "逐語訳",
+    "reading": "ちくごやく",
+    "meaning": "逐字翻译",
+    "level": "N1",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "逐語訳では不自然な文になる。",
+      "reading": "ちくごやく・ふしぜん・ぶん",
+      "translation": "逐字翻译会变成不自然的句子。"
+    }
+  },
+  {
+    "word": "機械翻訳",
+    "reading": "きかいほんやく",
+    "meaning": "机器翻译",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "機械翻訳の精度が向上している。",
+      "reading": "きかいほんやく・せいど・こうじょう",
+      "translation": "机器翻译的精度正在提高。"
+    }
+  },
+  {
+    "word": "通訳者",
+    "reading": "つうやくしゃ",
+    "meaning": "口译员",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "通訳者を介して話を進めた。",
+      "reading": "つうやくしゃ・かい・はなし・すす",
+      "translation": "通过口译员进行了沟通。"
+    }
+  },
+  {
+    "word": "翻訳者",
+    "reading": "ほんやくしゃ",
+    "meaning": "笔译员",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "翻訳者として長年働いている。",
+      "reading": "ほんやくしゃ・ながねん・はたら",
+      "translation": "作为笔译员工作了多年。"
+    }
+  },
+  {
+    "word": "対訳",
+    "reading": "たいやく",
+    "meaning": "对译（译文对照）",
+    "level": "N1",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "対訳版の本を使って勉強している。",
+      "reading": "たいやくばん・ほん・つか・べんきょう",
+      "translation": "正在使用对照译本学习。"
+    }
+  },
+  {
+    "word": "語源",
+    "reading": "ごげん",
+    "meaning": "词源",
+    "level": "N1",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "この単語の語源を調べた。",
+      "reading": "たんご・ごげん・しら",
+      "translation": "查了这个单词的词源。"
+    }
+  },
+  {
+    "word": "借用語",
+    "reading": "しゃくようご",
+    "meaning": "外来借词",
+    "level": "N1",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "日本語には多くの借用語がある。",
+      "reading": "にほんご・おお・しゃくようご",
+      "translation": "日语中有很多外来借词。"
+    }
+  },
+  {
+    "word": "造語",
+    "reading": "ぞうご",
+    "meaning": "造词，新词",
+    "level": "N1",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "若者言葉には造語が多い。",
+      "reading": "わかもの ことば・ぞうご・おお",
+      "translation": "年轻人用语中有很多新造词。"
+    }
+  },
+  {
+    "word": "慣用表現",
+    "reading": "かんようひょうげん",
+    "meaning": "惯用表达",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "慣用表現を覚えると自然な日本語になる。",
+      "reading": "かんようひょうげん・おぼ・しぜん・にほんご",
+      "translation": "记住惯用表达就能说出自然的日语。"
+    }
+  },
+  {
+    "word": "コーパス",
+    "reading": null,
+    "meaning": "语料库",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "コーパスを使って用例を調べた。",
+      "reading": "つか・ようれい・しら",
+      "translation": "使用语料库查阅了用例。"
+    }
+  },
+  {
+    "word": "表記法",
+    "reading": "ひょうきほう",
+    "meaning": "书写法，表记法",
+    "level": "N1",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "漢字の表記法には揺れがある。",
+      "reading": "かんじ・ひょうきほう・ゆ",
+      "translation": "汉字的书写法存在不统一的情况。"
+    }
+  },
+  {
+    "word": "標準語",
+    "reading": "ひょうじゅんご",
+    "meaning": "标准语",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "標準語と方言の違いを比較した。",
+      "reading": "ひょうじゅんご・ほうげん・ちが・ひかく",
+      "translation": "比较了标准语与方言的区别。"
+    }
+  },
+  {
+    "word": "方言差",
+    "reading": "ほうげんさ",
+    "meaning": "方言差异",
+    "level": "N2",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "地域による方言差が興味深い。",
+      "reading": "ちいき・ほうげんさ・きょうみぶか",
+      "translation": "地区间的方言差异很有趣。"
+    }
+  },
+  {
+    "word": "言語体系",
+    "reading": "げんごたいけい",
+    "meaning": "语言体系",
+    "level": "N1",
+    "category": "一〇四、语言学与翻译理论",
+    "example": {
+      "sentence": "日本語の言語体系を体系的に学んだ。",
+      "reading": "にほんご・げんごたいけい・たいけいてき・まな",
+      "translation": "系统地学习了日语的语言体系。"
+    }
+  }
+]
