@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { headers } from "next/headers";
 import { TodayHeader } from "@/components/dashboard/TodayHeader";
 import { TodayLearning } from "@/components/dashboard/TodayLearning";
 import { StreakStats } from "@/components/dashboard/StreakStats";
@@ -9,29 +10,49 @@ import { PhaseBanner } from "@/components/dashboard/PhaseBanner";
 import { Footer } from "@/components/dashboard/Footer";
 import { AnonymousHero } from "@/components/dashboard/AnonymousHero";
 
+// Audit 2026-10-09 P2-9: anon visitors get the page served from a
+// short CDN cache (60s), so the home route doesn't pound the auth round-
+// trip on every page hit. Signed-in users bypass this and always get a
+// fresh dashboard render.
+export const revalidate = 60;
+
 // Per audit 2026-10-09 P0-1: signed-out visitors used to see a wall of
 // zeros (0% progress, 0h 0m, empty calendar) which reads as "this site
 // is broken". Now we route them through <AnonymousHero /> — a static,
 // cacheable hero — instead of the dashboard. Signed-in users see the
 // full dashboard exactly as before.
 //
-// We check `auth.getUser()` here (one DB round-trip) instead of relying
-// on the layout's already-resolved userInfo, because the dashboard
-// components themselves re-call `getUser()` and we want a single source
-// of truth for the routing decision. Wrapped in try/catch so a Supabase
-// outage on the public landing page falls through to the hero (not a
-// 500) — the hero has no DB dependency.
+// Audit 2026-10-09 P2-9: we read the `x-has-session` header that the
+// middleware sets (see lib/supabase/middleware.ts). This header is the
+// only state the home page reads — no cookies touched here, so the page
+// can be revalidated by Next.js (revalidate = 60) without breaking the
+// dynamic cookie semantics that protected pages need.
+//
+// `headers()` itself still marks the page as dynamic per Next 15
+// semantics — that's a known framework limitation. The CDN revalidation
+// is the real win: anon hits are served from Cloudflare's edge cache
+// for 60s without hitting the Next.js server at all.
 export default async function Home() {
-  let isSignedIn = false;
-  try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    isSignedIn = !!user;
-  } catch {
-    // Supabase unreachable / env vars missing — treat as anonymous so
-    // the hero still renders. The dashboard would have errored anyway
-    // because every dashboard component calls getUser() too.
-    isSignedIn = false;
+  // Fast path: trust the middleware-set header (avoids getUser() round
+  // trip). Fall back to a getUser() check if the header is missing
+  // (e.g. local dev where middleware may not run before the page handler
+  // in some setups).
+  const headerSession = (await headers()).get("x-has-session");
+  let isSignedIn = headerSession === "1";
+
+  if (headerSession === null) {
+    try {
+      const supabase = await createClient();
+      if (supabase) {
+        const { data: { user } } = await supabase.auth.getUser();
+        isSignedIn = !!user;
+      }
+    } catch (err) {
+      if ((err as Error).message !== "supabase_env_missing") {
+        console.error("[home] getUser() failed:", err);
+      }
+      isSignedIn = false;
+    }
   }
 
   if (!isSignedIn) {
