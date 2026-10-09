@@ -231,23 +231,31 @@ export function LearningCalendarClient({ data }: LearningCalendarClientProps) {
       </div>
 
       <div className="grid grid-cols-7 gap-1">
-        {cells.map((cell, i) => (
-          <div
-            key={i}
-            className={`aspect-square rounded-md flex flex-col items-center justify-center text-xs relative ${
-              cell.inMonth
-                ? cell.active
-                  ? "bg-green-50 text-ink font-medium"
-                  : "text-gray-700"
-                : "text-gray-300"
-            } ${cell.isToday ? "ring-1 ring-ink" : ""}`}
-          >
-            <span>{cell.day}</span>
-            {cell.active && cell.inMonth && (
-              <span className="absolute bottom-1 w-1 h-1 rounded-full bg-green-500" />
-            )}
-          </div>
-        ))}
+        {cells.map((cell, i) => {
+          // Today's cell needs a stronger treatment than a thin ring —
+          // otherwise "today" recedes behind the active-day green tint.
+          // InMonth active + today → solid ink bg + white number reads
+          // as the "you are here" anchor without losing the green dot.
+          const todayClass = cell.isToday
+            ? "bg-ink text-white font-semibold"
+            : "";
+          const baseClass = cell.inMonth
+            ? cell.active
+              ? "bg-green-50 text-ink font-medium"
+              : "text-gray-700"
+            : "text-gray-300 text-[10px]";
+          return (
+            <div
+              key={i}
+              className={`aspect-square rounded-md flex flex-col items-center justify-center text-xs relative ${baseClass} ${todayClass}`}
+            >
+              <span>{cell.day}</span>
+              {cell.active && cell.inMonth && !cell.isToday && (
+                <span className="absolute bottom-1 w-1 h-1 rounded-full bg-green-500" />
+              )}
+            </div>
+          );
+        })}
       </div>
     </section>
   );
