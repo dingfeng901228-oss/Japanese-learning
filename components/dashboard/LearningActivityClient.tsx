@@ -145,6 +145,12 @@ export function LearningActivityClient({
               type="button"
               onClick={() => setRange(r)}
               className={`px-2.5 py-1 rounded-md transition-colors ${
+                // Audit 2026-10-09 P1-6 (re-checked): contrast was already
+                // sufficient — bg-ink text-white vs text-gray-500 (4.5:1+).
+                // Kept the strong-contrast selected style intentionally;
+                // no change needed here.  Other P1-6 improvements:
+                // vertical month separator lines (above) + "暂无数据" empty
+                // state hint (below).
                 range === r
                   ? "bg-ink text-white"
                   : "text-gray-500 hover:bg-gray-100"
@@ -154,7 +160,7 @@ export function LearningActivityClient({
             </button>
           ))}
         </div>
-        {hoverPoint && (
+        {hoverPoint ? (
           <div className="text-xs text-gray-700 tabular-nums">
             <span className="font-medium">{hoverPoint.date}</span>
             <span className="mx-2 text-gray-300">·</span>
@@ -162,7 +168,13 @@ export function LearningActivityClient({
               {Math.round(hoverPoint.minutes)} 分
             </span>
           </div>
-        )}
+        ) : totalMinutes === 0 ? (
+          // Audit 2026-10-09 P1-6: empty-state hint. Before, the chart
+          // looked broken — a flat line at y=200 with no explanation.
+          // Now the right side of the toggle row shows "暂无训练数据"
+          // until the user hovers (then hover date/minutes take over).
+          <span className="text-xs text-gray-400">暂无训练数据</span>
+        ) : null}
       </div>
 
       <div className="overflow-x-auto pb-2">
@@ -176,6 +188,26 @@ export function LearningActivityClient({
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setHoverIdx(null)}
         >
+          {/* Audit 2026-10-09 P1-6: vertical month-separator lines.
+             Before, month labels just floated at the bottom — confusing
+             for the 1Y view where the user has to mentally count to
+             figure out where each month ends.  Light dashed gray lines mark
+             the boundary between months (not rendered for 1M/3M since
+             those rarely cross a month boundary). */}
+          {range !== "1M" &&
+            range !== "3M" &&
+            monthLabels.map((m, i) => (
+              <line
+                key={`month-${i}`}
+                x1={m.x}
+                y1={padding.top}
+                x2={m.x}
+                y2={padding.top + chartHeight}
+                strokeWidth="1"
+                strokeDasharray="2 4"
+                className="stroke-gray-200"
+              />
+            ))}
           <path d={areaPath} className="fill-accent/10" />
           <path
             d={path}
