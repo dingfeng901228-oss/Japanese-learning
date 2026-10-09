@@ -22,10 +22,16 @@ export interface GlassHeaderProps {
     email: string;
     displayName: string | null;
     avatarUrl: string | null;
-  };
+  } | null;
 }
 
 export function GlassHeader({ navItems, userInfo }: GlassHeaderProps) {
+  // Per audit 2026-10-09 P0-1: anonymous visitors get a "登录" CTA on the
+  // right instead of the UserMenu + horizontal nav. The horizontal nav
+  // still renders on desktop (so signed-in users see no change), but for
+  // signed-out users the items aren't useful since they all bounce to
+  // /login — we hide the desktop nav when userInfo is null. Mobile menu
+  // also skips nav items in that case and just shows the Login link.
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-line">
       <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
@@ -39,16 +45,27 @@ export function GlassHeader({ navItems, userInfo }: GlassHeaderProps) {
             Tailwind's `hidden md:block` doesn't apply on Android
             Chrome (observed bug: all three header elements rendered
             at once, producing 2× UserMenu cards). */}
-        <div className="hidden md:block md-show-only">
-          <TopNav items={navItems} />
-        </div>
-        <div className="hidden md:block md-show-only">
-          <UserMenu
-            email={userInfo.email}
-            displayName={userInfo.displayName}
-            avatarUrl={userInfo.avatarUrl}
-          />
-        </div>
+        {userInfo && (
+          <div className="hidden md:block md-show-only">
+            <TopNav items={navItems} />
+          </div>
+        )}
+        {userInfo ? (
+          <div className="hidden md:block md-show-only">
+            <UserMenu
+              email={userInfo.email}
+              displayName={userInfo.displayName}
+              avatarUrl={userInfo.avatarUrl}
+            />
+          </div>
+        ) : (
+          <Link
+            href="/login"
+            className="hidden md:inline-flex items-center justify-center h-9 px-4 rounded-lg bg-ink text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+          >
+            登录
+          </Link>
+        )}
         <MobileNav items={navItems} userInfo={userInfo} />
       </div>
     </header>

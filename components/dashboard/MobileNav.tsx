@@ -13,6 +13,7 @@
 //   - Sheet still closes on link click (existing behavior).
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserMenu } from "@/components/UserMenu";
 import { NavLink } from "./NavLink";
@@ -23,7 +24,7 @@ export interface MobileNavProps {
     email: string;
     displayName: string | null;
     avatarUrl: string | null;
-  };
+  } | null;
 }
 
 export function MobileNav({ items, userInfo }: MobileNavProps) {
@@ -68,11 +69,20 @@ export function MobileNav({ items, userInfo }: MobileNavProps) {
     // desktop nav.
     <div className="md:hidden mobile-show-only" ref={ref}>
       <div className="flex items-center gap-2">
-        <UserMenu
-          email={userInfo.email}
-          displayName={userInfo.displayName}
-          avatarUrl={userInfo.avatarUrl}
-        />
+        {userInfo ? (
+          <UserMenu
+            email={userInfo.email}
+            displayName={userInfo.displayName}
+            avatarUrl={userInfo.avatarUrl}
+          />
+        ) : (
+          <Link
+            href="/login"
+            className="inline-flex items-center justify-center h-9 px-3 rounded-lg bg-ink text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+          >
+            登录
+          </Link>
+        )}
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
@@ -120,23 +130,25 @@ export function MobileNav({ items, userInfo }: MobileNavProps) {
             aria-label="主导航"
             className="px-6 py-4 flex flex-col gap-1"
           >
-            {items.map((item) => {
-              const isActive =
-                item.href === "/"
-                  ? pathname === "/"
-                  : pathname === item.href ||
-                    pathname.startsWith(item.href + "/");
-              return (
-                <NavLink
-                  key={item.href}
-                  href={item.href}
-                  label={item.label}
-                  isActive={isActive}
-                  size="md"
-                  className="w-full"
-                />
-              );
-            })}
+            {userInfo
+              ? items.map((item) => {
+                  const isActive =
+                    item.href === "/"
+                      ? pathname === "/"
+                      : pathname === item.href ||
+                        pathname.startsWith(item.href + "/");
+                  return (
+                    <NavLink
+                      key={item.href}
+                      href={item.href}
+                      label={item.label}
+                      isActive={isActive}
+                      size="md"
+                      className="w-full"
+                    />
+                  );
+                })
+              : null}
           </nav>
         </div>
       )}

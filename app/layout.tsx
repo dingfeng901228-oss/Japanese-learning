@@ -128,7 +128,11 @@ export default async function RootLayout({
       className={`${inter.variable} ${notoJP.variable} ${notoSC.variable}`}
     >
       <body className="font-sans antialiased min-h-screen bg-soft text-ink">
-        {userInfo && <GlassHeader navItems={NAV_ITEMS} userInfo={userInfo} />}
+        {/* Audit 2026-10-09 P0-1: header now renders for anonymous visitors
+            too, but with a Login CTA on the right instead of the UserMenu
+            + nav (the nav targets protected routes that bounce to /login on
+            click — useless friction for a first-time visitor). */}
+        <GlassHeader navItems={NAV_ITEMS} userInfo={userInfo} />
         <PageTransition>{children}</PageTransition>
       </body>
     </html>
