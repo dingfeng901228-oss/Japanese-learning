@@ -45,9 +45,22 @@ export default async function ImportVocabPage({
 }) {
   const sp = await searchParams;
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  // Audit 2026-10-09: try/catch around getUser() — dev-mode (no env
+  // vars) redirects to /login instead of 500ing.
+  let user: import("@supabase/supabase-js").User | null = null;
+  let supabase: import("@supabase/supabase-js").SupabaseClient | null = null;
+  try {
+    supabase = await createClient();
+    if (supabase) {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("[import-vocab] failed to load user:", err);
+    }
+  }
+  if (!user || !supabase) redirect("/login");
 
   // Quick user-scoped vocab count for the header status line.
   const { count: userVocabCount } = await supabase

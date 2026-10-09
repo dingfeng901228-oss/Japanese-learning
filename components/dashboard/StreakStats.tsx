@@ -13,24 +13,26 @@ export async function StreakStats() {
 
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
+    if (supabase) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
 
-      const { count: wordCount } = await supabase
-        .from("vocabulary_items")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .gte("created_at", weekAgo.toISOString());
-      newWords = wordCount ?? 0;
+        const { count: wordCount } = await supabase
+          .from("vocabulary_items")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .gte("created_at", weekAgo.toISOString());
+        newWords = wordCount ?? 0;
 
-      const { count: reviewCount } = await supabase
-        .from("vocabulary_reviews")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .gte("reviewed_at", weekAgo.toISOString());
-      reviewsCompleted = reviewCount ?? 0;
+        const { count: reviewCount } = await supabase
+          .from("vocabulary_reviews")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .gte("reviewed_at", weekAgo.toISOString());
+        reviewsCompleted = reviewCount ?? 0;
+      }
     }
   } catch {
     // Supabase down / not configured — fall back to 0, don't crash.

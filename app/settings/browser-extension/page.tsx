@@ -16,10 +16,20 @@ import { TokenList } from "./TokenList";
 export const dynamic = "force-dynamic";
 
 export default async function BrowserExtensionSettingsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Audit 2026-10-09: try/catch around getUser() — dev-mode (no env
+  // vars) redirects to /login instead of 500ing.
+  let user: import("@supabase/supabase-js").User | null = null;
+  try {
+    const supabase = await createClient();
+    if (supabase) {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("[browser-extension-settings] failed to load user:", err);
+    }
+  }
   if (!user) redirect("/login");
 
   const admin = createAdminClient();

@@ -19,11 +19,26 @@ const CODE_TTL_MIN = 10;
 const RATE_LIMIT_PER_HOUR = 5;
 
 export async function POST(_request: NextRequest) {
-  // 1) Auth: must be logged in (cookie session)
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // 1) Auth: must be logged in (cookie session).
+  // Audit 2026-10-09: try/catch around createClient + getUser — dev
+  // mode (no env vars) and real outages both return 503 Service Unavailable
+  // instead of crashing with a 500 stack.
+  let user: import("@supabase/supabase-js").User | null = null;
+  try {
+    const supabase = await createClient();
+    if (supabase) {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("POST /api/extension/connect auth failed:", err);
+    }
+    return NextResponse.json(
+      { success: false, error: "service_unavailable" },
+      { status: 503 }
+    );
+  }
   if (!user) {
     return NextResponse.json(
       { success: false, error: "unauthorized" },

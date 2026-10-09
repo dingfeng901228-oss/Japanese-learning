@@ -158,11 +158,21 @@ export default async function VocabularyListPage({
   // "我有多少词汇来自浏览器阅读？"). One cheap count query — no rows
   // shipped. Independent of pagination (paged result only covers the
   // current page window; this stat stays across the whole collection).
-  const supabase = await createClient();
-  const { count: browserSourcedCount } = await supabase
-    .from("vocabulary_items")
-    .select("id", { count: "exact", head: true })
-    .eq("source", "chrome-extension");
+  let browserSourcedCount: number | null = null;
+  try {
+    const supabase = await createClient();
+    if (supabase) {
+      const result = await supabase
+        .from("vocabulary_items")
+        .select("id", { count: "exact", head: true })
+        .eq("source", "chrome-extension");
+      browserSourcedCount = result.count;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("[vocabulary] source count failed:", err);
+    }
+  }
 
   // Per Frank #7397 (2026-08-31, docs/vocabuly0831.md §十四 +
   // §二十三): drives the "继续学习" card and the "今日学习已完成"

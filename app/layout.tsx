@@ -144,9 +144,17 @@ export default async function RootLayout({
       };
     }
   } catch (err) {
-    // Supabase unavailable (env vars missing, network down, etc.) —
-    // render without UserMenu instead of crashing the whole page.
-    console.error("[root layout] failed to load user:", err);
+    // Audit 2026-10-09: distinguish the two failure modes so local-dev
+    // log doesn't drown out real Supabase errors.
+    //   - "supabase_env_missing" → env vars not set (fresh clone, no
+    //     .env). Use console.debug so it's not alarming.
+    //   - anything else → real outage, console.error.
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg === "supabase_env_missing") {
+      console.debug("[root layout] supabase env vars not set (dev mode)");
+    } else {
+      console.error("[root layout] failed to load user:", err);
+    }
   }
 
   return (

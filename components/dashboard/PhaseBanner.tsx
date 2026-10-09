@@ -73,6 +73,13 @@ export async function PhaseBanner() {
 
   try {
     const supabase = await createClient();
+    if (!supabase) {
+      // Audit 2026-10-09: dev-mode (no env vars) — fall through to zeros
+      // instead of letting the null reference throw.
+      return (
+        <Banner streak={0} vocab={0} />
+      );
+    }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return <Banner streak={0} vocab={0} />;

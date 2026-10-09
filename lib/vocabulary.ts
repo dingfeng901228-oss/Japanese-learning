@@ -411,8 +411,23 @@ export type ListVocabularyPagedOpts = ListVocabularyOpts & {
 export async function listVocabularyItemsPaged(
   opts: ListVocabularyPagedOpts = {}
 ): Promise<ListVocabularyResult> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Audit 2026-10-09: try/catch around createClient + getUser — dev mode
+  // (no env vars) returns an empty paged result instead of 500.
+  let user: import("@supabase/supabase-js").User | null = null;
+  let supabase: import("@supabase/supabase-js").SupabaseClient | null = null;
+  try {
+    supabase = await createClient();
+    if (supabase) {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("listVocabularyItemsPaged auth failed:", err);
+    }
+    const pageSize = Math.max(1, opts.pageSize ?? 20);
+    return { items: [], total: 0, page: 1, pageSize, totalPages: 0 };
+  }
   if (!user) {
     const pageSize = Math.max(1, opts.pageSize ?? 20);
     return { items: [], total: 0, page: 1, pageSize, totalPages: 0 };

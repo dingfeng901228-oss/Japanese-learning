@@ -41,10 +41,22 @@ function providerLabel(p: string | undefined): string {
 }
 
 export default async function AccountPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Audit 2026-10-09: wrap the getUser() round in try/catch so a
+  // missing-supabase-env (dev mode) renders the same "未登录" view as
+  // an unauthenticated request — no 500, no stack trace.
+  let user: import("@supabase/supabase-js").User | null = null;
+  let supabase: import("@supabase/supabase-js").SupabaseClient | null = null;
+  try {
+    supabase = await createClient();
+    if (supabase) {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("[account] failed to load user:", err);
+    }
+  }
 
   if (!user) {
     // Middleware should have caught this, but if it ever doesn't, return
@@ -61,21 +73,23 @@ export default async function AccountPage() {
   // content).
   let wordCount = 0;
   let reviewCount = 0;
-  try {
-    const [w, r] = await Promise.all([
-      supabase
-        .from("vocabulary_items")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id),
-      supabase
-        .from("vocabulary_reviews")
+  if (supabase) {
+    try {
+      const [w, r] = await Promise.all([
+        supabase
+          .from("vocabulary_items")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id),
+        supabase
+          .from("vocabulary_reviews")
         .select("id", { count: "exact", head: true })
         .eq("user_id", user.id),
     ]);
     wordCount = w.count ?? 0;
     reviewCount = r.count ?? 0;
-  } catch {
-    // ignore — show 0s
+    } catch {
+      // ignore — show 0s
+    }
   }
 
   const email = user.email ?? "";

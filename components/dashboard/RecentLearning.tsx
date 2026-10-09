@@ -33,15 +33,17 @@ export async function RecentLearning() {
 
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data } = await supabase
-        .from("vocabulary_items")
-        .select("id, word, type, level, created_at")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(5);
-      items = data ?? [];
+    if (supabase) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from("vocabulary_items")
+          .select("id, word, type, level, created_at")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(5);
+        items = data ?? [];
+      }
     }
   } catch {
     // ignore

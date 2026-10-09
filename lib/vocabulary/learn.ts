@@ -84,8 +84,22 @@ const EMPTY_STATE: LearningState = {
 //     date → treat as 'active' (Frank #7397 Q4: "第二天：自动 active").
 // ==========================================================================
 export async function getUserLearningState(): Promise<LearningState> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Audit 2026-10-09: try/catch around createClient — dev mode (no env
+  // vars) falls through to EMPTY_STATE instead of 500.
+  let user: import("@supabase/supabase-js").User | null = null;
+  let supabase: import("@supabase/supabase-js").SupabaseClient | null = null;
+  try {
+    supabase = await createClient();
+    if (supabase) {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("getUserLearningState auth failed:", err);
+    }
+    return EMPTY_STATE;
+  }
   if (!user) return EMPTY_STATE;
 
   const { data, error } = await supabase.rpc("get_user_learning_state", {

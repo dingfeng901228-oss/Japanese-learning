@@ -26,8 +26,21 @@ import { ClientProgress } from "./client-progress";
 export const dynamic = "force-dynamic";
 
 export default async function ProgressPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Audit 2026-10-09: try/catch around getUser() — dev-mode (no env
+  // vars) and real outages both fall through to the same defensive
+  // 未登录 view instead of 500ing.
+  let user: import("@supabase/supabase-js").User | null = null;
+  try {
+    const supabase = await createClient();
+    if (supabase) {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("[progress] failed to load user:", err);
+    }
+  }
 
   // Middleware (PROTECTED_PREFIXES) already redirects unauthenticated
   // users to /login, so `user` should always be set when we reach here.
