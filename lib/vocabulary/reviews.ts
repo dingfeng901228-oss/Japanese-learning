@@ -49,8 +49,22 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 // is the source of truth). If not, create one with next_review_at=now
 // so the new vocab is due immediately for first-pass study.
 export async function ensureReviewRecord(vocabularyId: string): Promise<void> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Audit 2026-10-09: try/catch around createClient — dev mode (no
+  // env vars) silently no-ops instead of throwing.
+  let user: import("@supabase/supabase-js").User | null = null;
+  let supabase: import("@supabase/supabase-js").SupabaseClient | null = null;
+  try {
+    supabase = await createClient();
+    if (supabase) {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("ensureReviewRecord auth failed:", err);
+    }
+    return;
+  }
   if (!user) return;
 
   const { data: existing } = await supabase
@@ -73,8 +87,23 @@ export async function ensureReviewRecord(vocabularyId: string): Promise<void> {
 }
 
 export async function getDueReviews(limit = 20): Promise<ReviewItem[]> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Audit 2026-10-09: try/catch around createClient — dev mode (no
+  // env vars) returns an empty queue instead of 500. Production
+  // (Cloudflare Pages) is unaffected — env vars are set there.
+  let user: import("@supabase/supabase-js").User | null = null;
+  let supabase: import("@supabase/supabase-js").SupabaseClient | null = null;
+  try {
+    supabase = await createClient();
+    if (supabase) {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("getDueReviews auth failed:", err);
+    }
+    return [];
+  }
   if (!user) return [];
 
   const nowIso = new Date().toISOString();
@@ -253,8 +282,22 @@ export type BackfillResult = {
 
 export async function backfillUserReviews(): Promise<BackfillResult> {
   const empty: BackfillResult = { inserted: 0, eligible: 0, totalVocab: 0 };
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Audit 2026-10-09: try/catch around createClient — dev mode (no
+  // env vars) returns the empty result instead of 500.
+  let user: import("@supabase/supabase-js").User | null = null;
+  let supabase: import("@supabase/supabase-js").SupabaseClient | null = null;
+  try {
+    supabase = await createClient();
+    if (supabase) {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("backfillUserReviews auth failed:", err);
+    }
+    return empty;
+  }
   if (!user) return empty;
 
   // 1) All vocab ids the user owns.
@@ -329,8 +372,22 @@ export async function backfillUserReviews(): Promise<BackfillResult> {
 // (needs backfill)". select on (id, head:true, count:'exact') avoids
 // shipping the rows.
 export async function getUserVocabCount(): Promise<number> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Audit 2026-10-09: try/catch around createClient — dev mode (no
+  // env vars) returns 0 instead of 500.
+  let user: import("@supabase/supabase-js").User | null = null;
+  let supabase: import("@supabase/supabase-js").SupabaseClient | null = null;
+  try {
+    supabase = await createClient();
+    if (supabase) {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("getUserVocabCount auth failed:", err);
+    }
+    return 0;
+  }
   if (!user) return 0;
   const { count, error } = await supabase
     .from("vocabulary_items")
@@ -356,8 +413,22 @@ export async function getUserVocabCount(): Promise<number> {
 // rather than "is there at least one". Two straightforward queries
 // through properly-RLS-scoped tables is bulletproof.
 export async function userHasVocabWithExamples(): Promise<boolean> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Audit 2026-10-09: try/catch around createClient — dev mode (no
+  // env vars) returns false instead of 500.
+  let user: import("@supabase/supabase-js").User | null = null;
+  let supabase: import("@supabase/supabase-js").SupabaseClient | null = null;
+  try {
+    supabase = await createClient();
+    if (supabase) {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    }
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("userHasVocabWithExamples auth failed:", err);
+    }
+    return false;
+  }
   if (!user) return false;
 
   // 1) Fetch the user's vocab ids.
