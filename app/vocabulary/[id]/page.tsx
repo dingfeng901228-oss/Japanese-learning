@@ -28,6 +28,8 @@ import {
 import { getVocabReviewStats } from "@/lib/vocabulary/reviews";
 import { LearningTracker } from "./LearningTracker";
 import { SpeakButton } from "@/components/SpeakButton";
+import { DictionaryCards } from "@/components/vocabulary/DictionaryCards";
+import { KanjiStrokeOrderRow } from "@/components/vocabulary/KanjiStrokeOrderRow";
 import { WordCardSwipeable } from "./WordCardSwipeable";
 import { VocabLearningProgress } from "@/components/vocabulary/VocabLearningProgress";
 import { VocabAutoSpeak } from "@/components/vocabulary/VocabAutoSpeak";
@@ -316,6 +318,14 @@ export default async function VocabularyDetailPage({
             )}
             <p className="text-xl text-gray-800 mb-6">{item.meaning}</p>
 
+            {/* Per audit 2026-10-09: stroke-order viewer for the kanji in
+                the word. The paths come from KanjiVG (via Tomoshi's open
+                data layer, CC BY-SA 3.0) — see
+                public/dict/ATTRIBUTION.md. Rendered next to the word so
+                you can check the correct stroke order while writing it
+                down. */}
+            <KanjiStrokeOrderRow word={item.word} />
+
             <div className="flex items-center justify-between gap-3 flex-wrap text-xs text-gray-400 pt-4 border-t border-gray-100">
               <span>
                 收藏于 {formatDateTime(item.created_at)}
@@ -481,6 +491,16 @@ export default async function VocabularyDetailPage({
         )}
       </section>
       </WordCardSwipeable>
+
+      {/* Per audit 2026-10-09: 译法辨析 / 近义・语体辨析 / 自他动词配对.
+          These three cards are the part of the Tomoshi open data layer
+          that an LLM cannot be trusted to produce — they're curated
+          (and partly LLM-generated-then-reviewed) analysis of the exact
+          traps a Chinese speaker falls into. They live outside
+          WordCardSwipeable so they don't swipe away with the word card. */}
+      <div className="mb-6">
+        <DictionaryCards word={item.word} />
+      </div>
 
       {/* Per Frank #7397 (2026-08-31, docs/vocabuly0831.md §十 +
           §十一 + §十三): 学习记录 section on the detail page.

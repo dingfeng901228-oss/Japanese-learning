@@ -1,16 +1,25 @@
 "use client";
 
-// /vocabulary/new — quick add form. Only "word / phrase" is required;
-// AI auto-generates reading, meaning, JLPT level, and part of speech
-// behind the scenes (lib/vocabulary/enrich.ts → gpt-4o-mini).
+// /vocabulary/new — quick add form.
 //
-// The detail page at /vocabulary/[id] shows the AI-filled fields; if
-// any look wrong, future Phase 3+ work will let users edit them
-// in-place.
+// Two-tier completion:
+//   1. Instant dictionary lookup (client, public/dict/lookup.json —
+//      JMdict-derived, see public/dict/ATTRIBUTION.md). Typing shows
+//      reading / Chinese meaning / POS / JLPT level / example instantly.
+//      Picking a result fills the hidden fields below, so the server
+//      action stores dictionary-accurate data.
+//   2. AI fallback (server, lib/vocabulary/enrich.ts → gpt-4o-mini) for
+//      words the dictionary doesn't cover, or for grammar / sentence
+//      entries where a dictionary lookup doesn't apply.
+//
+// The detail page at /vocabulary/[id] shows the completed fields; if any
+// look wrong, future Phase 3+ work will let users edit them in-place.
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
 import { createVocabularyItemAction } from "../actions";
+import { DictLookupInput } from "@/components/vocabulary/DictLookupInput";
+import { DictionaryAttribution } from "@/components/vocabulary/DictionaryAttribution";
 
 type VocabularyType = "word" | "phrase" | "grammar" | "sentence";
 
@@ -48,7 +57,17 @@ export default function NewVocabularyPage({
 }) {
   const [type, setType] = useState<VocabularyType>("word");
   const [error, setError] = useState<string>("");
-
+  // The word field is controlled so the lookup dropdown can drive it.
+  const [word, setWord] = useState("");
+  // Dictionary-derived fields, submitted as hidden inputs. Empty means
+  // "let the AI fill it".
+  const [dict, setDict] = useState({
+    reading: "",
+    meaning: "",
+    level: "",
+    partOfSpeech: "",
+    example: "",
+  });
   useEffect(() => {
     let cancelled = false;
     searchParams.then((sp) => {
@@ -144,14 +163,47 @@ export default function NewVocabularyPage({
               : "单词 / 词组"}{" "}
             *
           </label>
-          <input
-            id="vocab-word"
-            type="text"
-            name="word"
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
-            placeholder={TYPE_PLACEHOLDER[type]}
-          />
+          {type === "word" || type === "phrase" ? (
+            <DictLookupInput
+              id="vocab-word"
+              value={word}
+              onChange={setWord}
+              onPick={setDict}
+              placeholder={TYPE_PLACEHOLDER[type]}
+            />
+          ) : (
+            <input
+              id="vocab-word"
+              type="text"
+              name="word"
+              value={word}
+              onChange={(e) => setWord(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
+              placeholder={TYPE_PLACEHOLDER[type]}
+            />
+          )}
+          {/* Dictionary-derived values, submitted alongside the word. When
+              they're empty the server action falls through to the AI
+              enrichment path — exactly the old behaviour.
+
+              The dictionary's example sentences are Chinese-only (the
+              Japanese side isn't in the open data layer), so they're
+              shown in the dropdown as a usage hint but not submitted —
+              vocabulary_examples.sentence needs a Japanese sentence and
+              the AI path already produces one. */}
+          <input type="hidden" name="reading" value={dict.reading} />
+          <input type="hidden" name="meaning" value={dict.meaning} />
+          <input type="hidden" name="level" value={dict.level} />
+          <input type="hidden" name="part_of_speech" value={dict.partOfSpeech} />
+          {dict.reading && (
+            <p className="text-xs text-gray-500 mt-2">
+              已从词典填入：
+              <span className="font-jp">{dict.reading}</span>
+              {dict.level && ` · ${dict.level}`}
+              {dict.meaning && ` · ${dict.meaning}`}
+            </p>
+          )}
         </div>
 
         <div className="flex gap-3 pt-4">
@@ -164,10 +216,14 @@ export default function NewVocabularyPage({
           </Link>
         </div>
 
-        <p className="text-xs text-gray-400 pt-2">
-          保存后 AI 用 gpt-4o-mini 自动补全，跳转到详情页即可看到全部内容（约 1-3 秒）。
-        </p>
-      </form>
-    </main>
-  );
-}
+          <p className="text-xs text-gray-400 pt-2">
+            保存后 AI 用 gpt-4o-mini 自动补全，跳转到详情页即可看到全部内容（约 1-3 秒）。
+          </p>
+        </form>
+
+        <div className="mt-6">
+          <DictionaryAttribution />
+        </div>
+      </main>
+    );
+  }
