@@ -207,6 +207,28 @@ def build_notes(conn: sqlite3.Connection) -> tuple[dict, dict]:
             },
         )
 
+    # Keep only the words that carry a JLPT level.
+    #
+    # The full card set is ~19k (译法辨析) + ~12k (近义・语体) entries,
+    # but only ~4k of each are JLPT words. The rest are rare, archaic or
+    # otherwise outside what a learner looks up — and they cost ~20 MB
+    # of deployment payload, which pushed the Vercel deployment over
+    # its size limit. Filtering to JLPT-level words keeps the cards
+    # that matter and drops public/dict from 37.8 MB to ~18 MB.
+    #
+    # JLPT levels come from the same vocab_jlpt table the lookup index
+    # uses, so "has a level" and "is in lookup.json" stay consistent.
+    jlpt_words: set[str] = set()
+    for entry_id, level in conn.execute("SELECT entry_id, level FROM vocab_jlpt"):
+        if not level:
+            continue
+        ja = form_by_entry.get(entry_id)
+        if ja:
+            jlpt_words.add(ja)
+
+    cn_cards = {w: c for w, c in cn_cards.items() if w in jlpt_words}
+    rel_cards = {w: c for w, c in rel_cards.items() if w in jlpt_words}
+
     return cn_cards, rel_cards
 
 
