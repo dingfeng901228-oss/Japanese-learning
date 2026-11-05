@@ -71,3 +71,6 @@ data/
 # Python bytecode cache (scripts/build-dict-index.py)
 __pycache__/
 *.pyc
+
+# Supabase CLI local state
+supabase/.temp/

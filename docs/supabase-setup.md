@@ -60,7 +60,40 @@ supabase link --project-ref <project-ref>
 supabase db push   # applies all supabase/migrations/*.sql in order
 ```
 
+### Option C — direct Postgres (scriptable, no dashboard needed)
+
+The fastest option when the migration is a plain DDL file: connect to
+Postgres directly and run the `.sql` as-is.
+
+```bash
+pip install psycopg2-binary
+
+export DATABASE_URL='postgresql://postgres:<password>@db.<ref>.supabase.co:5432/postgres'
+python scripts/apply-migration.py supabase/migrations/0008_vocab_freq_rank.sql
+```
+
+`scripts/apply-migration.py` executes the file in one transaction and
+prints the verification (column type, index presence, rows affected).
+For one-off queries, `psycopg2` directly is just as easy — and unlike
+PostgREST it can run DDL and `UPDATE ... FROM (VALUES ...)`.
+
 > Run `0002_rls.sql` **only after** `0001_init.sql` — RLS policies reference tables that must exist first.
+
+### PostgREST vs. raw SQL — the difference bites
+
+PostgREST (what supabase-js talks to) cannot run DDL, and it has its own
+syntax for null ordering:
+
+| what you write in supabase-js | what PostgREST sends | equivalent raw SQL |
+|---|---|---|
+| `.order("col", { ascending: true })` | `order=col.asc` | `order by col asc` |
+| `.order("col", { ascending: true, nullsFirst: false })` | `order=col.asc.nullslast` | `order by col asc nulls last` |
+| `.order("col", { ascending: true, nullsFirst: true })` | `order=col.asc.nullsfirst` | `order by col asc nulls first` |
+
+`nulls first false` is **not** valid Postgres — `false` is not a keyword
+there. Only PostgREST accepts the boolean form. Writing the boolean into
+raw SQL is a syntax error.
+
 
 ## 6. Verify
 
