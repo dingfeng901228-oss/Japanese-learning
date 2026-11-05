@@ -66,7 +66,7 @@ export default function NewVocabularyPage({
     meaning: "",
     level: "",
     partOfSpeech: "",
-    example: "",
+    freqRank: 0,
   });
   useEffect(() => {
     let cancelled = false;
@@ -110,7 +110,8 @@ export default function NewVocabularyPage({
         </Link>
         <h1 className="text-3xl font-bold mt-4">添加新收藏</h1>
         <p className="text-gray-600 mt-2">
-          只输入单词 / 词组，其他字段（中文意思、假名读音、JLPT 等级、词性）由 AI 自动生成。
+          输入即查词典：假名读音、中文意思、JLPT 等级、词性立即显示，选中后自动填入。
+          词典未收录的词由 AI 补全。
         </p>
       </header>
 
@@ -196,6 +197,11 @@ export default function NewVocabularyPage({
           <input type="hidden" name="meaning" value={dict.meaning} />
           <input type="hidden" name="level" value={dict.level} />
           <input type="hidden" name="part_of_speech" value={dict.partOfSpeech} />
+          <input
+            type="hidden"
+            name="freq_rank"
+            value={dict.freqRank ? String(dict.freqRank) : ""}
+          />
           {dict.reading && (
             <p className="text-xs text-gray-500 mt-2">
               已从词典填入：
@@ -217,7 +223,8 @@ export default function NewVocabularyPage({
         </div>
 
           <p className="text-xs text-gray-400 pt-2">
-            保存后 AI 用 gpt-4o-mini 自动补全，跳转到详情页即可看到全部内容（约 1-3 秒）。
+            词典已收录的词直接保存（无需等待）；未收录的词由 AI 补全（约 1-3 秒）。
+            跳转到详情页可看到全部内容。
           </p>
         </form>
 

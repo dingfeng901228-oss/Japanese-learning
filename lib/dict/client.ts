@@ -60,7 +60,10 @@ export interface VerbPair {
   other: string;
   /** "vt" = transitive (他动词), "vi" = intransitive (自动词) */
   role: "vt" | "vi";
-  /** conjugation pattern, e.g. "ru-su" / "aru-eru" */
+  /**
+   * Conjugation-pattern id, e.g. "ru-su" / "aru-eru". Empty when the
+   * pair has no regular ending rule (about a tenth of the entries).
+   */
   pattern: string;
 }
 

@@ -157,6 +157,24 @@ export default async function VocabularyDetailPage({
               {item.part_of_speech}
             </span>
           )}
+          {item.freq_rank != null && (
+            <span
+              className={`text-xs px-2 py-0.5 rounded ${
+                item.freq_rank <= 2000
+                  ? "bg-emerald-50 text-emerald-700"
+                  : item.freq_rank <= 10000
+                    ? "bg-gray-100 text-gray-600"
+                    : "bg-gray-50 text-gray-400"
+              }`}
+              title={`JMdict 常用度排名 ${item.freq_rank}（数字越小越常用）`}
+            >
+              {item.freq_rank <= 2000
+                ? "常用"
+                : item.freq_rank <= 10000
+                  ? "次常用"
+                  : "少用"}
+            </span>
+          )}
         </div>
       </header>
 
@@ -271,7 +289,7 @@ export default async function VocabularyDetailPage({
                   name="part_of_speech"
                   defaultValue={item.part_of_speech ?? ""}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
-                  placeholder="例：他动词"
+                  placeholder="例：动词"
                 />
               </div>
             </div>

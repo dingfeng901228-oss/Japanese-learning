@@ -226,7 +226,13 @@ def build_verb_pairs(conn: sqlite3.Connection) -> dict:
         other = form_by_entry.get(counterpart_id)
         if not ja or not other:
             continue
-        pairs.setdefault(ja, {"other": other, "role": role, "pattern": pattern})
+        # pattern is NULL for ~64 rows (the pair has no regular ending
+        # rule). Normalise to "" so the client gets an empty string
+        # instead of a JSON null.
+        pairs.setdefault(
+            ja,
+            {"other": other, "role": role, "pattern": pattern or ""},
+        )
 
     return pairs
 

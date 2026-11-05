@@ -40,6 +40,10 @@ export type VocabularyItem = {
   // invariant comments). Updated by start_learning_session RPC.
   learning_count: number;
   last_learned_at: string | null;
+  // JMdict frequency rank (lower = more common). Null when the word
+  // wasn't in the dictionary, or when the item was added before
+  // migration 0008_vocab_freq_rank.sql.
+  freq_rank?: number | null;
 };
 
 export type NewVocabularyItem = {
@@ -51,9 +55,41 @@ export type NewVocabularyItem = {
   language?: string;
   part_of_speech?: string | null;
   level?: string | null;
+  // JMdict frequency rank (lower = more common). Set by the dictionary
+  // lookup widget on /vocabulary/new. Requires migration
+  // 0008_vocab_freq_rank.sql — the insert falls back to a column-less
+  // variant when the column isn't there yet, so deploy order doesn't
+  // matter.
+  freq_rank?: number | null;
 };
 
-export type VocabularySort = "newest" | "oldest" | "word";
+export type VocabularySort = "newest" | "oldest" | "word" | "freq";
+
+/**
+ * Does vocabulary_items have the freq_rank column yet?
+ *
+ * The column arrives with migration 0008_vocab_freq_rank.sql, which the
+ * project applies manually (Frank's #7435 decision: no CI auto-apply).
+ * So the app has to work both before and after the migration runs —
+ * this probe caches the answer per process.
+ */
+let freqRankColumn: boolean | null = null;
+
+async function hasFreqRankColumn(
+  supabase: Awaited<ReturnType<typeof createClient>>
+): Promise<boolean> {
+  if (freqRankColumn !== null) return freqRankColumn;
+  try {
+    const { error } = await supabase
+      .from("vocabulary_items")
+      .select("freq_rank")
+      .limit(1);
+    freqRankColumn = !error;
+  } catch {
+    freqRankColumn = false;
+  }
+  return freqRankColumn;
+}
 
 export type ListVocabularyOpts = {
   type?: VocabularyType;
@@ -126,6 +162,11 @@ export async function listVocabularyItems(
     query = query.order("created_at", { ascending: true });
   } else if (opts.sort === "word") {
     query = query.order("word", { ascending: true });
+  } else if (opts.sort === "freq" && (await hasFreqRankColumn(supabase))) {
+    // Most-useful-first. nullsFirst:false puts the words we have no
+    // rank for (added before the column existed, or not in the
+    // dictionary) at the end instead of the top.
+    query = query.order("freq_rank", { ascending: true, nullsFirst: false });
   } else {
     query = query.order("created_at", { ascending: false });
   }
@@ -178,23 +219,57 @@ export async function createVocabularyItem(
     }
   }
 
-  const inserted = ensureData(
-    await supabase
+  const row = {
+    user_id: user.id,
+    type: item.type,
+    word: item.word,
+    reading,
+    meaning,
+    language: item.language ?? "ja",
+    part_of_speech: partOfSpeech,
+    level,
+  };
+
+  // Insert with the frequency rank when we have one. The column comes
+  // from migration 0008_vocab_freq_rank.sql, which may not be applied
+  // yet — so if the insert fails on the missing column, retry without
+  // it. Deploy order doesn't matter.
+  //
+  // NOTE: pass the whole response to ensureData(), not response.data —
+  // ensureData reads .data and .error off what it's given.
+  let inserted: VocabularyItem;
+  if (item.freq_rank != null) {
+    const withFreq = await supabase
       .from("vocabulary_items")
-      .insert({
-        user_id: user.id,
-        type: item.type,
-        word: item.word,
-        reading,
-        meaning,
-        language: item.language ?? "ja",
-        part_of_speech: partOfSpeech,
-        level,
-      })
+      .insert({ ...row, freq_rank: item.freq_rank })
       .select()
-      .single(),
-    null as unknown as VocabularyItem
-  );
+      .single();
+    if (withFreq.error) {
+      const msg = withFreq.error.message ?? "";
+      if (/freq_rank|column .* does not exist/i.test(msg)) {
+        const fallback = await supabase
+          .from("vocabulary_items")
+          .insert(row)
+          .select()
+          .single();
+        inserted = ensureData(
+          fallback,
+          null as unknown as VocabularyItem
+        );
+      } else {
+        throw new Error(msg);
+      }
+    } else {
+      inserted = ensureData(withFreq, null as unknown as VocabularyItem);
+    }
+  } else {
+    const plain = await supabase
+      .from("vocabulary_items")
+      .insert(row)
+      .select()
+      .single();
+    inserted = ensureData(plain, null as unknown as VocabularyItem);
+  }
 
   // Auto-attach a primary example sentence (Phase 3). Don't fail the
   // whole create if AI generation hiccups — user can regenerate later
@@ -464,6 +539,8 @@ export async function listVocabularyItemsPaged(
     query = query.order("created_at", { ascending: true });
   } else if (opts.sort === "word") {
     query = query.order("word", { ascending: true });
+  } else if (opts.sort === "freq" && (await hasFreqRankColumn(supabase))) {
+    query = query.order("freq_rank", { ascending: true, nullsFirst: false });
   } else {
     query = query.order("created_at", { ascending: false });
   }

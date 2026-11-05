@@ -45,7 +45,8 @@ interface DictLookupInputProps {
     meaning: string;
     level: string;
     partOfSpeech: string;
-    example: string;
+    /** JMdict frequency rank (lower = more common), 0 when unknown */
+    freqRank: number;
   }) => void;
   /** input placeholder, varies by type (word / phrase / grammar / sentence) */
   placeholder?: string;
@@ -53,24 +54,61 @@ interface DictLookupInputProps {
   id?: string;
 }
 
+/**
+ * JMdict part-of-speech (English) -> the Chinese labels the AI
+ * enrichment path produces (名词 / 动词 / 形容词 / 副词 / 助词 / 词组 /
+ * 句型 / 表达).
+ *
+ * Consistency matters: the detail page and the list render
+ * part_of_speech verbatim, so an English "transitive verb" next to a
+ * Chinese "动词" (from the AI path) looks broken.
+ *
+ * Returns "" for anything we don't recognise — an empty field lets the
+ * AI fill in a Chinese label, which is better than storing English.
+ */
 const POS_LABELS: Record<string, string> = {
   noun: "名词",
   "noun (common)": "名词",
+  "noun (suru verb)": "名词",
+  "nouns which take the aux. verb suru": "名词",
   verb: "动词",
-  "transitive verb": "他动词",
-  "intransitive verb": "自动词",
+  "transitive verb": "动词",
+  "intransitive verb": "动词",
+  "suru verb": "动词",
   adjective: "形容词",
+  "adjective (keiyōshi)": "形容词",
+  "adjective (na-adjective)": "形容词",
+  "adjectival nouns": "形容词",
   adverb: "副词",
+  "adverb (fukuyushi)": "副词",
   particle: "助词",
   pronoun: "代词",
   numeral: "数词",
-  expression: "惯用表达",
-  "nouns which take the aux. verb suru": "サ变名词",
+  counter: "数词",
+  expression: "词组",
+  "idiom": "词组",
+  "proverb": "词组",
+  "conjunction": "词组",
+  "nouns which take the aux. verb ru": "词组",
+  prefix: "词组",
+  "n-prefix": "词组",
+  suffix: "词组",
+  "n-suffix": "词组",
+  "set phrase": "词组",
+  interjection: "表达",
+  "phrase": "表达",
+  "phrase, clause": "表达",
 };
 
 function posLabel(pos: string): string {
   if (!pos) return "";
-  return POS_LABELS[pos] ?? POS_LABELS[pos.split(" (")[0]] ?? pos;
+  if (POS_LABELS[pos]) return POS_LABELS[pos];
+  // JMdict often writes "noun, or short for ..." — take the head POS.
+  const head = pos.split(",")[0].trim();
+  if (POS_LABELS[head]) return POS_LABELS[head];
+  const base = head.split(" (")[0].trim();
+  if (POS_LABELS[base]) return POS_LABELS[base];
+  return "";
 }
 
 /** Frequency band from the JMdict frequency rank. */
@@ -134,8 +172,8 @@ export function DictLookupInput({
         reading: entry.r,
         meaning: entry.m,
         level: entry.l,
-        partOfSpeech: entry.p,
-        example: entry.e,
+        partOfSpeech: posLabel(entry.p),
+        freqRank: entry.f || 0,
       });
       onChange(word);
       setOpen(false);

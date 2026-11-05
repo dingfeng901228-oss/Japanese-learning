@@ -41,7 +41,7 @@ function asLevel(
 }
 
 function asSort(v: string | undefined): VocabularySort {
-  if (v === "oldest" || v === "word") return v;
+  if (v === "oldest" || v === "word" || v === "freq") return v;
   return "newest";
 }
 
@@ -296,7 +296,9 @@ export default async function VocabularyListPage({
                           ? "最早收藏"
                           : userLearningState.filterContext.sort === "word"
                             ? "按 A-Z"
-                            : null,
+                            : userLearningState.filterContext.sort === "freq"
+                              ? "按常用度"
+                              : null,
                         userLearningState.filterContext.query
                           ? `搜索 "${userLearningState.filterContext.query}"`
                           : null,
@@ -375,6 +377,7 @@ export default async function VocabularyListPage({
           <option value="newest">最新收藏</option>
           <option value="oldest">最早收藏</option>
           <option value="word">按 A-Z</option>
+          <option value="freq">按常用度</option>
         </select>
         <button
           type="submit"
@@ -422,6 +425,24 @@ export default async function VocabularyListPage({
                       {item.level && (
                         <span className="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-600">
                           {item.level}
+                        </span>
+                      )}
+                      {item.freq_rank != null && (
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded ${
+                            item.freq_rank <= 2000
+                              ? "bg-emerald-50 text-emerald-700"
+                              : item.freq_rank <= 10000
+                                ? "bg-gray-100 text-gray-600"
+                                : "bg-gray-50 text-gray-400"
+                          }`}
+                          title={`JMdict 常用度排名 ${item.freq_rank}（数字越小越常用）`}
+                        >
+                          {item.freq_rank <= 2000
+                            ? "常用"
+                            : item.freq_rank <= 10000
+                              ? "次常用"
+                              : "少用"}
                         </span>
                       )}
                     </div>

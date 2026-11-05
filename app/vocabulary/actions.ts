@@ -53,6 +53,13 @@ export async function createVocabularyItemAction(formData: FormData) {
   const meaning = String(formData.get("meaning") ?? "").trim();
   const level = String(formData.get("level") ?? "").trim();
   const partOfSpeech = String(formData.get("part_of_speech") ?? "").trim();
+  // JMdict frequency rank, set by the dictionary lookup widget. Absent
+  // for words the dictionary doesn't cover — that's fine, the column
+  // stays null and the item sorts last under 「按常用度」.
+  const freqRankRaw = String(formData.get("freq_rank") ?? "").trim();
+  const freqRank = /^\d+$/.test(freqRankRaw)
+    ? Number(freqRankRaw)
+    : null;
 
   // Per Frank #7094 (2026-08-27): the whole flow used to be
   // uncaught — if createVocabularyItem threw (e.g., Supabase insert
@@ -71,6 +78,7 @@ export async function createVocabularyItemAction(formData: FormData) {
       meaning: meaning || undefined,
       level: level || null,
       part_of_speech: partOfSpeech || null,
+      freq_rank: freqRank,
     });
   } catch (err) {
     // Per Frank #7103 (2026-08-28): distinguish user-fixable errors
@@ -164,6 +172,31 @@ export async function updateWordAction(formData: FormData) {
   if (error) {
     console.error("updateWordAction: update failed", error);
     redirect(`/vocabulary/${id}?edit_word=1`);
+  }
+
+  // If the headword changed, the stored frequency rank no longer
+  // describes this word. Clear it rather than leave a wrong rank on
+  // the row (the 「按常用度」 sort and the 常用/少用 badge both read
+  // it). The column only exists after migration
+  // 0008_vocab_freq_rank.sql, so a failure here is expected on
+  // older databases — ignore it.
+  const { data: current } = await supabase
+    .from("vocabulary_items")
+    .select("word")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (current && current.word !== word) {
+    const { error: clearErr } = await supabase
+      .from("vocabulary_items")
+      .update({ freq_rank: null })
+      .eq("id", id)
+      .eq("user_id", user.id);
+    if (clearErr) {
+      console.debug(
+        "updateWordAction: freq_rank column not available, skipping cleanup"
+      );
+    }
   }
 
   revalidatePath(`/vocabulary/${id}`);
