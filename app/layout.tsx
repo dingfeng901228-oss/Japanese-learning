@@ -163,6 +163,18 @@ export default async function RootLayout({
       className={`${inter.variable} ${notoJP.variable} ${notoSC.variable}`}
     >
       <body className="font-sans antialiased min-h-screen bg-soft text-ink">
+        {/* Audit 2026-11-16 P1-15 (dark mode): apply the stored theme
+            BEFORE the first paint. Without this the page renders light,
+            then flips to dark once React hydrates — a white flash on
+            every navigation for a dark-mode user. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('jp_theme')||'system';" +
+              "var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);" +
+              "document.documentElement.classList.toggle('dark',d);}catch(e){}})();",
+          }}
+        />
         {/* Audit 2026-10-09 P0-1: header now renders for anonymous visitors
             too, but with a Login CTA on the right instead of the UserMenu
             + nav (the nav targets protected routes that bounce to /login on

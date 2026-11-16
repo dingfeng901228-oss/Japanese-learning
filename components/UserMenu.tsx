@@ -136,6 +136,17 @@ export function UserMenu({ email, displayName, avatarUrl }: UserMenuProps) {
             >
               Account
             </Link>
+            {/* Audit 2026-11-16 P1-15: the menu only had Account and
+                Sign out, so there was no way into the settings at all.
+                The theme switch lives on the settings page too. */}
+            <Link
+              href="/settings"
+              role="menuitem"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              onClick={() => setOpen(false)}
+            >
+              Settings · 设置
+            </Link>
             <form action={signOutAction}>
               <button
                 type="submit"
