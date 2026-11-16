@@ -6,6 +6,12 @@ import Link from "next/link";
 import { formatAccent } from "@/lib/vocabulary/accent";
 import { SpeakButton } from "@/components/SpeakButton";
 import { ExportButtons } from "@/components/vocabulary/ExportButtons";
+import { VocabularyFilters } from "@/components/vocabulary/VocabularyFilters";
+import {
+  JLPT_LEVELS,
+  MASTERY_RANGES,
+  TYPE_LABEL,
+} from "@/lib/vocabulary/filters";
 import {
   getVocabularyTags,
   getVocabularyTypeCounts,
@@ -34,7 +40,6 @@ type SearchParams = {
   mastery?: string;
 };
 
-const JLPT_LEVELS = ["N5", "N4", "N3", "N2", "N1"] as const;
 
 /**
  * Audit 2026-11-16 P1-12: every URL parameter is an English enum, and
@@ -86,19 +91,6 @@ function asFilter(v: string | undefined): VocabularyFilter | undefined {
   return undefined;
 }
 
-/**
- * P1-10: the 掌握度区间 filter. The buckets are the four ranges the
- * progress page talks about, so the two pages agree on what a
- * "mastery level" means.
- */
-const MASTERY_RANGES: { value: string; label: string; min?: number; max?: number }[] =
-  [
-    { value: "", label: "全部掌握度" },
-    { value: "0-19", label: "0%–19%（生疏）", min: 0, max: 19 },
-    { value: "20-49", label: "20%–49%（需加强）", min: 20, max: 49 },
-    { value: "50-79", label: "50%–79%（接近掌握）", min: 50, max: 79 },
-    { value: "80-100", label: "80%–100%（已掌握）", min: 80, max: 100 },
-  ];
 
 function asMasteryRange(
   v: string | undefined
@@ -134,22 +126,7 @@ function buildHref(params: Record<string, unknown>): string {
   return qs ? `/vocabulary?${qs}` : "/vocabulary";
 }
 
-const TYPE_LABEL: Record<VocabularyType, string> = {
-  word: "单词",
-  phrase: "词组",
-  grammar: "文法",
-  sentence: "句型",
-};
 
-/**
- * Audit 2026-11-16 P1-12: the filter row applies itself when a select
- * changes. Before, every dropdown change needed a second click on
- * 「搜索」, which read as "the filter is broken".
- */
-function autoApply(e: React.ChangeEvent<HTMLSelectElement>) {
-  const form = (e.target as HTMLSelectElement).form;
-  if (form) form.requestSubmit();
-}
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -230,10 +207,6 @@ export default async function VocabularyListPage({
     invalid.push(`tag=${tag}`);
   }
 
-  // P1-13: only offer the types that exist in this collection.
-  const AVAILABLE_TYPES = (Object.keys(TYPE_LABEL) as VocabularyType[]).filter(
-    (ty) => (typeCounts[ty] ?? 0) > 0
-  );
 
   // P1-12: is any filter active? Drives the empty-state copy.
   const hasFilters = Boolean(
@@ -451,112 +424,17 @@ export default async function VocabularyListPage({
           </section>
         )}
 
-      <form method="get" className="mb-8 flex gap-2 flex-wrap">
-        <input
-          type="text"
-          name="q"
-          defaultValue={q}
-          placeholder="搜索 单词 / 假名 / 中文..."
-          className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
-        />
-        {/* Audit 2026-11-16 P1-13: only the types the user actually has
-            are offered. 文法 / 句型 were dead options — Frank's collection
-            has 3,254 words, 93 phrases and zero of either. */}
-        <select
-          name="type"
-          defaultValue={type ?? ""}
-          onChange={autoApply}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
-        >
-          <option value="">全部类型</option>
-          {AVAILABLE_TYPES.map((ty) => (
-            <option key={ty} value={ty}>
-              {TYPE_LABEL[ty]} ({typeCounts[ty]})
-            </option>
-          ))}
-        </select>
-        <select
-          name="level"
-          defaultValue={level ?? ""}
-          onChange={autoApply}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
-        >
-          <option value="">全部等级</option>
-          {JLPT_LEVELS.map((lvl) => (
-            <option key={lvl} value={lvl}>
-              {lvl}
-            </option>
-          ))}
-        </select>
-        {/* P1-6: the 状态 filter — due / mastered / weak. */}
-        <select
-          name="filter"
-          defaultValue={filter ?? ""}
-          onChange={autoApply}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
-        >
-          <option value="">全部状态</option>
-          <option value="due">待复习</option>
-          <option value="mastered">已掌握</option>
-          <option value="weak">易忘</option>
-          {/* P1-10: the learner's own marks. */}
-          <option value="starred">★ 星标</option>
-          <option value="marked">已标记</option>
-        </select>
-        {/* P1-10: 掌握度区间 */}
-        <select
-          name="mastery"
-          defaultValue={sp.mastery ?? ""}
-          onChange={autoApply}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
-        >
-          {MASTERY_RANGES.map((r) => (
-            <option key={r.value} value={r.value}>
-              {r.label}
-            </option>
-          ))}
-        </select>
-        {/* P1-11: 主题 — the category the imported word came from. */}
-        {tags.length > 0 && (
-          <select
-            name="tag"
-            defaultValue={tag ?? ""}
-            onChange={autoApply}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white max-w-[220px]"
-          >
-            <option value="">全部主题</option>
-            {tags.map((tg) => (
-              <option key={tg.tag} value={tg.tag}>
-                {tg.tag} ({tg.count})
-              </option>
-            ))}
-          </select>
-        )}
-        <select
-          name="sort"
-          defaultValue={sort}
-          onChange={autoApply}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
-        >
-          <option value="newest">最新收藏</option>
-          <option value="oldest">最早收藏</option>
-          <option value="word">按 A-Z</option>
-          <option value="freq">按常用度</option>
-        </select>
-        <button
-          type="submit"
-          className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-        >
-          搜索
-        </button>
-        {/* P1-12: the filters apply themselves now, so the button is
-            only needed for the text box. */}
-        <noscript>
-          <span className="text-xs text-gray-500">
-            筛选已自动应用；搜索框需要点「搜索」。
-          </span>
-        </noscript>
-      </form>
+      <VocabularyFilters
+        q={q}
+        type={type ?? ""}
+        level={level ?? ""}
+        filter={filter ?? ""}
+        mastery={sp.mastery ?? ""}
+        tag={tag ?? ""}
+        sort={sort}
+        typeCounts={typeCounts}
+        tags={tags}
+      />
 
       {/* P1-9: export what is on screen — the same filters are passed
           on to the endpoint, so a filtered list exports filtered. */}
