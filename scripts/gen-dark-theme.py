@@ -77,15 +77,19 @@ TOKEN_TEXT = {
     "ink": "#f9fafb",
     "ink-700": "#d1d5db",
     "ink-500": "#9ca3af",
+    "soft": "#f9fafb",
+    "line": "#d1d5db",
 }
 TOKEN_BG = {
     "ink": "#0b1220",
     "soft": "#111827",
     "line": "#1f2937",
+    "white": "#111827",
 }
 TOKEN_BORDER = {
     "line": "#374151",
     "ink": "#374151",
+    "soft": "#374151",
 }
 
 # Accent colours: the light background becomes a deep tint, the dark
@@ -131,6 +135,17 @@ def palette_for(prop: str, colour: str) -> str | None:
     """The dark-mode colour for a utility, or None if it is not a colour."""
     if colour in FLAT:
         return FLAT[colour]
+    # The design tokens have NO dash (bg-soft, text-ink, border-line), so
+    # they must be looked up BEFORE the "shade" branch - otherwise they
+    # fall through and are silently skipped. That is how bg-soft was
+    # missing from the dark layer while the rest of the page turned
+    # dark.
+    if prop == "text" and colour in TOKEN_TEXT:
+        return TOKEN_TEXT[colour]
+    if prop == "bg" and colour in TOKEN_BG:
+        return TOKEN_BG[colour]
+    if prop == "border" and colour in TOKEN_BORDER:
+        return TOKEN_BORDER[colour]
     if "-" in colour:
         name, _, shade = colour.partition("-")
         shade_i = int(shade) if shade.isdigit() else None
