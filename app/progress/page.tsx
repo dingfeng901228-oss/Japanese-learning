@@ -16,6 +16,8 @@ import {
   getMasteryDistribution,
   getMasteryStats,
   getVocabByMastery,
+  MASTERED_THRESHOLD,
+  REVIEW_THRESHOLD,
   type MasteryDistribution,
   type MasteryByLevel,
   type MasteryStats,
@@ -56,12 +58,17 @@ export default async function ProgressPage() {
   }
 
   // Fan out the 4 queries in parallel — single round-trip wall time.
+  //
+  // Audit 2026-11-16 P0-1: the "已掌握" list used to be built by sorting
+  // mastery descending and taking the top 10, with no threshold filter.
+  // Every item sat at 0-20% mastery, so a list headed "已掌握 (≥80%)"
+  // showed 20%-mastery words. Both lists are now threshold-filtered.
   const [distribution, stats, byLevel, hardest, mastered] = await Promise.all([
     getMasteryDistribution(user.id),
     getMasteryStats(user.id),
     getMasteryByLevel(user.id),
-    getVocabByMastery(user.id, "low", 10),
-    getVocabByMastery(user.id, "high", 10),
+    getVocabByMastery(user.id, "low", 10, { maxMastery: REVIEW_THRESHOLD - 1 }),
+    getVocabByMastery(user.id, "high", 10, { minMastery: MASTERED_THRESHOLD }),
   ]);
 
   return (
@@ -72,8 +79,17 @@ export default async function ProgressPage() {
       <div className="mb-6" />
 
       <h1 className="text-2xl font-bold mb-2">📊 学习进度</h1>
-      <p className="text-sm text-gray-500 mb-6">
+      <p className="text-sm text-gray-500 mb-2">
         词汇 mastery + 听力完成度 + Shadow 跟读统计 + 按场景 / 难度分布。
+      </p>
+      {/* Audit 2026-11-16 P0-1: this page mixes two data sources. The
+          vocabulary block above is server-side (Supabase, cross-device);
+          the sections below are localStorage (this browser only). Say so
+          explicitly instead of letting the numbers sit next to each other
+          as if they were the same kind of fact. */}
+      <p className="text-xs text-gray-400 mb-6">
+        ⚠️ 上方「词汇掌握度」为服务端数据（所有设备同步）。
+        下方「本机训练记录」为浏览器本地数据，仅当前设备可见。
       </p>
 
       {/* Mastery Stats Overview + Distribution Histogram + By JLPT */}
@@ -118,14 +134,25 @@ export default async function ProgressPage() {
               </div>
             </div>
           )}
+
+          {/* Audit 2026-11-16 P0-3: the mastery formula and the thresholds
+              were invisible, so a word sitting at 20% looked like a
+              near-miss with no way to tell what the number meant. */}
+          <MasteryExplainer />
         </section>
       )}
 
       {/* Needs Review + Top Mastered */}
       {stats.total > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <MasteryList title="📌 最需复习" items={hardest} />
-          <MasteryList title="✨ 已掌握" items={mastered} />
+          <MasteryList
+            title={`📌 最需复习（< ${REVIEW_THRESHOLD}%）`}
+            items={hardest}
+          />
+          <MasteryList
+            title={`✨ 已掌握（≥ ${MASTERED_THRESHOLD}%）`}
+            items={mastered}
+          />
         </div>
       )}
 
@@ -135,8 +162,35 @@ export default async function ProgressPage() {
   );
 }
 
-const MASTERED_THRESHOLD = 80;
-const REVIEW_THRESHOLD = 50;
+/**
+ * Audit 2026-11-16 P0-3: the mastery number had no visible definition.
+ * The user could see "20%" on a word and had no way to know what moved
+ * it or what counted as 已掌握.
+ */
+function MasteryExplainer() {
+  return (
+    <div className="mt-5 pt-4 border-t border-gray-100 text-xs text-gray-500 leading-relaxed">
+      <p className="font-medium text-gray-700 mb-1.5">掌握度怎么算？</p>
+      <ul className="space-y-1 list-disc pl-4">
+        <li>
+          每个词从 0% 开始，只有<strong>主动操作</strong>才会加分：点朗读、
+          复习答题并评分、或手动标记。打开页面停留不会增加学习量。
+        </li>
+        <li>
+          复习评分四档换算：
+          <strong>忘了</strong> +0%、
+          <strong>模糊</strong> +10%、
+          <strong>记得</strong> +20%、
+          <strong>熟练</strong> +30%（每次复习上限 +30%）。
+        </li>
+        <li>
+          阈值：掌握度 &lt; {REVIEW_THRESHOLD}% 记为「最需复习」，
+          ≥ {MASTERED_THRESHOLD}% 记为「已掌握」。
+        </li>
+      </ul>
+    </div>
+  );
+}
 
 function StatCard({
   label,

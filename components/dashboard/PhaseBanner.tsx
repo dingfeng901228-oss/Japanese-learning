@@ -5,125 +5,39 @@
 // the bottom of the dashboard into something with a pulse instead of
 // dead text.
 //
-// Server component — pulls daily_rollups + vocabulary_items count in
-// parallel. Both queries are scoped by `user_id` and 365-day range so
-// they stay small. Falls through to a "start here" CTA when both
-// metrics are zero (nothing to show yet).
+// Audit 2026-11-16 P0-1: the streak used to be computed here from a
+// hand-copied helper over daily_rollups while the streak counter above
+// read the same table client-side — so the page showed both "最长连续
+// 0 天" and "最长连续 15 / 30 天". Both now come from
+// lib/vocabulary/stats.ts.
+//
+// The vocabulary metric is the number of SAVED words (that is what the
+// Phase 1 unlock criterion counts), but it used to be labelled
+// "已掌握词汇" — which claimed 3347 mastered words while the real
+// mastery count is 0. It now says 已收藏 and shows the true 已掌握
+// count next to it.
 
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getActivityStats, getVocabStats } from "@/lib/vocabulary/stats";
 
 const PHASE1_STREAK_TARGET = 30; // days
 const PHASE1_VOCAB_TARGET = 300; // words
 
-// Standalone streak helper — same algorithm as lib/today-stats.ts'
-// computeStreakFromDays but extracted here so the server-component
-// import doesn't pull the whole client-side today-stats module
-// (which has `useEffect` and would force this file into "use client").
-function computeStreak(activeDays: Set<string>): {
-  current: number;
-  longest: number;
-} {
-  if (activeDays.size === 0) return { current: 0, longest: 0 };
-  const sorted = Array.from(activeDays).sort();
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayMs = today.getTime();
-  const dayMs = 24 * 60 * 60 * 1000;
-
-  let longest = 1;
-  let run = 1;
-  for (let i = 1; i < sorted.length; i++) {
-    const prev = new Date(sorted[i - 1]);
-    const curr = new Date(sorted[i]);
-    const diff = Math.round((curr.getTime() - prev.getTime()) / dayMs);
-    if (diff === 1) {
-      run += 1;
-      if (run > longest) longest = run;
-    } else {
-      run = 1;
-    }
-  }
-
-  // Current = count back from today (or yesterday — grace day so the
-  // streak doesn't break before the user trains today).
-  let current = 0;
-  const lastMs = new Date(sorted[sorted.length - 1]).getTime();
-  const daysSinceLast = Math.round((todayMs - lastMs) / dayMs);
-  if (daysSinceLast <= 1) {
-    current = 1;
-    for (let i = sorted.length - 2; i >= 0; i--) {
-      const a = new Date(sorted[i + 1]);
-      const b = new Date(sorted[i]);
-      if (Math.round((a.getTime() - b.getTime()) / dayMs) === 1) {
-        current += 1;
-      } else {
-        break;
-      }
-    }
-  }
-
-  return { current, longest };
-}
-
 export async function PhaseBanner() {
-  let streakLongest = 0;
-  let streakCurrent = 0;
-  let vocabCount = 0;
-
-  try {
-    const supabase = await createClient();
-    if (!supabase) {
-      // Audit 2026-10-09: dev-mode (no env vars) — fall through to zeros
-      // instead of letting the null reference throw.
-      return (
-        <Banner streak={0} vocab={0} />
-      );
-    }
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return <Banner streak={0} vocab={0} />;
-    }
-
-    // Run the two independent reads in parallel — neither depends on
-    // the other. Rollups limited to 365 so the JSON payload stays
-    // small (~365 rows of 2 fields).
-    const [rollupsRes, vocabRes] = await Promise.all([
-      supabase
-        .from("daily_rollups")
-        .select("date, minutes")
-        .eq("user_id", user.id)
-        .gte(
-          "date",
-          new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
-            .toISOString()
-            .slice(0, 10)
-        ),
-      supabase
-        .from("vocabulary_items")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id),
-    ]);
-
-    const rollups = (rollupsRes.data ?? []) as Array<{
-      date: string;
-      minutes: number;
-    }>;
-    const activeDays = new Set(
-      rollups.filter((r) => r.minutes > 0).map((r) => r.date)
-    );
-    const streak = computeStreak(activeDays);
-    streakCurrent = streak.current;
-    streakLongest = streak.longest;
-    vocabCount = vocabRes.count ?? 0;
-  } catch {
-    // Supabase down — fall through with zeros. Better than a 500.
-  }
+  const [activity, stats] = await Promise.all([
+    getActivityStats(),
+    getVocabStats(),
+  ]);
+  const streakLongest = activity.longestStreak;
+  const streakCurrent = activity.currentStreak;
+  const vocabCount = stats.total;
+  const masteredCount = stats.mastered;
 
   return (
     <Banner
       streak={streakLongest}
       vocab={vocabCount}
+      mastered={masteredCount}
       currentStreak={streakCurrent}
     />
   );
@@ -132,10 +46,12 @@ export async function PhaseBanner() {
 function Banner({
   streak,
   vocab,
+  mastered,
   currentStreak,
 }: {
   streak: number;
   vocab: number;
+  mastered: number;
   currentStreak?: number;
 }) {
   const streakPct = Math.min(
@@ -183,8 +99,18 @@ function Banner({
             }
           />
           <Progress
-            label={`已掌握词汇 ${vocab} / ${PHASE1_VOCAB_TARGET} 词`}
+            label={`已收藏词汇 ${vocab} / ${PHASE1_VOCAB_TARGET} 词`}
             pct={vocabPct}
+          />
+          {/* The real mastery count — the row above counts SAVED words,
+              which is what the Phase 1 unlock criterion is about. */}
+          <Progress
+            label={`已掌握 ${mastered} 词（掌握度 ≥ 80%）`}
+            pct={
+              mastered > 0
+                ? Math.min(100, Math.round((mastered / Math.max(1, vocab)) * 100))
+                : 0
+            }
           />
         </div>
       )}

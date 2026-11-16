@@ -1,38 +1,36 @@
 // Mastery analytics for the /progress dashboard.
 //
-// Queries the vocabulary_reviews table (Supabase) and returns
-// aggregate stats: distribution histogram, overall mastery, per-JLPT
-// breakdown, and "needs review" / "top mastered" lists. Called from
-// the Server Component app/progress/page.tsx.
+// Audit 2026-11-16 P0-1: these functions used to query
+// vocabulary_reviews directly with no .range() call, so PostgREST capped
+// every result at its default 1000 rows. With 3,347 saved words the
+// progress page reported "总词数 1000" and "N2 586" while
+// /vocabulary reported 3,347 and 2,009 for the same database.
 //
-// All queries are scoped to the current user via the RLS policies on
-// vocabulary_reviews + vocabulary_items (defined in
-// supabase/migrations/0003_vocabulary.sql), so the user_id filter is
-// redundant — kept for clarity.
+// The aggregates now go through the get_vocab_stats() RPC (migration
+// 0009), which computes exact counts inside Postgres. This module is
+// the thin wrapper the page still imports.
+//
+// The RLS policies on vocabulary_items + vocabulary_reviews
+// ("auth.uid() = user_id", defined in supabase/migrations/0003_vocabulary.sql)
+// scope every row to the caller; the user_id filter below is redundant
+// but kept for clarity.
 
 import { createClient } from "@/lib/supabase/server";
+import {
+  getVocabStats,
+  MASTERED_THRESHOLD,
+  REVIEW_THRESHOLD,
+  type MasteryByLevel,
+  type MasteryDistribution,
+  type MasteryStats,
+} from "@/lib/vocabulary/stats";
 
-export type MasteryDistribution = {
-  bucket: number; // 0, 10, 20, ..., 90 (bucket floor)
-  count: number;
-};
-
-export type MasteryStats = {
-  total: number;
-  avg: number;
-  // Mastery >= 80 — usually means 8+ successful reviews on this item.
-  mastered: number;
-  // Mastery < 50 — these are the items the user keeps getting wrong
-  // or hasn't reviewed yet (initial state is mastery=0).
-  needsReview: number;
-  // Items whose next_review_at is in the past — due in /review now.
-  dueNow: number;
-};
-
-export type MasteryByLevel = {
-  level: string; // N5, N4, ..., N1, or "未指定"
-  count: number;
-  avg: number;
+export {
+  MASTERED_THRESHOLD,
+  REVIEW_THRESHOLD,
+  type MasteryByLevel,
+  type MasteryDistribution,
+  type MasteryStats,
 };
 
 export type VocabWithMastery = {
@@ -46,113 +44,61 @@ export type VocabWithMastery = {
   level: string | null;
 };
 
-// 10 buckets: 0, 10, 20, ..., 90 (mastery floor of each).
-// `Math.min(9, ...)` caps mastery at the 90-100 bucket since we
-// never expect 100+ values, but the cap is defensive.
+/**
+ * 10 buckets: 0, 10, 20, ..., 90 (mastery floor of each).
+ * `Math.min(9, ...)` caps mastery at the 90-100 bucket since we
+ * never expect 100+ values, but the cap is defensive.
+ */
 export async function getMasteryDistribution(
-  userId: string
+  _userId: string
 ): Promise<MasteryDistribution[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("vocabulary_reviews")
-    .select("mastery")
-    .eq("user_id", userId);
-
-  if (error) {
-    console.error("getMasteryDistribution:", error);
-    return [];
-  }
-
-  const buckets = new Map<number, number>();
-  for (let i = 0; i < 10; i++) buckets.set(i * 10, 0);
-
-  for (const r of data ?? []) {
-    const m = r.mastery ?? 0;
-    const bucket = Math.min(9, Math.floor(m / 10)) * 10;
-    buckets.set(bucket, (buckets.get(bucket) ?? 0) + 1);
-  }
-
-  return Array.from(buckets.entries())
-    .map(([bucket, count]) => ({ bucket, count }))
-    .sort((a, b) => a.bucket - b.bucket);
+  const stats = await getVocabStats();
+  return stats.distribution;
 }
 
-export async function getMasteryStats(userId: string): Promise<MasteryStats> {
-  const supabase = await createClient();
-  const nowIso = new Date().toISOString();
-  const { data, error } = await supabase
-    .from("vocabulary_reviews")
-    .select("mastery, next_review_at")
-    .eq("user_id", userId);
-
-  if (error || !data) {
-    return { total: 0, avg: 0, mastered: 0, needsReview: 0, dueNow: 0 };
-  }
-
-  const total = data.length;
-  const sum = data.reduce((s, r) => s + (r.mastery ?? 0), 0);
-  const avg = total > 0 ? Math.round(sum / total) : 0;
-  const mastered = data.filter((r) => (r.mastery ?? 0) >= 80).length;
-  const needsReview = data.filter((r) => (r.mastery ?? 0) < 50).length;
-  const dueNow = data.filter(
-    (r) => r.next_review_at && r.next_review_at <= nowIso
-  ).length;
-
-  return { total, avg, mastered, needsReview, dueNow };
+export async function getMasteryStats(_userId: string): Promise<MasteryStats> {
+  const stats = await getVocabStats();
+  return {
+    total: stats.total,
+    avg: stats.avgMastery,
+    mastered: stats.mastered,
+    needsReview: stats.needsReview,
+    dueNow: stats.dueNow,
+  };
 }
 
 export async function getMasteryByLevel(
-  userId: string
+  _userId: string
 ): Promise<MasteryByLevel[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("vocabulary_reviews")
-    .select(
-      `
-      mastery,
-      vocabulary_items!inner ( level )
-    `
-    )
-    .eq("user_id", userId);
-
-  if (error || !data) return [];
-
-  const byLevel = new Map<string, { count: number; sum: number }>();
-  for (const r of data) {
-    const v = r.vocabulary_items as unknown as { level: string | null };
-    const lvl = v?.level ?? "未指定";
-    const m = r.mastery ?? 0;
-    const cur = byLevel.get(lvl) ?? { count: 0, sum: 0 };
-    cur.count++;
-    cur.sum += m;
-    byLevel.set(lvl, cur);
-  }
-
-  // Order: easiest → hardest → unspecified (so N5 reads first, top of
-  // the list). The "未指定" group is vocab added without AI enrichment
-  // (older entries or items where AI didn't classify).
-  const order = ["N5", "N4", "N3", "N2", "N1", "未指定"];
-  const result: MasteryByLevel[] = [];
-  for (const lvl of order) {
-    const stats = byLevel.get(lvl);
-    if (stats && stats.count > 0) {
-      result.push({
-        level: lvl,
-        count: stats.count,
-        avg: Math.round(stats.sum / stats.count),
-      });
-    }
-  }
-  return result;
+  const stats = await getVocabStats();
+  return stats.byLevel;
 }
 
+/**
+ * The "最需复习" / "已掌握" lists.
+ *
+ * Audit 2026-11-16 P0-1: the "已掌握 (≥80%)" list used to be built by
+ * sorting mastery descending and taking the top N — with no threshold
+ * filter. Since every item sat at 0% or 20% mastery, that list showed
+ * 20%-mastery words under a "已掌握" heading. It now filters on the
+ * threshold, so the list is empty rather than wrong.
+ *
+ * `order` decides which end of the scale we want:
+ *   - "low"  -> lowest mastery, and only below REVIEW_THRESHOLD
+ *                (the words that actually need work)
+ *   - "high" -> highest mastery, and only at or above MASTERED_THRESHOLD
+ */
 export async function getVocabByMastery(
   userId: string,
   order: "low" | "high",
-  limit: number
+  limit: number,
+  options?: { minMastery?: number; maxMastery?: number }
 ): Promise<VocabWithMastery[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const min = options?.minMastery;
+  const max = options?.maxMastery;
+
+  let query = supabase
     .from("vocabulary_reviews")
     .select(
       `
@@ -164,10 +110,19 @@ export async function getVocabByMastery(
     `
     )
     .eq("user_id", userId)
-    .order("mastery", { ascending: order === "low" })
-    .limit(limit);
+    // .range() beats the PostgREST 1000-row default cap — without it a
+    // "limit 10" still ships the first 1000 rows to the server.
+    .range(0, limit - 1);
 
-  if (error || !data) return [];
+  if (min !== undefined) query = query.gte("mastery", min);
+  if (max !== undefined) query = query.lte("mastery", max);
+  query = query.order("mastery", { ascending: order === "low" });
+
+  const { data, error } = await query;
+  if (error || !data) {
+    if (error) console.error("[analytics] getVocabByMastery:", error.message);
+    return [];
+  }
 
   return data.map((r) => {
     const v = r.vocabulary_items as unknown as {
