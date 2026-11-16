@@ -16,6 +16,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isAdmin } from "@/lib/auth/admin";
 import {
   importPreloadedBatchAction,
   importPastedAction,
@@ -61,6 +62,14 @@ export default async function ImportVocabPage({
     }
   }
   if (!user || !supabase) redirect("/login");
+
+  // Audit 2026-11-16 P1-16: being logged in is not enough. The bulk
+  // import is admin tooling — an ordinary account must not be able to
+  // open it, let alone post to its actions. The allow-list lives in
+  // public.app_admins (migration 0011).
+  if (!(await isAdmin())) {
+    redirect("/vocabulary?denied=admin");
+  }
 
   // Quick user-scoped vocab count for the header status line.
   const { count: userVocabCount } = await supabase

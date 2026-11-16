@@ -11,6 +11,7 @@
 
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { GRADES } from "@/lib/vocabulary/srs";
 import {
   getMasteryByLevel,
   getMasteryDistribution,
@@ -167,6 +168,17 @@ export default async function ProgressPage() {
  * The user could see "20%" on a word and had no way to know what moved
  * it or what counted as 已掌握.
  */
+/**
+ * The interval each grade leads to, in words. The numbers live in
+ * lib/vocabulary/srs.ts (scheduleReview); this is only the display.
+ */
+const GRADE_INTERVAL_LABEL: Record<string, string> = {
+  again: "1 天（重置）",
+  hard: "2 天",
+  good: "1 → 6 天 → ×难度系数",
+  easy: "1 → 2 天 → ×难度系数 ×1.3",
+};
+
 function MasteryExplainer() {
   return (
     <div className="mt-5 pt-4 border-t border-gray-100 text-xs text-gray-500 leading-relaxed">
@@ -177,12 +189,46 @@ function MasteryExplainer() {
           复习答题并评分、或手动标记。打开页面停留不会增加学习量。
         </li>
         <li>
-          掌握度只在<strong>复习评分</strong>时变化：答对 +10%，
-          答错 −10%，取值范围 0%–100%。
+          掌握度只在<strong>复习评分</strong>时变化，四档评分对应四档加减分：
+        </li>
+      </ul>
+      {/* The table is generated from the SAME GRADES list the review
+          buttons use (lib/vocabulary/srs.ts), so the explanation can
+          never drift from the actual behaviour. */}
+      <table className="my-2 w-full text-[11px] border border-gray-200 rounded-lg overflow-hidden">
+        <thead>
+          <tr className="bg-gray-50 text-gray-600">
+            <th className="text-left font-medium px-2 py-1">评分</th>
+            <th className="text-left font-medium px-2 py-1">含义</th>
+            <th className="text-left font-medium px-2 py-1">掌握度</th>
+            <th className="text-left font-medium px-2 py-1">下次间隔</th>
+          </tr>
+        </thead>
+        <tbody>
+          {GRADES.map((g) => (
+            <tr key={g.id} className="border-t border-gray-100">
+              <td className="px-2 py-1 font-medium text-gray-700">{g.label}</td>
+              <td className="px-2 py-1">{g.hint}</td>
+              <td className="px-2 py-1">
+                {g.masteryDelta > 0 ? "+" : ""}
+                {g.masteryDelta}%
+              </td>
+              <td className="px-2 py-1">{GRADE_INTERVAL_LABEL[g.id]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <ul className="space-y-1 list-disc pl-4">
+        <li>
+          掌握度取值范围 0%–100%，只在<strong>复习评分</strong>时变化。
         </li>
         <li>
           阈值：掌握度 &lt; {REVIEW_THRESHOLD}% 记为「最需复习」，
           ≥ {MASTERED_THRESHOLD}% 记为「已掌握」。
+        </li>
+        <li>
+          复习间隔按 SM-2 计算，评分越高间隔越长（1 天 → 最长数月）；
+          「忘了」会回到 1 天并降低难度系数。
         </li>
       </ul>
     </div>

@@ -1,14 +1,17 @@
 "use server";
 
-// Server Action for the new single recall flow (per docs/review.docx,
-// Frank #6663 redesign). Reads `review_id` + `outcome` ("remembered"
-// or "again") from FormData and routes through
-// lib/vocabulary/reviews.ts recordReview(), which runs the SM-2
-// algorithm (quality=5 on remembered, quality=2 on again) and updates
-// next_review_at / interval / ease / mastery in Supabase.
+// Server Action for the recall flow. Reads `review_id` + `outcome` from
+// FormData and routes through lib/vocabulary/reviews.ts recordReview(),
+// which applies the four-grade schedule in lib/vocabulary/srs.ts and
+// updates next_review_at / interval / ease / mastery / last_grade.
 //
-// Dropped: `answer`, `correct`, `difficulty` fields — the new flow has
-// no text input and only two outcomes (binary), no middle ground.
+// Audit 2026-11-16 P1-6: the grades are now four — 忘了 (again) /
+// 模糊 (hard) / 记得 (good) / 熟练 (easy) — instead of the old binary
+// 再来一次 / 记住了, so a word can be scheduled at four different
+// intervals instead of two.
+//
+// Dropped: `answer`, `correct`, `difficulty` fields — the flow has no
+// text input.
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -16,6 +19,7 @@ import {
   recordReview,
   backfillUserReviews,
 } from "@/lib/vocabulary/reviews";
+import type { GradeId } from "@/lib/vocabulary/srs";
 
 export async function recordReviewAction(formData: FormData) {
   const reviewId = String(formData.get("review_id") ?? "").trim();
@@ -23,8 +27,11 @@ export async function recordReviewAction(formData: FormData) {
   // Strict whitelist — any unexpected value falls back to "again" so a
   // bug or tampered FormData can't accidentally pass `remembered` and
   // bump a review interval the user never explicitly approved.
-  const outcome: "remembered" | "again" =
-    outcomeRaw === "remembered" || outcomeRaw === "again"
+  const outcome: GradeId =
+    outcomeRaw === "again" ||
+    outcomeRaw === "hard" ||
+    outcomeRaw === "good" ||
+    outcomeRaw === "easy"
       ? outcomeRaw
       : "again";
 

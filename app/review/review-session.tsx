@@ -37,6 +37,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import type { ReviewItem } from "@/lib/vocabulary/reviews";
 import { recordReviewAction } from "./actions";
+import { GRADES, formatNextReview, type GradeId } from "@/lib/vocabulary/srs";
 import { useSessionTimer, formatDuration } from "@/lib/today-stats";
 
 const AUTOPLAY_KEY = "japanese:review-autoplay";
@@ -331,7 +332,7 @@ export function ReviewSession({
   }, [current]);
 
   const handleOutcome = useCallback(
-    async (outcome: "remembered" | "again") => {
+    async (outcome: GradeId) => {
       // Frank #6710: in-flight guard. The re-entry guard prevents the
       // second click from firing a duplicate server action + duplicate
       // setIndex. The `disabled` on the buttons is the user-facing
@@ -636,24 +637,33 @@ export function ReviewSession({
               下一题 →
             </button>
           </div>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => handleOutcome("again")}
-              disabled={outcomeInFlight}
-              className="flex-1 px-6 py-4 rounded-xl border-2 border-red-300 text-red-700 hover:bg-red-50 active:bg-red-100 active:translate-y-px transition-all text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-            >
-              再来一次
-            </button>
-            <button
-              type="button"
-              onClick={() => handleOutcome("remembered")}
-              disabled={outcomeInFlight}
-              className="flex-1 px-6 py-4 rounded-xl border-2 border-green-300 text-green-700 hover:bg-green-50 active:bg-green-100 active:translate-y-px transition-all text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-            >
-              记住了
-            </button>
+          {/* Audit 2026-11-16 P1-6: four grades instead of two. The
+              label AND the hint are shown, because "模糊" vs "记得" is
+              a judgement the user has to see spelled out — with only
+              再来一次 / 记住了 there was no way to say "I nearly knew
+              it", so the schedule was stuck at two intervals. */}
+          <div className="flex gap-2">
+            {GRADES.map((g) => (
+              <button
+                key={g.id}
+                type="button"
+                onClick={() => handleOutcome(g.id)}
+                disabled={outcomeInFlight}
+                title={g.hint}
+                className={g.buttonClass}
+              >
+                <span className="block">{g.label}</span>
+                <span className="block text-[10px] font-normal opacity-70 mt-0.5">
+                  {g.hint}
+                </span>
+              </button>
+            ))}
           </div>
+          {current.next_review_at && (
+            <p className="text-[11px] text-gray-400 text-center">
+              下次复习：{formatNextReview(current.next_review_at)}
+            </p>
+          )}
         </>
       )}
     </div>

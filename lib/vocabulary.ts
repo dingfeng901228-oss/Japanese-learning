@@ -6,6 +6,10 @@
 // the user_id filter on `eq` is redundant with RLS but kept for clarity.
 
 import { createClient } from "@/lib/supabase/server";
+import {
+  MASTERED_THRESHOLD,
+  REVIEW_THRESHOLD,
+} from "@/lib/vocabulary/stats";
 import { enrichVocabulary } from "./vocabulary/enrich";
 import { generateExample } from "./vocabulary/examples";
 import { ensureReviewRecord } from "./vocabulary/reviews";
@@ -96,7 +100,19 @@ export type ListVocabularyOpts = {
   level?: string;
   search?: string;
   sort?: VocabularySort;
+  /**
+   * Audit 2026-11-16 P1-6 / P1-10: the 状态 filter.
+   *   "due"      -> only words whose next_review_at has passed
+   *   "mastered" -> only words at or above the mastered threshold
+   *   "weak"     -> only words below the review threshold
+   */
+  filter?: VocabularyFilter;
+  /** P1-11: only words carrying this tag (the import's category). */
+  tag?: string;
 };
+
+/** The 状态 filter values, in English so the URL stays machine-readable. */
+export type VocabularyFilter = "due" | "mastered" | "weak";
 
 export type VocabularyExample = {
   id: string;
@@ -147,6 +163,28 @@ export async function listVocabularyItems(
 
   if (opts.level) {
     query = query.eq("level", opts.level);
+  }
+
+  // Audit 2026-11-16 P1-6: the 状态 filter. vocabulary_items has no
+  // review state of its own — the SRS state lives in vocabulary_reviews
+  // (one row per word), so the filter has to reach across. PostgREST's
+  // `!inner` embed turns the embedded filter into a semi-join on the
+  // parent, which is exactly the "only words with a due review" set.
+  if (opts.filter === "due") {
+    query = query.select(
+      "*, vocabulary_reviews!inner(id, next_review_at)"
+    );
+    query = query.or(
+      "vocabulary_reviews.next_review_at.lte." +
+        new Date().toISOString() +
+        ",vocabulary_reviews.next_review_at.is.null"
+    );
+  } else if (opts.filter === "mastered") {
+    query = query.select("*, vocabulary_reviews!inner(id, mastery)");
+    query = query.gte("vocabulary_reviews.mastery", MASTERED_THRESHOLD);
+  } else if (opts.filter === "weak") {
+    query = query.select("*, vocabulary_reviews!inner(id, mastery)");
+    query = query.lt("vocabulary_reviews.mastery", REVIEW_THRESHOLD);
   }
 
   const q = opts.search?.trim();
@@ -526,6 +564,28 @@ export async function listVocabularyItemsPaged(
     query = query.eq("level", opts.level);
   }
 
+  // Audit 2026-11-16 P1-6: the 状态 filter. vocabulary_items has no
+  // review state of its own — the SRS state lives in vocabulary_reviews
+  // (one row per word), so the filter has to reach across. PostgREST's
+  // `!inner` embed turns the embedded filter into a semi-join on the
+  // parent, which is exactly the "only words with a due review" set.
+  if (opts.filter === "due") {
+    query = query.select(
+      "*, vocabulary_reviews!inner(id, next_review_at)"
+    );
+    query = query.or(
+      "vocabulary_reviews.next_review_at.lte." +
+        new Date().toISOString() +
+        ",vocabulary_reviews.next_review_at.is.null"
+    );
+  } else if (opts.filter === "mastered") {
+    query = query.select("*, vocabulary_reviews!inner(id, mastery)");
+    query = query.gte("vocabulary_reviews.mastery", MASTERED_THRESHOLD);
+  } else if (opts.filter === "weak") {
+    query = query.select("*, vocabulary_reviews!inner(id, mastery)");
+    query = query.lt("vocabulary_reviews.mastery", REVIEW_THRESHOLD);
+  }
+
   const q = opts.search?.trim();
   if (q) {
     // Escape single quotes for the .or() filter to avoid breaking PostgREST.
@@ -533,6 +593,13 @@ export async function listVocabularyItemsPaged(
     query = query.or(
       `word.ilike.%${safe}%,reading.ilike.%${safe}%,meaning.ilike.%${safe}%`
     );
+  }
+
+  // P1-11: the 主题 filter. vocabulary_tags holds the category each
+  // imported word came from (118 distinct themes in Frank's collection).
+  if (opts.tag) {
+    query = query.select("*, vocabulary_tags!inner(id, tag)");
+    query = query.eq("vocabulary_tags.tag", opts.tag);
   }
 
   if (opts.sort === "oldest") {
@@ -563,4 +630,85 @@ export async function listVocabularyItemsPaged(
   const totalPages = total === 0 ? 0 : Math.ceil(total / pageSize);
 
   return { items, total, page, pageSize, totalPages };
+}
+
+
+// ==========================================================================
+// Filter metadata (P1-11, P1-13)
+// ==========================================================================
+
+/**
+ * How many words the user has of each type.
+ *
+ * P1-13: the type filter offered 文法 and 句型, but Frank's collection
+ * has none of either (3,254 word + 93 phrase, 0 grammar, 0 sentence),
+ * so the options were dead ends. The list page now only offers a type
+ * the user actually has.
+ */
+export async function getVocabularyTypeCounts(): Promise<
+  Record<VocabularyType, number>
+> {
+  const empty: Record<VocabularyType, number> = {
+    word: 0,
+    phrase: 0,
+    grammar: 0,
+    sentence: 0,
+  };
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return empty;
+    const { data, error } = await supabase
+      .from("vocabulary_items")
+      .select("type")
+      .eq("user_id", user.id);
+    if (error) return empty;
+    for (const row of data ?? []) {
+      const t = row.type as VocabularyType;
+      if (t in empty) empty[t] += 1;
+    }
+    return empty;
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("[vocabulary] type counts failed:", err);
+    }
+    return empty;
+  }
+}
+
+/**
+ * The distinct themes (vocabulary_tags) the user's words carry, with a
+ * count each. P1-11 — the import JSON already had a category field;
+ * it was stored as a tag and never surfaced in the UI.
+ */
+export async function getVocabularyTags(): Promise<
+  { tag: string; count: number }[]
+> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+    const { data, error } = await supabase
+      .from("vocabulary_tags")
+      .select("tag")
+      .eq("user_id", user.id);
+    if (error) {
+      console.error("[vocabulary] tag list failed:", error.message);
+      return [];
+    }
+    const counts = new Map<string, number>();
+    for (const row of data ?? []) {
+      const tag = (row.tag ?? "").trim();
+      if (!tag) continue;
+      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .map(([tag, count]) => ({ tag, count }))
+      .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("[vocabulary] tag list failed:", err);
+    }
+    return [];
+  }
 }

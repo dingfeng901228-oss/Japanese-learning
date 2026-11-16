@@ -14,6 +14,7 @@
 // Client Component (app/review/review-session.tsx).
 
 import { createClient } from "@/lib/supabase/server";
+import { scheduleReview, type GradeId } from "@/lib/vocabulary/srs";
 import type { VocabularyType } from "@/lib/vocabulary";
 
 export type ReviewItem = {
@@ -84,6 +85,37 @@ export async function ensureReviewRecord(vocabularyId: string): Promise<void> {
     ease_factor: DEFAULT_EASE,
     mastery: 0,
   });
+}
+
+/**
+ * How many words are due for review right now (next_review_at <= now).
+ *
+ * Audit 2026-11-16 P1-6: the review page never said how many words
+ * were waiting — it just started the session. getDueReviews() is capped
+ * at the page size, so this is the real number.
+ */
+export async function getDueReviewCount(): Promise<number> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return 0;
+    const nowIso = new Date().toISOString();
+    const { count, error } = await supabase
+      .from("vocabulary_reviews")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .or(`next_review_at.lte.${nowIso},next_review_at.is.null`);
+    if (error) {
+      console.error("getDueReviewCount failed:", error.message);
+      return 0;
+    }
+    return count ?? 0;
+  } catch (err) {
+    if ((err as Error).message !== "supabase_env_missing") {
+      console.error("getDueReviewCount failed:", err);
+    }
+    return 0;
+  }
 }
 
 export async function getDueReviews(limit = 20): Promise<ReviewItem[]> {
@@ -199,7 +231,7 @@ export async function getDueReviews(limit = 20): Promise<ReviewItem[]> {
 
 export async function recordReview(
   reviewId: string,
-  outcome: "remembered" | "again"
+  outcome: GradeId
 ): Promise<void> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -213,37 +245,23 @@ export async function recordReview(
     .maybeSingle();
   if (fetchErr || !existing) return;
 
-  // Frank #6663: outcome → SM-2 quality mapping. remembered=5 (perfect
-  // recall), again=2 (failed). No middle ground — user clicks one of
-  // two buttons in the new recall flow.
-  const correct = outcome === "remembered";
-  const q = correct ? 5 : 2;
-  let interval: number;
-  let ease = Number(existing.ease_factor);
-
-  if (q >= 3) {
-    // Correct — interval grows.
-    if (existing.interval_days === 0) interval = 1;
-    else if (existing.interval_days === 1) interval = 6;
-    else interval = Math.max(1, Math.round(existing.interval_days * ease));
-    // SM-2 ease update formula. q=5 grows ease by +0.10, q=4 holds it,
-    // q=3 drops it by -0.14. Floor at MIN_EASE so it never collapses.
-    const delta = 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02);
-    ease = Math.max(MIN_EASE, ease + delta);
-  } else {
-    // Incorrect — interval resets, ease drops a bit.
-    interval = 1;
-    ease = Math.max(MIN_EASE, ease - 0.2);
-  }
-
+  // Audit 2026-11-16 P1-6: the schedule itself now lives in
+  // lib/vocabulary/srs.ts, shared with the review UI and the /progress
+  // explanation — one definition of what each grade means.
   const reviewedAt = new Date();
-  const nextReviewAt = new Date(reviewedAt.getTime() + interval * DAY_MS);
+  const result = scheduleReview(
+    {
+      mastery: existing.mastery ?? 0,
+      intervalDays: existing.interval_days ?? 0,
+      ease: Number(existing.ease_factor) || 2.5,
+    },
+    outcome,
+    reviewedAt
+  );
 
-  // Mastery: simple step function. Correct bumps +10, incorrect drops -10,
-  // clamped to [0, 100]. Drives the future mastery-bar UI in Phase 7+.
-  const newMastery = correct
-    ? Math.min(100, existing.mastery + 10)
-    : Math.max(0, existing.mastery - 10);
+  // "correct" stays a boolean for the legacy column: anything other
+  // than 忘了 counts as a successful recall.
+  const correct = outcome !== "again";
 
   // Frank #6663: dropped user_answer (no text input in new flow) and
   // review_type="fill-in" (old multiple-choice mode removed). Columns
@@ -253,11 +271,12 @@ export async function recordReview(
     .from("vocabulary_reviews")
     .update({
       reviewed_at: reviewedAt.toISOString(),
-      next_review_at: nextReviewAt.toISOString(),
-      interval_days: interval,
-      ease_factor: ease,
-      mastery: newMastery,
+      next_review_at: result.nextReviewAt.toISOString(),
+      interval_days: result.intervalDays,
+      ease_factor: result.ease,
+      mastery: result.mastery,
       correct,
+      last_grade: outcome,
     })
     .eq("id", reviewId);
 }

@@ -4,7 +4,10 @@
 
 import Link from "next/link";
 import {
+  getVocabularyTags,
+  getVocabularyTypeCounts,
   listVocabularyItemsPaged,
+  type VocabularyFilter,
   type VocabularyType,
   type VocabularySort,
 } from "@/lib/vocabulary";
@@ -20,29 +23,54 @@ type SearchParams = {
   level?: string;
   sort?: string;
   page?: string;
+  /** P1-6: 状态 filter — due | mastered | weak */
+  filter?: string;
+  /** P1-11: 主题 (the import category, stored as a tag) */
+  tag?: string;
 };
 
 const JLPT_LEVELS = ["N5", "N4", "N3", "N2", "N1"] as const;
 
+/**
+ * Audit 2026-11-16 P1-12: every URL parameter is an English enum, and
+ * an unrecognised value is REPORTED instead of silently falling back.
+ * Before, `?sort=alpha` (or a Chinese value) was quietly ignored and
+ * the page looked like it had applied the filter.
+ */
+const invalid: string[] = [];
+
 function asType(v: string | undefined): VocabularyType | undefined {
+  if (!v) return undefined;
   if (v === "word" || v === "phrase" || v === "grammar" || v === "sentence") {
     return v;
   }
+  invalid.push(`type=${v}`);
   return undefined;
 }
 
 function asLevel(
   v: string | undefined
 ): (typeof JLPT_LEVELS)[number] | undefined {
-  if (v && (JLPT_LEVELS as readonly string[]).includes(v)) {
+  if (!v) return undefined;
+  if ((JLPT_LEVELS as readonly string[]).includes(v)) {
     return v as (typeof JLPT_LEVELS)[number];
   }
+  invalid.push(`level=${v}`);
   return undefined;
 }
 
 function asSort(v: string | undefined): VocabularySort {
-  if (v === "oldest" || v === "word" || v === "freq") return v;
+  if (!v) return "newest";
+  if (v === "newest" || v === "oldest" || v === "word" || v === "freq") return v;
+  invalid.push(`sort=${v}`);
   return "newest";
+}
+
+function asFilter(v: string | undefined): VocabularyFilter | undefined {
+  if (!v) return undefined;
+  if (v === "due" || v === "mastered" || v === "weak") return v;
+  invalid.push(`filter=${v}`);
+  return undefined;
 }
 
 // Per Frank #7347 (2026-08-30): /vocabulary pagination.
@@ -73,6 +101,16 @@ const TYPE_LABEL: Record<VocabularyType, string> = {
   grammar: "文法",
   sentence: "句型",
 };
+
+/**
+ * Audit 2026-11-16 P1-12: the filter row applies itself when a select
+ * changes. Before, every dropdown change needed a second click on
+ * 「搜索」, which read as "the filter is broken".
+ */
+function autoApply(e: React.ChangeEvent<HTMLSelectElement>) {
+  const form = (e.target as HTMLSelectElement).form;
+  if (form) form.requestSubmit();
+}
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -136,6 +174,31 @@ export default async function VocabularyListPage({
   const type = asType(sp.type);
   const level = asLevel(sp.level);
   const sort = asSort(sp.sort);
+  const filter = asFilter(sp.filter);
+  // The theme (category) is a free-form tag string, not an enum — any
+  // value that is not one of the user's tags is reported as invalid.
+  const tag = sp.tag?.trim() || undefined;
+
+  // P1-13: only offer the types the user actually has, and P1-11: the
+  // themes present in the collection.
+  const [typeCounts, tags] = await Promise.all([
+    getVocabularyTypeCounts(),
+    getVocabularyTags(),
+  ]);
+  const tagNames = new Set(tags.map((t) => t.tag));
+  if (tag && !tagNames.has(tag)) {
+    invalid.push(`tag=${tag}`);
+  }
+
+  // P1-13: only offer the types that exist in this collection.
+  const AVAILABLE_TYPES = (Object.keys(TYPE_LABEL) as VocabularyType[]).filter(
+    (ty) => (typeCounts[ty] ?? 0) > 0
+  );
+
+  // P1-12: is any filter active? Drives the empty-state copy.
+  const hasFilters = Boolean(
+    q || type || level || filter || tag
+  );
 
   // Per Frank #7347 (2026-08-30): paginate via ?page=N, default 20/page.
   // listVocabularyItemsPaged's `count: "exact"` returns the TRUE total
@@ -152,6 +215,8 @@ export default async function VocabularyListPage({
     type,
     level,
     sort,
+    filter,
+    tag: tag && tagNames.has(tag) ? tag : undefined,
     page: asPage(sp.page),
   });
 
@@ -192,10 +257,10 @@ export default async function VocabularyListPage({
           <h1 className="text-3xl font-bold">我的收藏</h1>
           <p className="text-gray-600">
             {total === 0
-              ? q || type || level
+              ? q || type || level || filter || tag
                 ? "没有匹配的收藏"
                 : "还没有收藏，先添加一个吧"
-              : q || type || level
+              : q || type || level || filter || tag
                 ? // Audit 2026-11-16 P0-4: this used to read
                   // "共 2009 项（匹配 20 项）" — items.length is the PAGE
                   // size (20), not the number of matches, so the number
@@ -352,20 +417,26 @@ export default async function VocabularyListPage({
           placeholder="搜索 单词 / 假名 / 中文..."
           className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
         />
+        {/* Audit 2026-11-16 P1-13: only the types the user actually has
+            are offered. 文法 / 句型 were dead options — Frank's collection
+            has 3,254 words, 93 phrases and zero of either. */}
         <select
           name="type"
           defaultValue={type ?? ""}
+          onChange={autoApply}
           className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
         >
           <option value="">全部类型</option>
-          <option value="word">单词</option>
-          <option value="phrase">词组</option>
-          <option value="grammar">文法</option>
-          <option value="sentence">句型</option>
+          {AVAILABLE_TYPES.map((ty) => (
+            <option key={ty} value={ty}>
+              {TYPE_LABEL[ty]} ({typeCounts[ty]})
+            </option>
+          ))}
         </select>
         <select
           name="level"
           defaultValue={level ?? ""}
+          onChange={autoApply}
           className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
         >
           <option value="">全部等级</option>
@@ -375,9 +446,38 @@ export default async function VocabularyListPage({
             </option>
           ))}
         </select>
+        {/* P1-6: the 状态 filter — due / mastered / weak. */}
+        <select
+          name="filter"
+          defaultValue={filter ?? ""}
+          onChange={autoApply}
+          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
+        >
+          <option value="">全部状态</option>
+          <option value="due">待复习</option>
+          <option value="mastered">已掌握</option>
+          <option value="weak">易忘</option>
+        </select>
+        {/* P1-11: 主题 — the category the imported word came from. */}
+        {tags.length > 0 && (
+          <select
+            name="tag"
+            defaultValue={tag ?? ""}
+            onChange={autoApply}
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white max-w-[220px]"
+          >
+            <option value="">全部主题</option>
+            {tags.map((tg) => (
+              <option key={tg.tag} value={tg.tag}>
+                {tg.tag} ({tg.count})
+              </option>
+            ))}
+          </select>
+        )}
         <select
           name="sort"
           defaultValue={sort}
+          onChange={autoApply}
           className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
         >
           <option value="newest">最新收藏</option>
@@ -391,19 +491,61 @@ export default async function VocabularyListPage({
         >
           搜索
         </button>
+        {/* P1-12: the filters apply themselves now, so the button is
+            only needed for the text box. */}
+        <noscript>
+          <span className="text-xs text-gray-500">
+            筛选已自动应用；搜索框需要点「搜索」。
+          </span>
+        </noscript>
       </form>
+
+      {/* P1-12: an unrecognised URL parameter is reported, not
+          silently ignored. */}
+      {invalid.length > 0 && (
+        <div className="mb-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p className="font-medium mb-1">无法识别的筛选参数</p>
+          <p className="text-xs">
+            {invalid.join("、")} 不是有效的筛选值，已忽略。可用值：
+            type = word / phrase / grammar / sentence，
+            level = N5…N1，
+            sort = newest / oldest / word / freq，
+            filter = due / mastered / weak。
+          </p>
+        </div>
+      )}
 
       {items.length === 0 ? (
         <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center">
           <p className="text-gray-500 mb-4">
-            {q || type ? "换个关键词试试？" : "还没有任何收藏"}
+            {/*
+              Audit 2026-11-16 P1-12: the old copy said "换个关键词试试？"
+              and offered "+ 添加第一个收藏" even when the user had 3,347
+              words and a filter that matched nothing. Say what actually
+              happened and offer the way out.
+            */}
+            {hasFilters
+              ? "当前筛选没有匹配的词"
+              : "还没有任何收藏"}
           </p>
-          <Link
-            href="/vocabulary/new"
-            className="inline-block px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            + 添加第一个收藏
-          </Link>
+          {hasFilters ? (
+            /* P1-12: with a filter active the way out is to clear it,
+               not to add a first collection — the user already has
+               3,347 words. */
+            <Link
+              href="/vocabulary"
+              className="inline-block px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+            >
+              清除筛选
+            </Link>
+          ) : (
+            <Link
+              href="/vocabulary/new"
+              className="inline-block px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+            >
+              + 添加第一个收藏
+            </Link>
+          )}
         </div>
       ) : (
         <>

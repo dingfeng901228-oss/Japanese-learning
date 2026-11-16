@@ -15,6 +15,7 @@
 import Link from "next/link";
 import {
   getDueReviews,
+  getDueReviewCount,
   getUserVocabCount,
   userHasVocabWithExamples,
 } from "@/lib/vocabulary/reviews";
@@ -37,6 +38,10 @@ export default async function ReviewPage({
   // ignore it — single flow serves both old fill-in + dictation routes.
   await searchParams;
   const items = await getDueReviews(20);
+  // Audit 2026-11-16 P1-6: the queue length was never shown — the
+  // page just started the session. Show how many are due today (and
+  // how many are waiting beyond the 20 this page loads).
+  const dueTotal = await getDueReviewCount();
   // Per Frank #6348 + #6353: drive the empty-state UI from server-side
   // data, not URL search params (the previous ?notice=no_examples flag
   // was getting stripped somewhere in the redirect chain and the page
@@ -61,6 +66,17 @@ export default async function ReviewPage({
           share the row with the heading (timer at right). Empty
           states below still own their own page-level titles
           (🎉📝🔄). No `<header>` rendered here anymore. */}
+
+      {items.length > 0 && (
+        <p className="mb-4 text-sm text-gray-500">
+          📅 今日待复习 <strong className="text-gray-900">{dueTotal}</strong> 个
+          {dueTotal > items.length && (
+            <span className="text-gray-400">
+              （本次先练前 {items.length} 个）
+            </span>
+          )}
+        </p>
+      )}
 
       {items.length === 0 ? (
         vocabCount === 0 ? (

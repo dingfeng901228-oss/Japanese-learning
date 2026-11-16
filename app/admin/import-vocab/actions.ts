@@ -31,6 +31,7 @@ import { join } from "node:path";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { isAdmin } from "@/lib/auth/admin";
 import {
   PRELOADED_BATCH_SET,
   type PreloadedBatchFilename,
@@ -62,6 +63,20 @@ type ImportResult = {
   errors: Array<{ word: string; reason: string }>;
 };
 
+// ---------- Admin guard ----------
+
+/**
+ * Audit 2026-11-16 P1-16: gating the admin PAGE is not enough — a
+ * server action can be posted to directly. Every exported action
+ * checks the allow-list first and refuses to run for anyone who is not
+ * on it.
+ */
+async function assertAdmin(): Promise<void> {
+  if (!(await isAdmin())) {
+    throw new Error("管理员权限不足：当前账号无权使用批量导入。");
+  }
+}
+
 // ---------- Server Actions ----------
 
 // importPreloadedBatchAction: read data/{batch}.json (where {batch}
@@ -69,6 +84,8 @@ type ImportResult = {
 // traversal — anything not in PRELOADED_BATCH_SET is rejected before
 // hitting the filesystem.
 export async function importPreloadedBatchAction(formData: FormData) {
+  // P1-16: only accounts on public.app_admins may run the import.
+  await assertAdmin();
   const batch = String(formData.get("batch") ?? "").trim();
   // Per Frank #7045 (2026-08-27): I used `batch in PRELOADED_BATCH_SET`
   // — which is BROKEN. `in` checks object property keys, NOT Set
@@ -103,6 +120,8 @@ export async function importPreloadedBatchAction(formData: FormData) {
 }
 
 export async function importPastedAction(formData: FormData) {
+  // P1-16: only accounts on public.app_admins may run the import.
+  await assertAdmin();
   const raw = String(formData.get("json") ?? "").trim();
   if (!raw) {
     redirect(`/admin/import-vocab?error=${encodeURIComponent("JSON 内容不能为空")}`);
@@ -130,6 +149,8 @@ export async function importPastedAction(formData: FormData) {
 // the CLI script uses → call processImport. No intermediate JSON
 // file needed. Pre-existing words (per current user) are deduped.
 export async function importPastedMdAction(formData: FormData) {
+  // P1-16: only accounts on public.app_admins may run the import.
+  await assertAdmin();
   // Prefer file upload; fall back to textarea paste.
   const fileField = formData.get("mdFile");
   const pastedText = String(formData.get("md") ?? "").trim();
