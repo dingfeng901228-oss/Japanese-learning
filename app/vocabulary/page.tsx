@@ -3,6 +3,9 @@
 // the user's vocabulary_items via lib/vocabulary.ts.
 
 import Link from "next/link";
+import { formatAccent } from "@/lib/vocabulary/accent";
+import { SpeakButton } from "@/components/SpeakButton";
+import { ExportButtons } from "@/components/vocabulary/ExportButtons";
 import {
   getVocabularyTags,
   getVocabularyTypeCounts,
@@ -500,6 +503,24 @@ export default async function VocabularyListPage({
         </noscript>
       </form>
 
+      {/* P1-9: export what is on screen — the same filters are passed
+          on to the endpoint, so a filtered list exports filtered. */}
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <p className="text-xs text-gray-500">
+          导出会包含读音、アクセント、释义、词性、等级、例句与主题。
+        </p>
+        <ExportButtons
+          filters={{
+            q: q || undefined,
+            type: type ?? undefined,
+            level: level ?? undefined,
+            sort,
+            filter: filter ?? undefined,
+            tag: tag ?? undefined,
+          }}
+        />
+      </div>
+
       {/* P1-12: an unrecognised URL parameter is reported, not
           silently ignored. */}
       {invalid.length > 0 && (
@@ -563,10 +584,23 @@ export default async function VocabularyListPage({
                         {item.word}
                       </span>
                       {item.reading && (
-                        <span className="text-sm text-gray-500">
+                        /* P1-7: the accent travels with the reading —
+                           猫① vs 犬② is the whole point. */
+                        <span className="text-sm text-gray-500 font-jp">
                           {item.reading}
+                          {item.accent != null
+                            ? formatAccent(item.accent)
+                            : ""}
                         </span>
                       )}
+                      {/* P1-14: every row gets its own speaker. It is a
+                          plain SpeakButton (no learning counter) —
+                          listening to the list is not studying a word. */}
+                      <SpeakButton
+                        text={item.word}
+                        label={`朗读 ${item.word}`}
+                        className="shrink-0"
+                      />
                       <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">
                         {TYPE_LABEL[item.type]}
                       </span>

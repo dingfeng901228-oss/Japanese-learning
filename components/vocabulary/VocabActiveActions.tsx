@@ -25,6 +25,7 @@
 
 import { useCallback, useState } from "react";
 import { startLearningSessionAction } from "@/app/vocabulary/actions";
+import { getSpeakRate } from "@/components/vocabulary/speak-rate";
 
 export type ActiveAction = "speak" | "mark";
 
@@ -85,12 +86,13 @@ export function useActiveAction(vocabId: string) {
   );
 }
 
-function speakJa(text: string, rate = 0.9) {
+/** Speak with the rate the user picked (P1-14). */
+function speakJa(text: string, rate?: number) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "ja-JP";
-  u.rate = rate;
+  u.rate = rate ?? getSpeakRate();
   window.speechSynthesis.speak(u);
 }
 

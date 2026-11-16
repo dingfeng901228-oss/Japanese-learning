@@ -44,6 +44,10 @@ export type VocabularyItem = {
   // invariant comments). Updated by start_learning_session RPC.
   learning_count: number;
   last_learned_at: string | null;
+  // Pitch accent: 0 = 平板 (flat), N > 0 = the pitch falls after the
+  // Nth mora. Null when the dictionary had no entry for this word
+  // (migration 0012; backfilled from Kanjium, CC-BY-SA 4.0).
+  accent: number | null;
   // JMdict frequency rank (lower = more common). Null when the word
   // wasn't in the dictionary, or when the item was added before
   // migration 0008_vocab_freq_rank.sql.

@@ -23,7 +23,9 @@ type PlaybackPrefs = {
   playbackRate: number;
 };
 
-const VALID_RATES: readonly number[] = [1.0, 1.1, 1.2];
+// P1-14: 0.5 and 0.75 added — a beginner needs a much slower
+// read than 1.0/1.1/1.2 gives.
+const VALID_RATES: readonly number[] = [0.5, 0.75, 1.0, 1.1, 1.2];
 
 type ShadowGrade = {
   accuracy: number;

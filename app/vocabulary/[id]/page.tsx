@@ -27,6 +27,8 @@ import {
 } from "@/lib/vocabulary";
 import { getVocabReviewStats } from "@/lib/vocabulary/reviews";
 import { SpeakButton } from "@/components/SpeakButton";
+import { accentName, formatAccent, PendingBadge } from "@/lib/vocabulary/accent";
+import { SpeakSpeedPicker } from "@/components/vocabulary/speak-rate";
 import {
   VocabMarkStudiedButton,
   VocabReadingSpeakButton,
@@ -183,6 +185,30 @@ export default async function VocabularyDetailPage({
                   : "少用"}
             </span>
           )}
+          {/* Audit 2026-11-16 P1-7 — the accent, the part of speech,
+              the level and the JMdict rank. Whatever the dictionary
+              could not supply is SAID, not left out: a word with no
+              accent in the data source shows 声调待补全 instead of
+              silently having no marker at all. */}
+          {item.reading && (
+            <span
+              className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600 font-jp"
+              title={
+                item.accent != null
+                  ? `アクセント：${accentName(item.accent)}`
+                  : "词典数据源没有这个词的声调"
+              }
+            >
+              {item.reading}
+              {item.accent != null ? formatAccent(item.accent) : ""}
+            </span>
+          )}
+          {item.accent == null && item.reading && (
+            <PendingBadge label="声调" />
+          )}
+          {!item.part_of_speech && <PendingBadge label="词性" />}
+          {!item.level && <PendingBadge label="等级" />}
+          {item.freq_rank == null && <PendingBadge label="常用度" />}
         </div>
       </header>
 
@@ -392,6 +418,8 @@ export default async function VocabularyDetailPage({
                 </h1>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <VocabSpeakButton vocabId={item.id} text={item.word} />
+                  {/* P1-14: 0.5 / 0.75 / 1.0 / 1.2 */}
+                  <SpeakSpeedPicker className="ml-1" />
                   <Link
                     href={`/vocabulary/${id}?fix_reading=1`}
                     className="text-xs text-gray-500 hover:text-gray-900 underline-offset-2 hover:underline"

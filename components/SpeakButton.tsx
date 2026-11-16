@@ -10,15 +10,27 @@
 // so this is a Client Component. Wrap in a parent that already does
 // the right thing for accessibility (e.g., pass `label`).
 
+import { useSpeakRate } from "@/components/vocabulary/speak-rate";
+
 export function SpeakButton({
   text,
   lang = "ja-JP",
   label = "朗读",
+  rate,
+  className,
 }: {
   text: string;
   lang?: string;
   label?: string;
+  /** Overrides the user's chosen speed (P1-14). */
+  rate?: number;
+  className?: string;
 }) {
+  // P1-14: the speed is the user's choice (0.5 / 0.75 / 1.0 / 1.2),
+  // stored in localStorage and shared by every speak button.
+  const chosenRate = useSpeakRate();
+  const effectiveRate = rate ?? chosenRate;
+
   function handleClick() {
     if (typeof window === "undefined") return;
     if (!("speechSynthesis" in window)) {
@@ -33,8 +45,7 @@ export function SpeakButton({
 
     const utt = new SpeechSynthesisUtterance(text);
     utt.lang = lang;
-    // Slightly slower than default — easier for listening practice.
-    utt.rate = 0.9;
+    utt.rate = effectiveRate;
     window.speechSynthesis.speak(utt);
   }
 
@@ -44,7 +55,7 @@ export function SpeakButton({
       onClick={handleClick}
       aria-label={label}
       title={label}
-      className="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition-colors text-gray-600 hover:text-gray-900"
+      className={`inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition-colors text-gray-600 hover:text-gray-900 ${className ?? ""}`}
     >
       <span aria-hidden="true" className="text-base">
         🔊
