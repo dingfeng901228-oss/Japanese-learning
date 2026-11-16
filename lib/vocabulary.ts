@@ -44,6 +44,10 @@ export type VocabularyItem = {
   // invariant comments). Updated by start_learning_session RPC.
   learning_count: number;
   last_learned_at: string | null;
+  // P1-10: the learner's own star (生词). Independent of mastery.
+  starred: boolean;
+  // P1-10: the manual 已掌握 / 易忘 mark. Independent of the SRS.
+  mark_state: "mastered" | "weak" | null;
   // Pitch accent: 0 = 平板 (flat), N > 0 = the pitch falls after the
   // Nth mora. Null when the dictionary had no entry for this word
   // (migration 0012; backfilled from Kanjium, CC-BY-SA 4.0).
@@ -113,10 +117,21 @@ export type ListVocabularyOpts = {
   filter?: VocabularyFilter;
   /** P1-11: only words carrying this tag (the import's category). */
   tag?: string;
+  /**
+   * P1-10: the 掌握度区间 filter — inclusive bounds on the SRS mastery
+   * (0-100). e.g. {min: 20, max: 49} = 20%-49%.
+   */
+  masteryMin?: number;
+  masteryMax?: number;
 };
 
 /** The 状态 filter values, in English so the URL stays machine-readable. */
-export type VocabularyFilter = "due" | "mastered" | "weak";
+export type VocabularyFilter =
+  | "due"
+  | "mastered"
+  | "weak"
+  | "starred"
+  | "marked";
 
 export type VocabularyExample = {
   id: string;
@@ -181,21 +196,48 @@ export async function listVocabularyItems(
   // (one row per word), so the filter has to reach across. PostgREST's
   // `!inner` embed turns the embedded filter into a semi-join on the
   // parent, which is exactly the "only words with a due review" set.
-  if (opts.filter === "due") {
+  // P1-6 / P1-10: the 状态 filter.
+  //
+  // vocabulary_items has no review state of its own — the SRS state
+  // lives in vocabulary_reviews (one row per word), so those filters
+  // have to reach across. PostgREST's `!inner` embed turns the
+  // embedded filter into a semi-join on the parent, which is exactly
+  // the "only words with a due review" set.
+  //
+  // The star and the manual mark live on vocabulary_items itself, so
+  // they are plain column filters.
+  const needsReviewJoin =
+    opts.filter === "due" ||
+    opts.filter === "mastered" ||
+    opts.filter === "weak" ||
+    opts.masteryMin !== undefined ||
+    opts.masteryMax !== undefined;
+
+  if (needsReviewJoin) {
     query = query.select(
-      "*, vocabulary_reviews!inner(id, next_review_at)"
+      "*, vocabulary_reviews!inner(id, next_review_at, mastery)"
     );
+  }
+  if (opts.filter === "due") {
     query = query.or(
       "vocabulary_reviews.next_review_at.lte." +
         new Date().toISOString() +
         ",vocabulary_reviews.next_review_at.is.null"
     );
   } else if (opts.filter === "mastered") {
-    query = query.select("*, vocabulary_reviews!inner(id, mastery)");
     query = query.gte("vocabulary_reviews.mastery", MASTERED_THRESHOLD);
   } else if (opts.filter === "weak") {
-    query = query.select("*, vocabulary_reviews!inner(id, mastery)");
     query = query.lt("vocabulary_reviews.mastery", REVIEW_THRESHOLD);
+  } else if (opts.filter === "starred") {
+    query = query.eq("starred", true);
+  } else if (opts.filter === "marked") {
+    query = query.not("mark_state", "is", null);
+  }
+  if (opts.masteryMin !== undefined) {
+    query = query.gte("vocabulary_reviews.mastery", opts.masteryMin);
+  }
+  if (opts.masteryMax !== undefined) {
+    query = query.lte("vocabulary_reviews.mastery", opts.masteryMax);
   }
 
   const q = opts.search?.trim();

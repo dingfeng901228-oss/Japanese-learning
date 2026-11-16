@@ -30,6 +30,8 @@ type SearchParams = {
   filter?: string;
   /** P1-11: 主题 (the import category, stored as a tag) */
   tag?: string;
+  /** P1-10: 掌握度区间 — e.g. "20-49" */
+  mastery?: string;
 };
 
 const JLPT_LEVELS = ["N5", "N4", "N3", "N2", "N1"] as const;
@@ -71,9 +73,43 @@ function asSort(v: string | undefined): VocabularySort {
 
 function asFilter(v: string | undefined): VocabularyFilter | undefined {
   if (!v) return undefined;
-  if (v === "due" || v === "mastered" || v === "weak") return v;
+  if (
+    v === "due" ||
+    v === "mastered" ||
+    v === "weak" ||
+    v === "starred" ||
+    v === "marked"
+  ) {
+    return v;
+  }
   invalid.push(`filter=${v}`);
   return undefined;
+}
+
+/**
+ * P1-10: the 掌握度区间 filter. The buckets are the four ranges the
+ * progress page talks about, so the two pages agree on what a
+ * "mastery level" means.
+ */
+const MASTERY_RANGES: { value: string; label: string; min?: number; max?: number }[] =
+  [
+    { value: "", label: "全部掌握度" },
+    { value: "0-19", label: "0%–19%（生疏）", min: 0, max: 19 },
+    { value: "20-49", label: "20%–49%（需加强）", min: 20, max: 49 },
+    { value: "50-79", label: "50%–79%（接近掌握）", min: 50, max: 79 },
+    { value: "80-100", label: "80%–100%（已掌握）", min: 80, max: 100 },
+  ];
+
+function asMasteryRange(
+  v: string | undefined
+): { min?: number; max?: number } | undefined {
+  if (!v) return undefined;
+  const hit = MASTERY_RANGES.find((r) => r.value === v);
+  if (!hit) {
+    invalid.push(`mastery=${v}`);
+    return undefined;
+  }
+  return { min: hit.min, max: hit.max };
 }
 
 // Per Frank #7347 (2026-08-30): /vocabulary pagination.
@@ -178,6 +214,7 @@ export default async function VocabularyListPage({
   const level = asLevel(sp.level);
   const sort = asSort(sp.sort);
   const filter = asFilter(sp.filter);
+  const masteryRange = asMasteryRange(sp.mastery);
   // The theme (category) is a free-form tag string, not an enum — any
   // value that is not one of the user's tags is reported as invalid.
   const tag = sp.tag?.trim() || undefined;
@@ -200,7 +237,7 @@ export default async function VocabularyListPage({
 
   // P1-12: is any filter active? Drives the empty-state copy.
   const hasFilters = Boolean(
-    q || type || level || filter || tag
+    q || type || level || filter || tag || sp.mastery
   );
 
   // Per Frank #7347 (2026-08-30): paginate via ?page=N, default 20/page.
@@ -220,6 +257,8 @@ export default async function VocabularyListPage({
     sort,
     filter,
     tag: tag && tagNames.has(tag) ? tag : undefined,
+    masteryMin: masteryRange?.min,
+    masteryMax: masteryRange?.max,
     page: asPage(sp.page),
   });
 
@@ -260,10 +299,10 @@ export default async function VocabularyListPage({
           <h1 className="text-3xl font-bold">我的收藏</h1>
           <p className="text-gray-600">
             {total === 0
-              ? q || type || level || filter || tag
+              ? q || type || level || filter || tag || sp.mastery
                 ? "没有匹配的收藏"
                 : "还没有收藏，先添加一个吧"
-              : q || type || level || filter || tag
+              : q || type || level || filter || tag || sp.mastery
                 ? // Audit 2026-11-16 P0-4: this used to read
                   // "共 2009 项（匹配 20 项）" — items.length is the PAGE
                   // size (20), not the number of matches, so the number
@@ -460,6 +499,22 @@ export default async function VocabularyListPage({
           <option value="due">待复习</option>
           <option value="mastered">已掌握</option>
           <option value="weak">易忘</option>
+          {/* P1-10: the learner's own marks. */}
+          <option value="starred">★ 星标</option>
+          <option value="marked">已标记</option>
+        </select>
+        {/* P1-10: 掌握度区间 */}
+        <select
+          name="mastery"
+          defaultValue={sp.mastery ?? ""}
+          onChange={autoApply}
+          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 bg-white"
+        >
+          {MASTERY_RANGES.map((r) => (
+            <option key={r.value} value={r.value}>
+              {r.label}
+            </option>
+          ))}
         </select>
         {/* P1-11: 主题 — the category the imported word came from. */}
         {tags.length > 0 && (
@@ -517,6 +572,7 @@ export default async function VocabularyListPage({
             sort,
             filter: filter ?? undefined,
             tag: tag ?? undefined,
+            mastery: sp.mastery || undefined,
           }}
         />
       </div>
@@ -607,6 +663,35 @@ export default async function VocabularyListPage({
                       {item.level && (
                         <span className="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-600">
                           {item.level}
+                        </span>
+                      )}
+                      {/* P1-10: the learner's own marks. Shown as a
+                          badge here (the whole row is a link, so an
+                          interactive button inside it would be nested
+                          interactive content) — the star and the marks
+                          themselves live on the detail page. */}
+                      {item.starred && (
+                        <span
+                          className="text-xs px-1.5 py-0.5 rounded bg-amber-50 text-amber-700"
+                          title="星标（生词）"
+                        >
+                          ★
+                        </span>
+                      )}
+                      {item.mark_state && (
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded ${
+                            item.mark_state === "mastered"
+                              ? "bg-emerald-50 text-emerald-700"
+                              : "bg-amber-50 text-amber-700"
+                          }`}
+                          title={
+                            item.mark_state === "mastered"
+                              ? "手动标记：已掌握"
+                              : "手动标记：易忘"
+                          }
+                        >
+                          {item.mark_state === "mastered" ? "已掌握" : "易忘"}
                         </span>
                       )}
                       {item.freq_rank != null && (

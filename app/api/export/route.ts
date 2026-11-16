@@ -83,6 +83,17 @@ export async function GET(req: NextRequest) {
       ? filterRaw
       : undefined;
   const tag = sp.get("tag")?.trim() || undefined;
+  // P1-10: the 掌握度区间 filter ("20-49").
+  const masteryRaw = sp.get("mastery")?.trim() || "";
+  let masteryMin: number | undefined;
+  let masteryMax: number | undefined;
+  if (masteryRaw) {
+    const m = /^(\d+)-(\d+)$/.exec(masteryRaw);
+    if (m) {
+      masteryMin = Number(m[1]);
+      masteryMax = Number(m[2]);
+    }
+  }
 
   let supabase;
   try {
@@ -114,6 +125,8 @@ export async function GET(req: NextRequest) {
       sort,
       filter,
       tag,
+      masteryMin,
+      masteryMax,
       page,
       pageSize: PAGE_SIZE,
     });

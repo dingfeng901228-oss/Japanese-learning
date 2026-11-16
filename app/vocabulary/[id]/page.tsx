@@ -31,6 +31,10 @@ import { accentName, formatAccent, PendingBadge } from "@/lib/vocabulary/accent"
 import { SpeakSpeedPicker } from "@/components/vocabulary/speak-rate";
 import { RubyText } from "@/components/vocabulary/RubyText";
 import {
+  VocabMarkButtons,
+  VocabStarButton,
+} from "@/components/vocabulary/VocabMarks";
+import {
   VocabMarkStudiedButton,
   VocabReadingSpeakButton,
   VocabSpeakButton,
@@ -207,6 +211,11 @@ export default async function VocabularyDetailPage({
           {item.accent == null && item.reading && (
             <PendingBadge label="声调" />
           )}
+          {/* P1-10: the star and the manual 已掌握 / 易忘 marks. */}
+          <VocabStarButton
+            vocabId={item.id}
+            initialStarred={item.starred}
+          />
           {!item.part_of_speech && <PendingBadge label="词性" />}
           {!item.level && <PendingBadge label="等级" />}
           {item.freq_rank == null && <PendingBadge label="常用度" />}
@@ -677,6 +686,12 @@ export default async function VocabularyDetailPage({
             Opening this page and reading it counts for nothing. */}
         <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-3 flex-wrap">
           <VocabMarkStudiedButton vocabId={item.id} />
+          {/* P1-10: the learner's own 已掌握 / 易忘 marks, kept apart
+              from the SRS mastery the review grades write. */}
+          <VocabMarkButtons
+            vocabId={item.id}
+            initialMarkState={item.mark_state}
+          />
           <p className="text-[11px] text-gray-400">
             只有主动操作（点朗读、复习答题并评分、手动标记）才计入学习量。
           </p>

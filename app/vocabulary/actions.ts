@@ -141,6 +141,60 @@ export async function deleteVocabularyItemAction(formData: FormData) {
 // "编辑" link next to the 🔊 button on the top card. Uses a separate
 // query param (?edit_word=1) so it doesn't collide with the existing
 // example editor (?edit=1).
+/**
+ * Star / unstar a word.
+ *
+ * Audit 2026-11-16 P1-10: there was no way to mark a word as 生词
+ * worth another look, apart from the SRS mastery that the review
+ * grades write.
+ */
+export async function setStarAction(
+  vocabId: string,
+  starred: boolean
+): Promise<void> {
+  const id = String(vocabId ?? "").trim();
+  if (!id) return;
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const { error } = await supabase
+    .from("vocabulary_items")
+    .update({ starred, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("user_id", user.id);
+  if (error) console.error("setStarAction failed:", error.message);
+  revalidatePath(`/vocabulary/${id}`);
+  revalidatePath("/vocabulary");
+}
+
+/**
+ * The manual 已掌握 / 易忘 mark (P1-10).
+ *
+ * markState: "mastered" | "weak" | null (clears the mark).
+ */
+export async function setMarkStateAction(
+  vocabId: string,
+  markState: "mastered" | "weak" | null
+): Promise<void> {
+  const id = String(vocabId ?? "").trim();
+  if (!id) return;
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const { error } = await supabase
+    .from("vocabulary_items")
+    .update({ mark_state: markState, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("user_id", user.id);
+  if (error) console.error("setMarkStateAction failed:", error.message);
+  revalidatePath(`/vocabulary/${id}`);
+  revalidatePath("/vocabulary");
+}
+
 export async function updateWordAction(formData: FormData) {
   const id = String(formData.get("id") ?? "").trim();
   const word = String(formData.get("word") ?? "").trim();
