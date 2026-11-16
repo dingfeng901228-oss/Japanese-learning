@@ -622,21 +622,48 @@ export async function listVocabularyItemsPaged(
   // (one row per word), so the filter has to reach across. PostgREST's
   // `!inner` embed turns the embedded filter into a semi-join on the
   // parent, which is exactly the "only words with a due review" set.
-  if (opts.filter === "due") {
+  // P1-6 / P1-10: the 状态 filter.
+  //
+  // vocabulary_items has no review state of its own - the SRS state
+  // lives in vocabulary_reviews (one row per word), so those filters
+  // have to reach across. PostgREST's `!inner` embed turns the
+  // embedded filter into a semi-join on the parent, which is exactly
+  // the "only words with a due review" set.
+  //
+  // The star and the manual mark live on vocabulary_items itself, so
+  // they are plain column filters.
+  const needsReviewJoin =
+    opts.filter === "due" ||
+    opts.filter === "mastered" ||
+    opts.filter === "weak" ||
+    opts.masteryMin !== undefined ||
+    opts.masteryMax !== undefined;
+
+  if (needsReviewJoin) {
     query = query.select(
-      "*, vocabulary_reviews!inner(id, next_review_at)"
+      "*, vocabulary_reviews!inner(id, next_review_at, mastery)"
     );
+  }
+  if (opts.filter === "due") {
     query = query.or(
       "vocabulary_reviews.next_review_at.lte." +
         new Date().toISOString() +
         ",vocabulary_reviews.next_review_at.is.null"
     );
   } else if (opts.filter === "mastered") {
-    query = query.select("*, vocabulary_reviews!inner(id, mastery)");
     query = query.gte("vocabulary_reviews.mastery", MASTERED_THRESHOLD);
   } else if (opts.filter === "weak") {
-    query = query.select("*, vocabulary_reviews!inner(id, mastery)");
     query = query.lt("vocabulary_reviews.mastery", REVIEW_THRESHOLD);
+  } else if (opts.filter === "starred") {
+    query = query.eq("starred", true);
+  } else if (opts.filter === "marked") {
+    query = query.not("mark_state", "is", null);
+  }
+  if (opts.masteryMin !== undefined) {
+    query = query.gte("vocabulary_reviews.mastery", opts.masteryMin);
+  }
+  if (opts.masteryMax !== undefined) {
+    query = query.lte("vocabulary_reviews.mastery", opts.masteryMax);
   }
 
   const q = opts.search?.trim();
@@ -711,14 +738,18 @@ export async function getVocabularyTypeCounts(): Promise<
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return empty;
-    const { data, error } = await supabase
-      .from("vocabulary_items")
-      .select("type")
-      .eq("user_id", user.id);
-    if (error) return empty;
-    for (const row of data ?? []) {
+    // Counted in the database. Selecting the rows and counting them
+    // here silently truncated at PostgREST's 1,000-row cap, which is
+    // why the filter said "单词 (943) 词组 (57)" - exactly 1,000.
+    const { data, error } = await supabase.rpc("get_vocab_type_counts");
+    if (error) {
+      console.error("[vocabulary] type counts failed:", error.message);
+      return empty;
+    }
+    const rows = (data ?? []) as { type: string; count: number }[];
+    for (const row of rows) {
       const t = row.type as VocabularyType;
-      if (t in empty) empty[t] += 1;
+      if (t in empty) empty[t] = Number(row.count) || 0;
     }
     return empty;
   } catch (err) {
@@ -741,22 +772,21 @@ export async function getVocabularyTags(): Promise<
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];
-    const { data, error } = await supabase
-      .from("vocabulary_tags")
-      .select("tag")
-      .eq("user_id", user.id);
+    // Counted in the database for the same reason as the type counts:
+    // vocabulary_tags holds 2,912 rows for this user, and PostgREST
+    // caps a response at 1,000.
+    const { data, error } = await supabase.rpc("get_vocab_tag_counts");
     if (error) {
       console.error("[vocabulary] tag list failed:", error.message);
       return [];
     }
-    const counts = new Map<string, number>();
-    for (const row of data ?? []) {
-      const tag = (row.tag ?? "").trim();
-      if (!tag) continue;
-      counts.set(tag, (counts.get(tag) ?? 0) + 1);
-    }
-    return Array.from(counts.entries())
-      .map(([tag, count]) => ({ tag, count }))
+    const rows = (data ?? []) as { tag: string; count: number }[];
+    return rows
+      .map((row) => ({
+        tag: String(row.tag ?? "").trim(),
+        count: Number(row.count) || 0,
+      }))
+      .filter((row) => row.tag !== "")
       .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
   } catch (err) {
     if ((err as Error).message !== "supabase_env_missing") {
