@@ -38,6 +38,7 @@ import Link from "next/link";
 import type { ReviewItem } from "@/lib/vocabulary/reviews";
 import { recordReviewAction } from "./actions";
 import { GRADES, formatNextReview, type GradeId } from "@/lib/vocabulary/srs";
+import { RubyText } from "@/components/vocabulary/RubyText";
 import { useSessionTimer, formatDuration } from "@/lib/today-stats";
 
 const AUTOPLAY_KEY = "japanese:review-autoplay";
@@ -520,11 +521,13 @@ export function ReviewSession({
              active-recall UX (user can read along instead of listening
              + inferring the word from audio + Chinese context). */}
 
-          {/* Chinese translation — always visible (§4). */}
-          <div className="text-base text-gray-600 leading-relaxed">
-            {current.example_translation ?? (
-              <span className="italic text-gray-400">(翻译缺失)</span>
-            )}
+          {/* Audit 2026-11-16 P1-8: the Chinese gloss is hidden until
+              the answer is revealed, exactly like the reading already
+              was. §4 said "always visible", but with the gloss on
+              screen the user reads the Chinese instead of recalling
+              the word from the sentence and the audio. */}
+          <div className="text-sm text-gray-400 leading-relaxed">
+            中文释义在作答前隐藏，点「显示答案」后出现。
           </div>
 
           {/* Frank #6668: empty input is OK — clicking 显示单词
@@ -574,7 +577,12 @@ export function ReviewSession({
           {/* ANSWER_REVEALED: sentence with bold target (§8). */}
           <div className="text-2xl font-medium text-gray-900 leading-loose text-left break-words whitespace-pre-wrap">
             {hasExample ? (
-              renderWithBoldTarget(current.example_sentence!, current.word)
+              /* P1-8: per-character ruby. The target word stays bold. */
+              <RubyText
+                segments={current.example_furigana}
+                fallback={current.example_sentence}
+                highlight={current.word}
+              />
             ) : (
               <span className="italic text-gray-400">(例句缺失)</span>
             )}
@@ -606,7 +614,7 @@ export function ReviewSession({
             )}
           </div>
 
-          {/* Chinese translation — always visible (§4). */}
+          {/* The Chinese gloss — revealed with the answer (P1-8). */}
           <div className="text-base text-gray-600 leading-relaxed">
             {current.example_translation ?? (
               <span className="italic text-gray-400">(翻译缺失)</span>

@@ -29,6 +29,7 @@ import { getVocabReviewStats } from "@/lib/vocabulary/reviews";
 import { SpeakButton } from "@/components/SpeakButton";
 import { accentName, formatAccent, PendingBadge } from "@/lib/vocabulary/accent";
 import { SpeakSpeedPicker } from "@/components/vocabulary/speak-rate";
+import { RubyText } from "@/components/vocabulary/RubyText";
 import {
   VocabMarkStudiedButton,
   VocabReadingSpeakButton,
@@ -590,8 +591,10 @@ export default async function VocabularyDetailPage({
           <SpeakableClick text={example.sentence}>
           <div className="space-y-2">
             <div className="flex items-start gap-2">
-              <p className="flex-1 text-lg text-gray-900 break-words">
-                {example.sentence}
+              {/* P1-8: per-character ruby instead of one flat kana line
+                  under the whole sentence. */}
+              <p className="flex-1 text-lg text-gray-900 break-words font-jp">
+                <RubyText segments={example.furigana} fallback={example.sentence} />
               </p>
               <div className="flex-shrink-0 -mt-1">
                 <SpeakButton text={example.sentence} />

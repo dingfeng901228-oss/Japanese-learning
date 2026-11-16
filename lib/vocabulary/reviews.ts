@@ -27,6 +27,8 @@ export type ReviewItem = {
   example_sentence: string | null;
   example_reading: string | null;
   example_translation: string | null;
+  /** Per-character ruby for the example (P1-8). */
+  example_furigana: { text: string; ruby: string | null }[] | null;
   interval_days: number;
   ease_factor: number;
   mastery: number;
@@ -172,6 +174,7 @@ export async function getDueReviews(limit = 20): Promise<ReviewItem[]> {
           sentence,
           reading,
           translation,
+          furigana,
           is_primary
         )
       )
@@ -203,6 +206,8 @@ export async function getDueReviews(limit = 20): Promise<ReviewItem[]> {
         sentence: string;
         reading: string | null;
         translation: string | null;
+        /** Per-character ruby (P1-8). */
+        furigana: { text: string; ruby: string | null }[] | null;
         is_primary: boolean;
       }>;
     };
@@ -220,6 +225,7 @@ export async function getDueReviews(limit = 20): Promise<ReviewItem[]> {
       example_sentence: primary.sentence,
       example_reading: primary.reading,
       example_translation: primary.translation,
+      example_furigana: primary.furigana ?? null,
       interval_days: r.interval_days,
       ease_factor: Number(r.ease_factor),
       mastery: r.mastery,

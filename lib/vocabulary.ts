@@ -127,6 +127,13 @@ export type VocabularyExample = {
   is_primary: boolean;
   generated_by_ai: boolean;
   user_edited: boolean;
+  /**
+   * Per-character ruby for the sentence (P1-8): a JSON array of
+   * {text, ruby}. Built offline by scripts/rebuild-example-furigana.py
+   * against the JMdict surface forms; ruby is null for a run that is
+   * already kana. Null when the sentence could not be segmented.
+   */
+  furigana: { text: string; ruby: string | null }[] | null;
   created_at: string;
   updated_at: string;
 };
