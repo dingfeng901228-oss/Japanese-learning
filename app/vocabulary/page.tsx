@@ -146,6 +146,7 @@ export default async function VocabularyListPage({
     total,
     totalPages,
     page: currentPage,
+    pageSize,
   } = await listVocabularyItemsPaged({
     search: q || undefined,
     type,
@@ -195,7 +196,12 @@ export default async function VocabularyListPage({
                 ? "没有匹配的收藏"
                 : "还没有收藏，先添加一个吧"
               : q || type || level
-                ? `共 ${total} 项（匹配 ${items.length} 项）`
+                ? // Audit 2026-11-16 P0-4: this used to read
+                  // "共 2009 项（匹配 20 项）" — items.length is the PAGE
+                  // size (20), not the number of matches, so the number
+                  // looked like a match count and was always the same.
+                  // Now: the real total, plus the page size.
+                  `共 ${total} 项 · 每页 ${pageSize} 条`
                 : `共 ${total} 项`}
           </p>
           <div className="flex items-center gap-2">

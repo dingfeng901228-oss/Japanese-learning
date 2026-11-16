@@ -1,11 +1,14 @@
 "use client";
 
 /**
- * KanjiStrokeOrder — animated stroke-order viewer.
+ * KanjiStrokeOrder — one kanji box, drawn progressively.
  *
- * Renders the KanjiVG stroke paths for one kanji. Paths are drawn
- * progressively (stroke 1, then 2, …) with a "重播" button and a
- * per-stroke scrubber.
+ * Presentational: the parent (KanjiStrokeOrderRow) owns the playhead and
+ * decides how many strokes of this kanji are visible, so all the kanji
+ * of a word can be animated in one continuous sequence.
+ *
+ * Audit 2026-11-16 P0-5: this used to own its own timer, so every kanji
+ * needed its own "重播" click and the box sat blank until then.
  *
  * Data: KanjiVG via Tomoshi's open data layer (CC BY-SA 3.0).
  * Attribution: public/dict/ATTRIBUTION.md
@@ -18,72 +21,36 @@
  * by rendering both ways side by side.)
  */
 
-import { useEffect, useMemo, useState } from "react";
-import { fetchStrokes } from "@/lib/dict/client";
-
-interface KanjiStrokeOrderProps {
-  /** the kanji character to display */
+export function KanjiStrokeOrder({
+  character,
+  paths,
+  shown,
+  size = 96,
+  active = false,
+}: {
   character: string;
+  /** stroke paths for this kanji */
+  paths: string[];
+  /** how many strokes to draw */
+  shown: number;
   /** render size in px */
   size?: number;
-}
-
-export function KanjiStrokeOrder({ character, size = 96 }: KanjiStrokeOrderProps) {
-  const [paths, setPaths] = useState<string[] | null>(null);
-  const [shown, setShown] = useState(0);
-  const [playing, setPlaying] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    setPaths(null);
-    setShown(0);
-    setPlaying(false);
-    fetchStrokes([character]).then((map) => {
-      if (cancelled) return;
-      setPaths(map[character] ?? null);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [character]);
-
-  // Play the animation once when the paths arrive.
-  useEffect(() => {
-    if (!paths || paths.length === 0 || !playing) return;
-    if (shown >= paths.length) {
-      setPlaying(false);
-      return;
-    }
-    const t = setTimeout(() => setShown((s) => s + 1), 420);
-    return () => clearTimeout(t);
-  }, [paths, playing, shown]);
-
-  const viewBox = useMemo(() => "0 0 109 109", []);
-
-  if (paths === null) {
-    return (
-      <div
-        className="flex items-center justify-center rounded-lg bg-gray-50 text-xs text-gray-400"
-        style={{ width: size, height: size }}
-      >
-        …
-      </div>
-    );
-  }
-
-  if (paths.length === 0) {
-    return null;
-  }
+  /** highlight the kanji the playhead is currently on */
+  active?: boolean;
+}) {
+  if (paths.length === 0) return null;
 
   return (
-    <div className="select-none">
+    <div className="select-none text-center">
       <svg
-        viewBox={viewBox}
+        viewBox="0 0 109 109"
         width={size}
         height={size}
         role="img"
         aria-label={`${character} 的笔顺动画`}
-        className="rounded-lg bg-white border border-line"
+        className={`rounded-lg bg-white border ${
+          active ? "border-ink" : "border-line"
+        }`}
       >
         {/* guide box */}
         <rect
@@ -111,22 +78,12 @@ export function KanjiStrokeOrder({ character, size = 96 }: KanjiStrokeOrderProps
           />
         ))}
       </svg>
-
-      <div className="mt-2 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => {
-            setShown(0);
-            setPlaying(true);
-          }}
-          className="px-2.5 py-1 text-xs rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
-        >
-          重播笔顺
-        </button>
-        <span className="text-xs text-gray-400 tabular-nums">
-          {shown} / {paths.length} 画
+      <p className="text-[11px] text-gray-400 mt-1">
+        {character}
+        <span className="tabular-nums ml-1">
+          {shown}/{paths.length}
         </span>
-      </div>
+      </p>
     </div>
   );
 }
