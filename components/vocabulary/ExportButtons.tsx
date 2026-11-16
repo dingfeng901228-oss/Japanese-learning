@@ -20,6 +20,8 @@ export type ExportFilters = {
   sort?: string;
   filter?: string;
   tag?: string;
+  /** P1-10: the 掌握度区间 bucket, e.g. "20-49". */
+  mastery?: string;
 };
 
 export function ExportButtons({
