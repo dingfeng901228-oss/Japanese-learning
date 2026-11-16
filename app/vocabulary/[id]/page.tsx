@@ -26,8 +26,12 @@ import {
   type VocabularyType,
 } from "@/lib/vocabulary";
 import { getVocabReviewStats } from "@/lib/vocabulary/reviews";
-import { LearningTracker } from "./LearningTracker";
 import { SpeakButton } from "@/components/SpeakButton";
+import {
+  VocabMarkStudiedButton,
+  VocabReadingSpeakButton,
+  VocabSpeakButton,
+} from "@/components/vocabulary/VocabActiveActions";
 import { DictionaryCards } from "@/components/vocabulary/DictionaryCards";
 import { KanjiStrokeOrderRow } from "@/components/vocabulary/KanjiStrokeOrderRow";
 import { WordCardSwipeable } from "./WordCardSwipeable";
@@ -67,12 +71,17 @@ export default async function VocabularyDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ edit?: string; edit_word?: string }>;
+  searchParams: Promise<{ edit?: string; edit_word?: string; fix_reading?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
   const editing = sp.edit === "1";
   const editingWord = sp.edit_word === "1";
+  // Audit 2026-11-16 P0-2: a focused reading-correction form. The
+  // reading is the one field the bulk import got wrong for 12 words, and
+  // correcting it also repairs the example furigana (see
+  // updateWordAction).
+  const fixingReading = sp.fix_reading === "1";
 
   const item = await getVocabularyItem(id);
   if (!item) notFound();
@@ -101,13 +110,12 @@ export default async function VocabularyDetailPage({
 
   return (
     <main className="min-h-screen px-6 py-12 max-w-2xl mx-auto">
-      {/* Per Frank #7458 (2026-08-31): opening the detail page IS the
-          learning event — LearningTracker bumps learningCount on mount
-          via the same idempotent sessionStorage + RPC PK pattern as
-          /vocabulary/learn. The [开始学习 →] CTA that used to link
-          to /vocabulary/learn was removed (no longer needed — the
-          mount itself is the "start" event). */}
-      <LearningTracker vocabId={item.id} />
+      {/* Audit 2026-11-16 P0-3: LearningTracker used to fire on mount, so
+          merely OPENING this page counted as a study session
+          (learning_count +1) and the 5s bar filled from passive dwell.
+          Now a study session is only recorded by a deliberate action —
+          点朗读 / 标记已学 (see components/vocabulary/VocabActiveActions.tsx)
+          or answering a review. The tracker component itself is gone. */}
       <header className="mb-8">
         {/* Per Frank #6576: put "+手动添加" on the same row as
             "← 返回收藏列表", at the far right. Using flex justify-between
@@ -201,7 +209,68 @@ export default async function VocabularyDetailPage({
         disabled={editingWord || editing}
       >
         <article className="bg-white border border-gray-200 rounded-2xl p-8 mb-6">
-        {editingWord ? (
+        {fixingReading ? (
+          /* Audit 2026-11-16 P0-2 — 读音纠错. Only the reading is
+             editable; word / meaning / level / part-of-speech travel
+             through as hidden fields so updateWordAction can reuse its
+             single code path. Saving also repairs the example furigana
+             (the old kana inside it is swapped for the new one). */
+          <form action={updateWordAction} className="space-y-4">
+            <input type="hidden" name="id" value={id} />
+            <input type="hidden" name="word" value={item.word} />
+            <input type="hidden" name="meaning" value={item.meaning} />
+            <input type="hidden" name="level" value={item.level ?? ""} />
+            <input
+              type="hidden"
+              name="part_of_speech"
+              value={item.part_of_speech ?? ""}
+            />
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">
+                校读音 · {item.word}
+              </h2>
+              <p className="text-xs text-gray-500 mt-1">
+                读音不对？改成正确的假名。保存后例句的假名注音会一起更新，
+                朗读也会用新的读音。
+              </p>
+            </div>
+            <div>
+              <label
+                htmlFor="fix-reading"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                正确读音
+              </label>
+              <input
+                id="fix-reading"
+                type="text"
+                name="reading"
+                defaultValue={item.reading ?? ""}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
+                placeholder="例：そとまわり"
+              />
+              {item.reading && (
+                <p className="text-xs text-gray-400 mt-1">
+                  当前读音：<span className="font-jp">{item.reading}</span>
+                </p>
+              )}
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="submit"
+                className="px-5 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                保存读音
+              </button>
+              <Link
+                href={`/vocabulary/${id}`}
+                className="px-5 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                取消
+              </Link>
+            </div>
+          </form>
+        ) : editingWord ? (
           <form action={updateWordAction} className="space-y-4">
             <input type="hidden" name="id" value={id} />
             <div className="flex items-start justify-between gap-3">
@@ -322,7 +391,14 @@ export default async function VocabularyDetailPage({
                   {item.word}
                 </h1>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <SpeakButton text={item.word} />
+                  <VocabSpeakButton vocabId={item.id} text={item.word} />
+                  <Link
+                    href={`/vocabulary/${id}?fix_reading=1`}
+                    className="text-xs text-gray-500 hover:text-gray-900 underline-offset-2 hover:underline"
+                    title="读音有误？点这里订正，例句注音与朗读会一起更新"
+                  >
+                    校读音
+                  </Link>
                   <Link
                     href={`/vocabulary/${id}?edit_word=1`}
                     className="text-xs text-gray-500 hover:text-gray-900 underline-offset-2 hover:underline"
@@ -332,7 +408,13 @@ export default async function VocabularyDetailPage({
                 </div>
               </div>
             {item.reading && (
-              <p className="text-lg text-gray-500 mb-4">{item.reading}</p>
+              <p className="text-lg text-gray-500 mb-4 flex items-center gap-1.5">
+                {item.reading}
+                <VocabReadingSpeakButton
+                  vocabId={item.id}
+                  reading={item.reading}
+                />
+              </p>
             )}
             <p className="text-xl text-gray-800 mb-6">{item.meaning}</p>
 
@@ -541,7 +623,6 @@ export default async function VocabularyDetailPage({
           <span className="text-gray-900 tabular-nums">
             {item.learning_count} 次
           </span>
-
           <span className="text-gray-600">复习次数</span>
           <span className="text-gray-900 tabular-nums">
             {reviewStats.reviewCount} 次
@@ -558,6 +639,16 @@ export default async function VocabularyDetailPage({
               ? formatDateTime(reviewStats.lastReviewedAt)
               : "—"}
           </span>
+        </div>
+
+        {/* Audit 2026-11-16 P0-3: a study session is only recorded by a
+            deliberate action now (点朗读 / 标记已学 / 复习答题评分).
+            Opening this page and reading it counts for nothing. */}
+        <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-3 flex-wrap">
+          <VocabMarkStudiedButton vocabId={item.id} />
+          <p className="text-[11px] text-gray-400">
+            只有主动操作（点朗读、复习答题并评分、手动标记）才计入学习量。
+          </p>
         </div>
       </section>
 

@@ -57,7 +57,7 @@ function todayKey(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export function useVocabLearningTimer(vocabId: string) {
+export function useVocabLearningTimer(vocabId: string, engaged: boolean = true) {
   const [baselineMs, setBaselineMs] = useState(0);
   const [state, setState] = useState<LearningTimerState>("IDLE");
   const [displayMs, setDisplayMs] = useState(0);
@@ -150,6 +150,13 @@ export function useVocabLearningTimer(vocabId: string) {
         if (result.learningTimeMs >= MAX_LEARNING_MS) {
           setState("COMPLETED");
           // No segment — frozen at 5.0s for the rest of today.
+        } else if (!engaged) {
+          // Audit 2026-11-16 P0-3: the timer only runs once the user has
+          // done something deliberate on this word (点朗读 / 标记已学).
+          // Merely opening the page and leaving it open no longer fills
+          // the 5s bar.
+          setState("IDLE");
+          segmentStartRef.current = null;
         } else if (
           typeof document !== "undefined" &&
           document.visibilityState === "visible"
@@ -179,6 +186,24 @@ export function useVocabLearningTimer(vocabId: string) {
     // including it would re-run the mount logic on every flush.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vocabId]);
+
+  // Audit 2026-11-16 P0-3: the user becomes "engaged" with this word
+  // when they do something deliberate (点朗读 / 标记已学). Only then does
+  // the 5s bar start filling — opening the page and leaving it open does
+  // not count as study time any more.
+  useEffect(() => {
+    if (!engaged) return;
+    if (stateRef.current === "COMPLETED") return;
+    if (segmentStartRef.current !== null) return;
+    if (
+      typeof document !== "undefined" &&
+      document.visibilityState !== "visible"
+    ) {
+      return;
+    }
+    segmentStartRef.current = Date.now();
+    setState("VIEWING");
+  }, [engaged]);
 
   // Tick: update display + check cap. Gated on VIEWING — the cap-reach
   // path calls flushNow(true) which transitions to COMPLETED, after

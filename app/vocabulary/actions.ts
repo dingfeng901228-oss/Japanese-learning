@@ -157,6 +157,16 @@ export async function updateWordAction(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  // Read the CURRENT reading first — we need it to repair the example
+  // furigana when the reading changes (audit 2026-11-16 P0-2).
+  const { data: before } = await supabase
+    .from("vocabulary_items")
+    .select("reading")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  const oldReading = before?.reading ?? null;
+
   const { error } = await supabase
     .from("vocabulary_items")
     .update({
@@ -172,6 +182,26 @@ export async function updateWordAction(formData: FormData) {
   if (error) {
     console.error("updateWordAction: update failed", error);
     redirect(`/vocabulary/${id}?edit_word=1`);
+  }
+
+  // Audit 2026-11-16 P0-2: when the reading is corrected, the example's
+  // furigana has to follow — vocabulary_examples.reading holds the whole
+  // sentence in kana, so the old kana inside it is swapped for the new
+  // one. Without this the ruby annotation kept showing the wrong
+  // reading after the word itself had been fixed.
+  if (oldReading && reading && oldReading !== reading) {
+    const { data: examples } = await supabase
+      .from("vocabulary_examples")
+      .select("id, reading")
+      .eq("vocabulary_id", id)
+      .eq("user_id", user.id);
+    for (const ex of examples ?? []) {
+      if (!ex.reading || !ex.reading.includes(oldReading)) continue;
+      await supabase
+        .from("vocabulary_examples")
+        .update({ reading: ex.reading.split(oldReading).join(reading) })
+        .eq("id", ex.id);
+    }
   }
 
   // If the headword changed, the stored frequency rank no longer

@@ -177,11 +177,8 @@ function MasteryExplainer() {
           复习答题并评分、或手动标记。打开页面停留不会增加学习量。
         </li>
         <li>
-          复习评分四档换算：
-          <strong>忘了</strong> +0%、
-          <strong>模糊</strong> +10%、
-          <strong>记得</strong> +20%、
-          <strong>熟练</strong> +30%（每次复习上限 +30%）。
+          掌握度只在<strong>复习评分</strong>时变化：答对 +10%，
+          答错 −10%，取值范围 0%–100%。
         </li>
         <li>
           阈值：掌握度 &lt; {REVIEW_THRESHOLD}% 记为「最需复习」，

@@ -18,35 +18,68 @@
 // useVocabLearningTimer so the same hook could be reused (e.g.,
 // future dashboard widget) without duplication.
 
+import { useEffect, useState } from "react";
 import { useVocabLearningTimer } from "@/lib/use-vocab-learning-timer";
+import { VOCAB_ACTIVE_ACTION_EVENT } from "./VocabActiveActions";
 
 export function VocabLearningProgress({ vocabId }: { vocabId: string }) {
-  const { state, displayMs, progress } = useVocabLearningTimer(vocabId);
+  // Audit 2026-11-16 P0-3: the 5s bar only starts once the user does
+  // something deliberate with this word. Until then it reads 未开始.
+  const [engaged, setEngaged] = useState(false);
+
+  useEffect(() => {
+    function onAction(e: Event) {
+      const detail = (e as CustomEvent<{ vocabId?: string }>).detail;
+      if (detail?.vocabId === vocabId) setEngaged(true);
+    }
+    window.addEventListener(VOCAB_ACTIVE_ACTION_EVENT, onAction);
+    return () =>
+      window.removeEventListener(VOCAB_ACTIVE_ACTION_EVENT, onAction);
+  }, [vocabId]);
+
+  const { state, displayMs, progress } = useVocabLearningTimer(
+    vocabId,
+    engaged
+  );
 
   const seconds = (displayMs / 1000).toFixed(1);
 
   const emoji =
     state === "COMPLETED" ? "✓" : state === "PAUSED" ? "⏸" : "📚";
   const label =
-    state === "COMPLETED" ? "已学完" : state === "PAUSED" ? "已暂停" : "学习中";
+    state === "COMPLETED"
+      ? "已学完"
+      : state === "PAUSED"
+        ? "已暂停"
+        : state === "IDLE"
+          ? "未开始"
+          : "学习中";
   const textColor =
     state === "COMPLETED"
       ? "text-green-600"
       : state === "PAUSED"
         ? "text-gray-400"
-        : "text-blue-600";
+        : state === "IDLE"
+          ? "text-gray-400"
+          : "text-blue-600";
   const barColor =
     state === "COMPLETED"
       ? "bg-green-500"
       : state === "PAUSED"
         ? "bg-gray-400"
-        : "bg-blue-500";
+        : state === "IDLE"
+          ? "bg-gray-300"
+          : "bg-blue-500";
 
   return (
     <div
       className="flex items-center gap-2 text-xs"
       aria-label={`单词学习进度 ${seconds} 秒 / 5.0 秒`}
-      title="每个词每天最多 5 秒学习时间（按天重置）"
+      title={
+        engaged
+          ? "每个词每天最多 5 秒学习时间（按天重置）"
+          : "点朗读或「标记已学」后开始计时"
+      }
     >
       <span className={`tabular-nums whitespace-nowrap ${textColor}`}>
         {emoji} {label} {seconds}s / 5.0s

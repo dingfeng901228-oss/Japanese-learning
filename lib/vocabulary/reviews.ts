@@ -457,8 +457,21 @@ export async function userHasVocabWithExamples(): Promise<boolean> {
 // counters — reviews count SRS fill-in completions, learning counts
 // formal /vocabulary/learn session entries (decoupled per Q3).
 //
-// reviewCount = number of vocabulary_reviews rows for this vocab.
-// lastReviewedAt = most recent reviewed_at timestamp (DESC, limit 1).
+// reviewCount = number of REAL reviews for this vocab.
+//
+// Audit 2026-11-16 P0-3: this used to count EVERY vocabulary_reviews
+// row. The bulk import (app/admin/import-vocab/actions.ts) creates one
+// placeholder row per imported word with reviewed_at set but no grade,
+// so every word in the collection showed "复习次数 1 次" even though the
+// user had never reviewed it — which is how a word could read
+// "学习次数 0 次 / 复习次数 1 次".
+//
+// A review counts only when it was actually graded: `correct` is not
+// null (the SRS outcome was recorded) or `review_type` is set (an
+// older fill-in attempt). The placeholder rows have neither.
+//
+// lastReviewedAt = most recent reviewed_at among the GRADED rows, so
+// "最近复习" matches "复习次数".
 //
 // Both queries are scoped by auth.uid() via RLS + explicit user_id
 // filter (belt-and-suspenders, matching the lib/vocabulary.ts pattern).
@@ -471,17 +484,22 @@ export async function getVocabReviewStats(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return empty;
 
+  // A graded review: correct is set, or review_type is set.
+  const GRADED = "correct.not.is.null,review_type.not.is.null";
+
   const { count: reviewCount } = await supabase
     .from("vocabulary_reviews")
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
-    .eq("vocabulary_id", vocabId);
+    .eq("vocabulary_id", vocabId)
+    .or(GRADED);
 
   const { data: lastReviewRow } = await supabase
     .from("vocabulary_reviews")
     .select("reviewed_at")
     .eq("user_id", user.id)
     .eq("vocabulary_id", vocabId)
+    .or(GRADED)
     .order("reviewed_at", { ascending: false })
     .limit(1)
     .maybeSingle();
