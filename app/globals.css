@@ -108,7 +108,7 @@ rt {
   .dark .bg-red-500 { background-color: #b91c1c; }
   .dark .bg-soft { background-color: #111827; }
   .dark .bg-success { background-color: #4ade80; }
-  .dark .bg-white { background-color: #111827; }
+  .dark .bg-white { background-color: #1f2937; }
   .dark .bg-yellow-100 { background-color: #713f12; }
   .dark .bg-yellow-50 { background-color: #422006; }
   .dark .border-amber-200 { border-color: #92400e; }
@@ -124,8 +124,8 @@ rt {
   .dark .border-red-200 { border-color: #991b1b; }
   .dark .border-red-300 { border-color: #f87171; }
   .dark .fill-accent { fill: #60a5fa; }
-  .dark .fill-white { fill: #111827; }
-  .dark .stroke-white { stroke: #111827; }
+  .dark .fill-white { fill: #1f2937; }
+  .dark .stroke-white { stroke: #1f2937; }
   .dark .text-amber-500 { color: #fbbf24; }
   .dark .text-amber-700 { color: #fde68a; }
   .dark .text-blue-500 { color: #60a5fa; }
@@ -145,7 +145,7 @@ rt {
   .dark .text-red-500 { color: #f87171; }
   .dark .text-red-600 { color: #fca5a5; }
   .dark .text-red-700 { color: #fecaca; }
-  .dark .text-white { color: #111827; }
+  .dark .text-white { color: #1f2937; }
   .dark .active\:bg-gray-100:active { background-color: #1f2937; }
   .dark .active\:bg-gray-700:active { background-color: #374151; }
   .dark .disabled\:bg-gray-400:disabled { background-color: #4b5563; }

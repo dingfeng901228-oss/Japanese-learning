@@ -122,7 +122,10 @@ ACCENT_BORDER = {
 
 # Flat colours (no shade)
 FLAT = {
-    "white": "#111827",
+    # The page background is bg-soft (#111827); the cards sit on top of
+    # it, so they have to be a step lighter or the card boundary is
+    # only the 1px border.
+    "white": "#1f2937",
     "black": "#f9fafb",
     "accent": "#60a5fa",
     "success": "#4ade80",
